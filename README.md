@@ -25,7 +25,7 @@ Desde la versión 0.4 la maqueta sigue la línea gráfica de www.conaf.cl (letra
 | Funcionario solicitante | Inicio · Nueva solicitud · Mis salidas | Solicitud con revisión automática (fechas, destinos, capacidad, conductor habilitado de la región) y seguimiento |
 | Jefatura directa | Inicio · Por aprobar · Salidas de mi equipo | Definir la imputación presupuestaria (folio) y aprobar, observar o rechazar con comentario; historial del equipo |
 | Encargado de vehículos | Inicio · Salidas · Flota · Conductores · Combustible y gastos · Reportes | Ver detalle abajo |
-| Administrador nacional | Lo mismo que el encargado, más Configuración | Catálogos, usuarios y accesos, cierre mensual, calidad de datos, traspasos y auditoría |
+| Administrador nacional | Lo mismo que el encargado, más Configuración | **Agregar vehículos** (Flota) y **agregar conductores** (Conductores), sólo en este perfil; catálogos, usuarios y accesos, cierre mensual, calidad de datos, traspasos y auditoría |
 
 El conductor no tiene perfil: no accede a la plataforma. La entrega y la recepción del vehículo (odómetro, combustible e inventario) las registra el encargado de vehículos.
 
@@ -33,7 +33,7 @@ Lo que ve el encargado de vehículos, y qué función de GESAD reemplaza cada pa
 
 | Menú | Contenido | Reemplaza en GESAD |
 |---|---|---|
-| Inicio | Accesos a cada tarea, pendientes del día (asignar, entregar, recibir, novedades mecánicas), próximos vencimientos y **cierre de jornada del libro de guardia** | Salidas del día, Guarde de vehículos, Movimiento diario |
+| Inicio | Tarjetas de acceso a cada tarea; las de pendientes del día, próximos vencimientos y libro de guardia abren su propia pantalla. Pendientes del día (asignar, entregar, recibir, novedades mecánicas), próximos vencimientos y **cierre de jornada del libro de guardia** | Salidas del día, Guarde de vehículos, Movimiento diario |
 | Salidas | Lista única con filtros (por asignar, próximas, en terreno, finalizadas) o vista de calendario. Desde el detalle se asigna, se entrega y se recibe el vehículo, con **inventario de accesorios** al entregar y al recibir | Ingreso de solicitudes, Consulta de salidas, Consulta por conductor y por pasajeros |
 | Flota | **Hoja de vida** de cada vehículo: documentos, mantención (órdenes de trabajo y cierre con factura), combustible, gastos, **accidentes**, inventario, libro de guardia y salidas | Ficha de vehículos, Seguros, Accidentes de tránsito, Ubicación, Mantenciones, Ficha de taller, Orden de trabajo |
 | Conductores | Padrón con caución y licencia; los bloqueados no aparecen en las asignaciones | Conductores, Ficha de conductores |
