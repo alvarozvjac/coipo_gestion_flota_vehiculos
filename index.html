@@ -4,7 +4,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Mono:wght@500;600&display=swap">
 <style>
 /* Maqueta UIA · registro OPERATIVO (ESTANDAR_UI coipo_master_produccion): banner de gerencia arriba,
    barra de aplicación con selector de perfil, navegación por módulo y área de trabajo densa. */
@@ -12,10 +12,11 @@
   /* Medidos del banner (UI-2) — sólo superficie */
   --banner-campo-principal:#064928; --banner-campo-izquierdo:#15301d;
   /* Neutros con sesgo verde */
-  --bg:#f3f5f2; --sup:#ffffff; --sup-2:#edf1ec; --sup-3:#e3e9e3; --linea:#d3dcd4; --linea-fuerte:#a9b8ad;
-  --tinta:#16231b; --tinta-2:#45554b; --tinta-3:#647368;
-  --verde-tinta:#064928; --verde-tinta-fuerte:#043620; --foco-color:#064928;
-  --boton:#064928; --boton-hover:#0a5a33; --boton-texto:#ffffff;
+  --bg:#f4f5f3; --sup:#ffffff; --sup-2:#f4f7f2; --sup-3:#e9eee7; --linea:#e1e4df; --linea-fuerte:#bdc3bb;
+  --tinta:#212121; --tinta-2:#4f544e; --tinta-3:#676d66;
+  --verde-tinta:#34582f; --verde-tinta-fuerte:#263f22; --foco-color:#518e48;
+  --verde-acento:#518e48; --verde-claro:#79ac78; --verde-tinte:#eef5ec; --verde-tinte-2:#dcebd8;
+  --boton:#467d3e; --boton-hover:#34582f; --boton-texto:#ffffff;
   --placa-fondo:#ffffff; --placa-tinta:#111111; --placa-borde:#1d1d1d;
   --franja-fondo:#fff4cf; --franja-tinta:#5c4100; --franja-borde:#e3c35c;
   /* Estados: forma + etiqueta + color (UI-13); texto ≥4,5:1 sobre su fondo (UI-14) */
@@ -28,23 +29,24 @@
   --st-excl:#3d4550; --st-excl-bg:#e2e6ea;
   --st-neu:#3d4e45;  --st-neu-bg:#e4eae5;
   /* Tipografía */
-  --ff-cuerpo:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  --ff-titulo:"IBM Plex Sans Condensed","IBM Plex Sans",system-ui,sans-serif;
-  --ff-dato:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --ff-cuerpo:"Noto Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --ff-titulo:"Noto Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --ff-dato:"Noto Sans Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
   --f-xs:.75rem; --f-s:.875rem; --f-m:1rem; --f-l:1.125rem; --f-xl:1.375rem; --f-2xl:1.75rem; --f-3xl:2.25rem;
   /* Espaciado, radio, elevación, capas, movimiento (§3.1) */
   --e-1:.25rem; --e-2:.5rem; --e-3:.75rem; --e-4:1rem; --e-5:1.5rem; --e-6:2rem; --e-7:3rem;
-  --r-s:4px; --r-m:8px; --r-l:16px; --r-pill:999px;
-  --s-1:0 2px 6px rgba(6,73,40,.08); --s-2:0 6px 18px rgba(6,73,40,.10); --s-3:0 12px 36px rgba(6,73,40,.12); --s-4:0 24px 72px rgba(6,73,40,.14);
+  --r-s:4px; --r-m:6px; --r-l:12px; --r-pill:999px;
+  --s-1:0 1px 2px rgba(0,0,0,.06),0 1px 4px rgba(0,0,0,.05); --s-2:0 2px 6px rgba(0,0,0,.07),0 8px 20px rgba(0,0,0,.06); --s-3:0 12px 36px rgba(0,0,0,.12); --s-4:0 24px 72px rgba(0,0,0,.16);
   --z-barra:100; --z-desplegable:200; --z-modal:300; --z-aviso:400;
   --curva:cubic-bezier(.16,.85,.2,1); --t-micro:.2s; --t-local:.35s; --t-capa:.5s;
   --gutter-l:max(16px, env(safe-area-inset-left, 0px)); --gutter-r:max(16px, env(safe-area-inset-right, 0px));
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#121814; --sup:#1a221d; --sup-2:#212b25; --sup-3:#29342d; --linea:#33413a; --linea-fuerte:#4e5f55;
+  --bg:#141714; --sup:#1c201b; --sup-2:#212b25; --sup-3:#29342d; --linea:#33413a; --linea-fuerte:#4e5f55;
   --tinta:#e5ece7; --tinta-2:#b4c1b8; --tinta-3:#8f9d94;
-  --verde-tinta:#4fb37a; --verde-tinta-fuerte:#7fcb9d; --foco-color:#4fb37a;
-  --boton:#0b6a3a; --boton-hover:#0e7c45; --boton-texto:#ffffff;
+  --verde-tinta:#9fd294; --verde-tinta-fuerte:#bfe3b6; --foco-color:#79ac78;
+  --verde-acento:#79ac78; --verde-claro:#79ac78; --verde-tinte:#1f2d1c; --verde-tinte-2:#2a3d26;
+  --boton:#467d3e; --boton-hover:#518e48; --boton-texto:#ffffff;
   --placa-fondo:#f4f4f2; --placa-tinta:#111111; --placa-borde:#000000;
   --franja-fondo:#3a2f0c; --franja-tinta:#f3d98a; --franja-borde:#6d5617;
   --st-disp:#86d7a6; --st-disp-bg:#163825; --st-res:#a3c6f3; --st-res-bg:#182b45;
@@ -54,10 +56,11 @@
   color-scheme:dark;
 }}
 :root[data-theme="dark"]{
-  --bg:#121814; --sup:#1a221d; --sup-2:#212b25; --sup-3:#29342d; --linea:#33413a; --linea-fuerte:#4e5f55;
+  --bg:#141714; --sup:#1c201b; --sup-2:#212b25; --sup-3:#29342d; --linea:#33413a; --linea-fuerte:#4e5f55;
   --tinta:#e5ece7; --tinta-2:#b4c1b8; --tinta-3:#8f9d94;
-  --verde-tinta:#4fb37a; --verde-tinta-fuerte:#7fcb9d; --foco-color:#4fb37a;
-  --boton:#0b6a3a; --boton-hover:#0e7c45; --boton-texto:#ffffff;
+  --verde-tinta:#9fd294; --verde-tinta-fuerte:#bfe3b6; --foco-color:#79ac78;
+  --verde-acento:#79ac78; --verde-claro:#79ac78; --verde-tinte:#1f2d1c; --verde-tinte-2:#2a3d26;
+  --boton:#467d3e; --boton-hover:#518e48; --boton-texto:#ffffff;
   --placa-fondo:#f4f4f2; --placa-tinta:#111111; --placa-borde:#000000;
   --franja-fondo:#3a2f0c; --franja-tinta:#f3d98a; --franja-borde:#6d5617;
   --st-disp:#86d7a6; --st-disp-bg:#163825; --st-res:#a3c6f3; --st-res-bg:#182b45;
@@ -69,7 +72,7 @@
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{background:var(--bg);color:var(--tinta)}
-body{font-family:var(--ff-cuerpo);font-size:var(--f-s);line-height:1.5;-webkit-font-smoothing:antialiased}
+body{font-family:var(--ff-cuerpo);font-size:.9375rem;line-height:1.55;-webkit-font-smoothing:antialiased}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--sup)}
 h1,h2,h3,h4{font-family:var(--ff-titulo);margin:0;text-wrap:balance;line-height:1.2}
 p{margin:0}
@@ -352,6 +355,89 @@ details.no-aptos summary{cursor:pointer;font-weight:500;color:var(--tinta-2);min
 .pie-tabla{display:flex;justify-content:space-between;gap:var(--e-3);flex-wrap:wrap;padding:var(--e-3) var(--e-4);border-top:1px solid var(--linea);font-size:var(--f-s)}
 #capa2 .velo{z-index:calc(var(--z-modal) + 10)}
 
+
+/* ================= Rediseño v0.4: estilo conaf.cl (Noto Sans, verdes institucionales, tarjetas con sombra) ================= */
+.ico{width:1.15em;height:1.15em;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.2em}
+svg use{pointer-events:none}
+.barra{box-shadow:0 1px 0 var(--linea),0 4px 14px rgba(0,0,0,.04);border-bottom:0}
+.barra-in{padding-block:var(--e-3)}
+.app-nombre{gap:var(--e-3);color:var(--tinta)}
+.app-ico{width:42px;height:42px;border-radius:50%;background:var(--verde-tinte);color:var(--verde-tinta);display:grid;place-items:center;border:1px solid var(--verde-tinte-2)}
+.app-ico svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.app-txt{display:flex;flex-direction:column;line-height:1.2}
+.app-txt b{font-size:var(--f-l);font-weight:700;color:var(--verde-tinta)}
+.app-txt small{font-size:var(--f-xs);font-weight:500;color:var(--tinta-3);letter-spacing:.02em}
+.perfil label{display:flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:var(--f-s);font-weight:500;color:var(--tinta-2)}
+.perfil select{border-radius:var(--r-pill);border-color:var(--verde-claro);background:var(--verde-tinte);color:var(--verde-tinta);padding:0 var(--e-5) 0 var(--e-4);min-height:40px}
+.quien{flex-direction:row;align-items:center;gap:var(--e-2);padding-left:var(--e-3);border-left:1px solid var(--linea)}
+.quien .avatar{width:36px;height:36px;border-radius:50%;background:var(--verde-tinta);color:#fff;display:grid;place-items:center;font-weight:700;font-size:var(--f-xs);letter-spacing:.04em;flex:none}
+.quien .qtxt{display:flex;flex-direction:column}
+.nav{gap:var(--e-2);border-top:1px solid var(--linea);background:var(--sup)}
+.nav button{font-size:.9375rem;color:var(--tinta);padding:var(--e-3) var(--e-3);min-height:52px;border-bottom-width:3px}
+.nav button .ico{color:var(--tinta-3)}
+.nav button:hover{color:var(--verde-tinta)}
+.nav button:hover .ico{color:var(--verde-acento)}
+.nav button[aria-current="page"]{color:var(--verde-tinta);border-bottom-color:var(--verde-acento)}
+.nav button[aria-current="page"] .ico{color:var(--verde-acento)}
+.nav .cuenta{font-family:var(--ff-cuerpo);background:var(--boton);color:#fff;min-width:20px;text-align:center;padding:0 6px}
+main{padding-block:var(--e-6) var(--e-7)}
+.cab-vista h1{font-size:1.875rem;font-weight:600;color:var(--tinta)}
+.cab-vista h1::after{content:"";display:block;width:48px;height:3px;background:var(--verde-acento);border-radius:2px;margin-top:var(--e-2)}
+.cab-vista p{color:var(--tinta-2);font-size:var(--f-m)}
+.ref-ers{font-family:var(--ff-cuerpo);background:var(--sup);border:1px solid var(--linea);border-radius:var(--r-pill);padding:2px 10px}
+.panel,.kpi,.contador,fieldset{border-color:var(--linea);box-shadow:var(--s-1);border-radius:8px}
+.panel>header{padding:var(--e-4) var(--e-5)}
+.panel>header h2{font-weight:600;color:var(--tinta)}
+.panel .cuerpo{padding:var(--e-4) var(--e-5)}
+.contador{border-top:3px solid var(--verde-claro)}
+.contador.alerta{border-top-color:var(--st-malo)}
+.contador b{font-weight:700;color:var(--verde-tinta)}
+.contador.alerta b{color:var(--st-malo)}
+.btn{border-radius:var(--r-m);font-weight:600}
+.btn.sec{color:var(--verde-tinta);border-color:var(--verde-claro)}
+.btn.sec:hover{background:var(--verde-tinte)}
+legend{color:var(--verde-tinta);font-weight:600}
+fieldset{background:var(--sup);padding:var(--e-4) var(--e-5) var(--e-5)}
+.seccion-num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--boton);color:#fff;font-family:var(--ff-cuerpo);font-weight:700;margin-right:var(--e-2)}
+input[type=text],input[type=number],input[type=datetime-local],input[type=search],select,textarea{border-color:var(--linea-fuerte);border-radius:var(--r-m)}
+input:focus,select:focus,textarea:focus{border-color:var(--verde-acento);box-shadow:0 0 0 3px var(--verde-tinte-2);outline:none}
+th{background:var(--sup-2);color:var(--tinta-2)}
+tr.clic:hover{background:var(--verde-tinte)}
+footer.pie-app{background:var(--verde-tinta);color:#e9f1e7;border-top:4px solid var(--verde-acento)}
+.pie-app span{color:inherit}
+
+/* Inicio por perfil */
+.hero{position:relative;overflow:hidden;border-radius:12px;background:linear-gradient(115deg,var(--verde-tinta) 0%,#3f6b38 60%,var(--verde-acento) 100%);color:#fff;padding:var(--e-6) var(--e-6);margin-bottom:var(--e-6);display:flex;justify-content:space-between;align-items:flex-end;gap:var(--e-5);flex-wrap:wrap;box-shadow:var(--s-2)}
+.hero::after{content:"";position:absolute;right:-60px;top:-80px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.14),rgba(255,255,255,0) 70%);pointer-events:none}
+.hero .eyebrow{display:flex;align-items:center;gap:6px;font-size:var(--f-xs);font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#d6ebd0}
+.hero h1{font-size:clamp(1.6rem,3vw,2.25rem);font-weight:600;margin-top:var(--e-2);color:#fff}
+.hero p{max-width:62ch;margin-top:var(--e-2);color:#eef5ec;font-size:var(--f-m)}
+.hero .fecha{display:flex;align-items:center;gap:var(--e-2);background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-radius:var(--r-pill);padding:var(--e-2) var(--e-4);font-weight:500;position:relative;z-index:1}
+.sec-tit{display:flex;align-items:center;gap:var(--e-2);font-size:var(--f-xl);font-weight:600;margin:0 0 var(--e-4)}
+.sec-tit .ico{color:var(--verde-acento)}
+.sec-tit small{font-size:var(--f-s);font-weight:400;color:var(--tinta-3);margin-left:var(--e-2)}
+.accesos{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:var(--e-4);margin-bottom:var(--e-6)}
+.acceso{position:relative;display:flex;flex-direction:column;gap:var(--e-2);text-align:left;background:var(--sup);border:1px solid var(--linea);border-top:4px solid var(--verde-claro);border-radius:8px;padding:var(--e-5);box-shadow:var(--s-1);cursor:pointer;color:var(--tinta);transition:transform var(--t-micro) var(--curva),box-shadow var(--t-micro) var(--curva),border-color var(--t-micro) var(--curva)}
+.acceso:hover{transform:translateY(-3px);box-shadow:var(--s-2);border-top-color:var(--verde-acento)}
+.acceso.principal{border-top-color:var(--verde-acento);background:linear-gradient(180deg,var(--verde-tinte),var(--sup) 70%)}
+.acceso .a-ico{width:52px;height:52px;border-radius:12px;background:var(--verde-tinte);color:var(--verde-tinta);display:grid;place-items:center;margin-bottom:var(--e-1)}
+.acceso.principal .a-ico{background:var(--boton);color:#fff}
+.acceso .a-ico svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.acceso h3{font-size:var(--f-l);font-weight:600}
+.acceso p{font-size:var(--f-s);color:var(--tinta-2);flex:1}
+.acceso .a-pie{display:flex;align-items:center;justify-content:space-between;gap:var(--e-2);margin-top:var(--e-2);font-weight:600;color:var(--verde-tinta);font-size:var(--f-s)}
+.acceso .a-pie .ico{transition:transform var(--t-micro) var(--curva)}
+.acceso:hover .a-pie .ico{transform:translateX(4px)}
+.acceso .a-cuenta{position:absolute;top:var(--e-4);right:var(--e-4);background:var(--boton);color:#fff;border-radius:var(--r-pill);font-weight:700;font-size:var(--f-s);padding:2px 10px}
+.acceso .a-cuenta.aviso{background:var(--st-malo)}
+.pasos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;background:var(--sup);border:1px solid var(--linea);border-radius:8px;box-shadow:var(--s-1);margin-bottom:var(--e-6);counter-reset:paso}
+.paso{padding:var(--e-4) var(--e-5);position:relative;display:flex;gap:var(--e-3);align-items:flex-start}
+.paso+.paso{border-left:1px solid var(--linea)}
+.paso b{flex:none;width:32px;height:32px;border-radius:50%;background:var(--verde-tinte);color:var(--verde-tinta);display:grid;place-items:center;font-weight:700;border:2px solid var(--verde-claro)}
+.paso span{font-size:var(--f-s);color:var(--tinta-2)}
+.paso span strong{display:block;color:var(--tinta);font-weight:600;font-size:var(--f-m);margin-bottom:2px}
+@media (max-width:899.98px){ .pasos{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} .paso:nth-child(3){border-left:0} .paso:nth-child(n+3){border-top:1px solid var(--linea)} }
+@media (max-width:559.98px){ .pasos{grid-template-columns:minmax(0,1fr)} .paso+.paso{border-left:0;border-top:1px solid var(--linea)} .hero{padding:var(--e-5)} .quien{border-left:0;padding-left:0} }
 </style>
 
 </head><body>
@@ -364,9 +450,9 @@ details.no-aptos summary{cursor:pointer;font-weight:500;color:var(--tinta-2);min
 
 <div class="barra">
   <div class="barra-in">
-    <div class="app-nombre">Gestión de Flota <span class="sigla">INF-LOG-TI-2026-V1</span></div>
+    <div class="app-nombre"><span class="app-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-car"/></svg></span><span class="app-txt"><b>Gestión de Flota</b><small>Pool de vehículos · CONAF</small></span></div>
     <div class="perfil">
-      <label for="sel-rol">Ver como</label>
+      <label for="sel-rol"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-user"/></svg>Ver como</label>
       <select id="sel-rol">
         <option value="solicitante">Funcionario solicitante</option>
         <option value="jefatura">Jefatura directa</option>
@@ -380,8 +466,30 @@ details.no-aptos summary{cursor:pointer;font-weight:500;color:var(--tinta-2);min
   <nav class="nav" id="nav" aria-label="Módulos"></nav>
 </div>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></symbol>
+<symbol id="i-car" viewBox="0 0 24 24"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></symbol>
+<symbol id="i-lista" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"/></symbol>
+<symbol id="i-aprobar" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></symbol>
+<symbol id="i-equipo" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+<symbol id="i-ruta" viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></symbol>
+<symbol id="i-licencia" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M14 10h4M14 14h4"/></symbol>
+<symbol id="i-combustible" viewBox="0 0 24 24"><path d="M3 22h12M4 9h10"/><path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 4 0V9.83a2 2 0 0 0-.59-1.42L18 5"/></symbol>
+<symbol id="i-grafico" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></symbol>
+<symbol id="i-config" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M2 14h4M10 8h4M18 16h4"/></symbol>
+<symbol id="i-calendario" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
+<symbol id="i-flecha" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></symbol>
+<symbol id="i-llave" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6M15.5 7.5l3 3L22 7l-3-3"/></symbol>
+<symbol id="i-alerta" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4M12 17h.01"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+<symbol id="i-escudo" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></symbol>
+<symbol id="i-qr" viewBox="0 0 24 24"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3M21 21v.01M12 7v3a2 2 0 0 1-2 2H7M3 12h.01M12 3h.01M12 16v.01M16 12h1M21 12v.01M12 21v-1"/></symbol>
+<symbol id="i-reloj" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+</defs></svg>
 <main id="vista" tabindex="-1"></main>
-<footer class="pie-app"><span>CONAF · Unidad de Información y Análisis · Maqueta v0.3 para revisión con la Sección Servicios Generales (GEFA)</span><span>Base: ERS INF-LOG-TI-2026-V1 (15-10-2026) · Prototipo Pool de Vehículos V7 · GESAD</span></footer>
+<footer class="pie-app"><span>CONAF · Unidad de Información y Análisis · Maqueta v0.4 para revisión con la Sección Servicios Generales (GEFA)</span><span>Base: ERS INF-LOG-TI-2026-V1 (15-10-2026) · Prototipo Pool de Vehículos V7 · GESAD</span></footer>
 <div class="aviso-tostada" id="tostadas" aria-live="polite"></div>
 <div id="capa"></div>
 <div id="capa2"></div>
@@ -1032,12 +1140,15 @@ let CIERRES = [{mes:"2026-08",estado:"Cerrado",por:"p1",fecha:"2026-09-05"},{mes
 const mesCerrado = f=>CIERRES.some(c=>c.estado==="Cerrado"&&f.slice(0,7)===c.mes);
 
 /* ---------- Perfiles y navegación ---------- */
-ROLES.solicitante.nav=[["nueva","Nueva solicitud"],["mis","Mis salidas"]];
-ROLES.jefatura.nav=[["bandeja","Por aprobar"],["equipo","Salidas de mi equipo"]];
-ROLES.encargado.nav=[["hoy","Hoy"],["salidas","Salidas"],["flota","Flota"],["conductores","Conductores"],["combustible","Combustible y gastos"],["reportes","Reportes"]];
-ROLES.conductor.nav=[["agenda","Mis viajes"]];
+ROLES.solicitante.nav=[["inicio","Inicio"],["nueva","Nueva solicitud"],["mis","Mis salidas"]];
+ROLES.jefatura.nav=[["inicio","Inicio"],["bandeja","Por aprobar"],["equipo","Salidas de mi equipo"]];
+ROLES.encargado.nav=[["hoy","Inicio"],["salidas","Salidas"],["flota","Flota"],["conductores","Conductores"],["combustible","Combustible y gastos"],["reportes","Reportes"]];
+ROLES.conductor.nav=[["inicio","Inicio"],["agenda","Mis viajes"]];
 ROLES.super.nav=[...ROLES.encargado.nav,["config","Configuración"]];
 const puedeGestionar = ()=>["encargado","super"].includes(rol);
+const NAV_ICO={inicio:"home",hoy:"home",nueva:"plus",mis:"lista",bandeja:"aprobar",equipo:"equipo",salidas:"ruta",flota:"car",conductores:"licencia",combustible:"combustible",reportes:"grafico",agenda:"calendario",config:"config"};
+const ico=(n,c="ico")=>`<svg class="${c}" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-${n}"/></svg>`;
+const iniciales=n=>String(n||"").split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase();
 
 /* ---------- Estado de vista ---------- */
 let rol = "encargado", vista = "hoy";
@@ -1055,8 +1166,8 @@ function cuentas(){
 }
 function pintarBarra(){
   const R0=ROLES[rol], p=PX[R0.quien], c=cuentas();
-  $("#quien").innerHTML=`<b>${esc(p.nom)}</b><span>${esc(p.cargo)}</span>`;
-  $("#nav").innerHTML=R0.nav.map(([k,t])=>`<button type="button" data-v="${k}" ${k===vista?'aria-current="page"':""}>${t}${c[k]?`<span class="cuenta num" aria-label="${c[k]} pendientes">${c[k]}</span>`:""}</button>`).join("");
+  $("#quien").innerHTML=`<span class="avatar" aria-hidden="true">${iniciales(p.nom)}</span><span class="qtxt"><b>${esc(p.nom)}</b><span>${esc(p.cargo)}</span></span>`;
+  $("#nav").innerHTML=R0.nav.map(([k,t])=>`<button type="button" data-v="${k}" ${k===vista?'aria-current="page"':""}>${ico(NAV_ICO[k]||"home")}${t}${c[k]?`<span class="cuenta num" aria-label="${c[k]} pendientes">${c[k]}</span>`:""}</button>`).join("");
 }
 function ir(v){ vista=v; try{history.replaceState(null,"","#"+v)}catch(e){} render(); $("#vista").focus({preventScroll:true}); }
 $("#nav").addEventListener("click",e=>{const b=e.target.closest("button[data-v]"); if(b) ir(b.dataset.v)});
@@ -1065,7 +1176,7 @@ function render(){
   if(!ROLES[rol].nav.some(n=>n[0]===vista)) vista=ROLES[rol].nav[0][0];
   pintarBarra();
   const viejo=$("#vista"), nuevo=viejo.cloneNode(false); viejo.replaceWith(nuevo);
-  const fn={mis:vMis,nueva:vNueva,visor:vVisor,bandeja:vBandeja,equipo:vEquipo,hoy:vHoy,salidas:vSalidas,flota:vFlota,conductores:vConductores,combustible:vCombustible,reportes:vReportes,agenda:vAgenda,config:vConfig}[vista];
+  const fn={inicio:vInicio,mis:vMis,nueva:vNueva,visor:vVisor,bandeja:vBandeja,equipo:vEquipo,hoy:vHoy,salidas:vSalidas,flota:vFlota,conductores:vConductores,combustible:vCombustible,reportes:vReportes,agenda:vAgenda,config:vConfig}[vista];
   $("#vista").innerHTML=fn();
   (post[vista]||(()=>{}))();
 }
@@ -1099,10 +1210,12 @@ function tareasHoy(){
 }
 function vHoy(){
   const est=VEH.map(estadoHoy), n=k=>est.filter(e=>e===k).length, t=tareasHoy(), ven=vencimientos();
-  const ico={asignar:chip("Asignar","c-pend","◑"),despachar:chip("Salida","c-res","■"),recibir:chip("Regreso","c-terr","▶"),novedad:chip("Taller","c-tall","⚙"),guardia:chip("Guardia","c-neu","◷")};
-  return cab("Hoy · "+DS[HOY.getDay()]+" "+fF(HOY),"Lo que requiere tu atención en la flota de Oficina Central.","Encargado de vehículos")+
+  const icoT={asignar:chip("Asignar","c-pend","◑"),despachar:chip("Salida","c-res","■"),recibir:chip("Regreso","c-terr","▶"),novedad:chip("Taller","c-tall","⚙"),guardia:chip("Guardia","c-neu","◷")};
+  return heroHTML("Lo que requiere tu atención en la flota de Oficina Central: solicitudes por asignar, vehículos por entregar o recibir y vencimientos.")+
+  `<h2 class="sec-tit">${ico("flecha")}¿Qué necesitas hacer?</h2>`+accesosHTML(accesosGestion())+
+  `<h2 class="sec-tit">${ico("reloj")}Hoy en la flota<small>${DS[HOY.getDay()]} ${fF(HOY)}</small></h2>`+
   `<div class="contadores"><div class="contador"><b>${n("DISP")}</b><span>disponibles<br>de ${VEH.length}</span></div><div class="contador"><b>${n("TERR")}</b><span>en terreno</span></div><div class="contador"><b>${n("TALL_P")+n("TALL_C")}</b><span>en taller</span></div><div class="contador"><b>${n("MALO")+n("EXCL")}</b><span>fuera de servicio<br>o exclusivos</span></div><div class="contador ${ven.length?"alerta":""}"><b>${ven.length}</b><span>vencimientos<br>en 30 días</span></div></div>
-  <div class="grid g-2"><section class="panel"><header><h2>Pendientes</h2><span class="sub num">${t.length}</span></header><div class="cuerpo">${t.length?t.map((x,i)=>`<div class="tarea">${ico[x.k]}<div class="q">${esc(x.txt)}<small>${esc(x.sub)}</small></div><button class="btn chico" type="button" data-tarea="${i}">${x.btn}</button></div>`).join(""):`<p class="vacio-chico">No hay tareas pendientes.</p>`}</div></section>
+  <div class="grid g-2"><section class="panel"><header><h2>Pendientes</h2><span class="sub num">${t.length}</span></header><div class="cuerpo">${t.length?t.map((x,i)=>`<div class="tarea">${icoT[x.k]}<div class="q">${esc(x.txt)}<small>${esc(x.sub)}</small></div><button class="btn chico" type="button" data-tarea="${i}">${x.btn}</button></div>`).join(""):`<p class="vacio-chico">No hay tareas pendientes.</p>`}</div></section>
   <section class="panel"><header><h2>Próximos vencimientos</h2></header><div class="cuerpo">${ven.slice(0,9).map(a=>`<div class="tarea">${placa(a.pat)}<div class="q">${a.t}<small>${a.f?fF(a.f):"Sin fecha registrada"}</small></div>${a.e==="VENC"?chip("Vencido","c-malo","✕"):a.e==="SIN"?chip("Sin dato","c-malo","?"):chip("Por vencer","c-pend","!")}</div>`).join("")}${ven.length>9?`<p class="tenue peq" style="margin-top:var(--e-2)">Y ${ven.length-9} más en <button class="pin-reveal" type="button" data-ir="flota">Flota</button></p>`:""}</div></section></div>
   <section class="panel" style="margin-top:var(--e-4)" id="sec-guardia">${guardiaHTML()}</section>`;
 }
@@ -1116,6 +1229,7 @@ function guardiaHTML(){
   <div class="pie-tabla"><span class="tenue">${enOC.length} vehículos en recinto · ${VEH.length-enOC.length} en terreno</span><button class="btn" type="button" id="btn-guardia">Registrar cierre de jornada</button></div>`;
 }
 post.hoy = ()=>{
+  postAccesos();
   const t=tareasHoy();
   $("#vista").querySelectorAll("[data-tarea]").forEach(b=>b.onclick=()=>{const x=t[+b.dataset.tarea];
     if(x.k==="guardia"){ $("#sec-guardia").scrollIntoView({behavior:"smooth"}); return; }
@@ -1126,6 +1240,60 @@ post.hoy = ()=>{
     RES.filter(r=>r.est==="EN_TERRENO").forEach(r=>GUARDE.push({fecha:h,pat:r.pat,hora:"18:05",ub:"Terreno",km:r.bit.odoS,comb:r.bit.combS,est:"Bueno",quien:"Automático (en terreno)"}));
     audit("Cierre de jornada en libro de guardia",fF(HOY),"—",VEH.length+" vehículos"); tostada("Cierre de jornada registrado."); render(); };
 };
+
+/* ======================= INICIO POR PERFIL ======================= */
+function heroHTML(txt){
+  const p=PX[ROLES[rol].quien], nombre=String(p.nom).split(" ")[0];
+  return `<section class="hero"><div style="position:relative;z-index:1"><span class="eyebrow">${ico("escudo")}${esc(ROLES[rol].nombre)} · ${esc(p.cargo)}</span><h1>Hola, ${esc(nombre)}</h1><p>${txt}</p></div><span class="fecha">${ico("calendario")}${DS[HOY.getDay()]} ${fF(HOY)}</span></section>`;
+}
+function accesosHTML(lista){
+  return `<div class="accesos">${lista.map((a,i)=>`<button type="button" class="acceso ${a.principal?"principal":""}" data-acc="${i}">${a.n?`<span class="a-cuenta num ${a.aviso?"aviso":""}" aria-label="${a.n} ${esc(a.nl||"pendientes")}">${a.n}</span>`:""}<span class="a-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-${a.ico}"/></svg></span><h3>${a.t}</h3><p>${a.d}</p><span class="a-pie">${a.cta}${ico("flecha")}</span></button>`).join("")}</div>`;
+}
+let ACCESOS=[];
+function postAccesos(){ $("#vista").querySelectorAll("[data-acc]").forEach(b=>b.onclick=()=>{const a=ACCESOS[+b.dataset.acc]; if(a.pre) a.pre(); ir(a.v);}); }
+function accesosGestion(){
+  const n=e=>RES.filter(r=>r.est===e).length, alertas=VEH.filter(v=>alertasVeh(v)>0).length;
+  const cond=COND.map(c=>estCond(c).est), porVencer=cond.filter(e=>e==="POR"||e==="BLOQ").length;
+  ACCESOS=[
+   {v:"salidas",ico:"aprobar",t:"Asignar vehículos",d:"Solicitudes aprobadas por la jefatura que esperan vehículo y conductor.",cta:"Ir a asignar",n:n("APROBADA"),nl:"por asignar",principal:true,pre:()=>{sel.salFiltro="asignar";sel.salModo="lista"}},
+   {v:"salidas",ico:"llave",t:"Entregar y recibir",d:"Vehículos que salen o regresan: odómetro, combustible e inventario de accesorios.",cta:"Ver salidas",n:n("CONFIRMADA")+n("EN_TERRENO"),nl:"en curso",pre:()=>{sel.salFiltro="proximas";sel.salModo="lista"}},
+   {v:"salidas",ico:"calendario",t:"Calendario de la flota",d:"Ocupación de cada vehículo día a día, con reservas y mantenciones.",cta:"Abrir calendario",pre:()=>{sel.salModo="calendario"}},
+   {v:"flota",ico:"car",t:"Flota",d:"Hoja de vida de cada vehículo: documentos, mantenciones, gastos y accidentes.",cta:"Ver vehículos",n:alertas,nl:"con alertas",aviso:alertas>0},
+   {v:"conductores",ico:"licencia",t:"Conductores",d:"Caución y licencia de cada conductor. Los bloqueados no se pueden asignar.",cta:"Ver padrón",n:porVencer,nl:"por vencer o bloqueados",aviso:porVencer>0},
+   {v:"combustible",ico:"combustible",t:"Combustible y gastos",d:"Cargas, archivo COPEC, compras a granel y gastos por factura o boleta.",cta:"Registrar"},
+   {v:"reportes",ico:"grafico",t:"Reportes",d:"Kilómetros, rendimiento, operatividad y el Excel mensual o anual para Tesorería.",cta:"Ver reportes"}];
+  if(rol==="super") ACCESOS.push({v:"config",ico:"config",t:"Configuración",d:"Catálogos, usuarios y accesos, cierre mensual y auditoría.",cta:"Configurar"});
+  return ACCESOS;
+}
+function vInicio(){
+  const yo=ROLES[rol].quien;
+  if(rol==="solicitante"){
+    const mias=RES.filter(r=>r.sol===yo), curso=mias.filter(r=>["PEND_JEFE","OBSERVADA","APROBADA","CONFIRMADA","EN_TERRENO"].includes(r.est)), obs=mias.filter(r=>r.est==="OBSERVADA").length;
+    const prox=mias.filter(r=>r.est==="CONFIRMADA").sort((a,b)=>a.salida.localeCompare(b.salida))[0];
+    ACCESOS=[{v:"nueva",ico:"plus",t:"Solicitar un vehículo",d:"Indica destino, fechas, cometido y acompañantes. Tu jefatura recibirá la solicitud para aprobarla.",cta:"Nueva solicitud",principal:true},
+             {v:"mis",ico:"lista",t:"Mis salidas",d:"Revisa en qué etapa está cada solicitud y abre la orden de salida con código QR.",cta:"Ver mis salidas",n:curso.length,nl:"en curso"}];
+    if(obs) ACCESOS.push({v:"mis",ico:"alerta",t:"Solicitudes observadas",d:"Tu jefatura pidió corregir algo antes de aprobar.",cta:"Corregir",n:obs,nl:"observadas",aviso:true});
+    return heroHTML("Desde aquí pides un vehículo para tus salidas a terreno y sigues cada solicitud hasta recibir la orden de salida.")+
+      `<h2 class="sec-tit">${ico("flecha")}¿Qué necesitas hacer?</h2>`+accesosHTML(ACCESOS)+
+      (prox?`<h2 class="sec-tit">${ico("car")}Tu próxima salida</h2><section class="panel" style="margin-bottom:var(--e-6)"><div class="cuerpo"><div class="tarea">${prox.pat?placa(prox.pat):""}<div class="q">${esc(prox.destinos.map(d=>d.com).join(" · "))} · ${fCorta(prox.salida)}<small>${prox.id} · conductor ${esc(nom(prox.cond))}</small></div><button class="btn" type="button" data-orden="${prox.id}">${ico("qr")}Ver orden de salida</button></div></div></section>`:"")+
+      `<h2 class="sec-tit">${ico("ruta")}Cómo funciona</h2><div class="pasos"><div class="paso"><b>1</b><span><strong>Solicitas</strong>Destino, fechas, cometido y acompañantes.</span></div><div class="paso"><b>2</b><span><strong>Tu jefatura aprueba</strong>Y define con qué presupuesto se imputa el gasto.</span></div><div class="paso"><b>3</b><span><strong>Se asigna el vehículo</strong>El encargado elige vehículo y conductor habilitado.</span></div><div class="paso"><b>4</b><span><strong>Recibes la orden</strong>Con código QR para presentar al retirar el vehículo.</span></div></div>`;
+  }
+  if(rol==="jefatura"){
+    const pend=RES.filter(r=>r.est==="PEND_JEFE"&&r.jefe===yo), eq=RES.filter(r=>r.jefe===yo);
+    ACCESOS=[{v:"bandeja",ico:"aprobar",t:"Aprobar solicitudes",d:"Define la imputación presupuestaria y aprueba, observa o rechaza cada solicitud de tu equipo.",cta:"Revisar solicitudes",n:pend.length,nl:"por aprobar",principal:true},
+             {v:"equipo",ico:"equipo",t:"Salidas de mi equipo",d:"Historial y estado de las salidas que autorizaste.",cta:"Ver historial",n:eq.filter(r=>["CONFIRMADA","EN_TERRENO"].includes(r.est)).length,nl:"en curso"}];
+    return heroHTML(pend.length?`Tienes ${pend.length} ${pend.length===1?"solicitud":"solicitudes"} de tu equipo esperando tu aprobación.`:"No tienes solicitudes pendientes de aprobación.")+
+      `<h2 class="sec-tit">${ico("flecha")}¿Qué necesitas hacer?</h2>`+accesosHTML(ACCESOS)+
+      (pend.length?`<h2 class="sec-tit">${ico("reloj")}Esperan tu decisión</h2><section class="panel"><div class="cuerpo">${pend.map(r=>`<div class="tarea">${chipR(r.est)}<div class="q">${esc(nom(r.sol))} · ${esc(r.destinos.map(d=>d.com).join(" · "))}<small>${r.id} · sale ${fCorta(r.salida)} · ${esc(r.cometido)}</small></div><button class="btn chico" type="button" data-ir="bandeja">Revisar</button></div>`).join("")}</div></section>`:"");
+  }
+  // conductor
+  const mias=RES.filter(r=>(r.cond===yo||r.relevo===yo)&&["CONFIRMADA","EN_TERRENO"].includes(r.est)).sort((a,b)=>a.salida.localeCompare(b.salida)), c=CX[yo];
+  ACCESOS=[{v:"agenda",ico:"calendario",t:"Mis viajes",d:"Registra el kilometraje, el combustible y el inventario al retirar y al devolver el vehículo.",cta:"Ver mis viajes",n:mias.length,nl:"próximos",principal:true}];
+  return heroHTML("Aquí ves los cometidos que te asignaron y registras la salida y el regreso del vehículo.")+
+    `<h2 class="sec-tit">${ico("flecha")}¿Qué necesitas hacer?</h2>`+accesosHTML(ACCESOS)+
+    `<h2 class="sec-tit">${ico("licencia")}Tu habilitación</h2><div class="contadores"><div class="contador"><b>${c.clases.join("·")}</b><span>licencia vigente<br>hasta ${fF(c.licHasta)}</span></div><div class="contador"><b>✓</b><span>caución vigente<br>hasta ${fF(c.cauHasta)}</span></div><div class="contador"><b>${mias.length}</b><span>viajes<br>próximos</span></div></div>`;
+}
+post.inicio = ()=>postAccesos();
 
 /* ======================= SALIDAS ======================= */
 function grupoSalida(r){ return r.est==="APROBADA"?"asignar":r.est==="CONFIRMADA"?"proximas":r.est==="EN_TERRENO"?"terreno":r.est==="FINALIZADA"?"finalizadas":r.est==="PEND_JEFE"||r.est==="OBSERVADA"?"jefatura":"otras"; }
