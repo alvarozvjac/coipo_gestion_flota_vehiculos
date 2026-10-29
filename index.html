@@ -440,26 +440,22 @@ footer.pie-app{background:var(--verde-tinta);color:#e9f1e7;border-top:4px solid 
 /* Ingreso (login simulado) */
 body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{display:none}
 .login{padding:var(--e-7) var(--gutter-r) var(--e-7) var(--gutter-l);background:linear-gradient(180deg,var(--verde-tinte),var(--bg) 60%);min-height:70vh}
-.login-caja{max-width:1040px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:var(--e-5);align-items:start}
-@media (max-width:899.98px){ .login-caja{grid-template-columns:minmax(0,1fr)} }
-.login-form,.login-prueba{background:var(--sup);border:1px solid var(--linea);border-top:4px solid var(--verde-acento);border-radius:10px;box-shadow:var(--s-2);padding:var(--e-6);display:flex;flex-direction:column;gap:var(--e-4)}
-.login-prueba{border-top-color:var(--verde-claro)}
+.login-caja{max-width:460px;margin:0 auto}
+.login-form{background:var(--sup);border:1px solid var(--linea);border-top:4px solid var(--verde-acento);border-radius:10px;box-shadow:var(--s-2);padding:var(--e-6);display:flex;flex-direction:column;gap:var(--e-4)}
+.login-form>.app-ico,.login-form>h1,.login-form>h1+p{align-self:center;text-align:center}
 .login-form h1{font-size:var(--f-2xl);font-weight:600;color:var(--verde-tinta)}
-.login-prueba h2{font-size:var(--f-xl);font-weight:600}
+.login-prueba{border-top:1px solid var(--linea);padding-top:var(--e-4);display:flex;flex-direction:column;gap:var(--e-2)}
+.login-prueba h2{font-size:var(--f-s);font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--tinta-3)}
 .app-ico.grande{width:60px;height:60px}
 .app-ico.grande svg{width:32px;height:32px}
 .btn.grande{min-height:48px;font-size:var(--f-m)}
 .login-error{color:var(--st-malo);font-weight:600;min-height:1.4em;margin:0}
-.l-usuarios{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--e-3)}
-@media (max-width:559.98px){ .l-usuarios{grid-template-columns:minmax(0,1fr)} }
-.l-usuario{display:flex;gap:var(--e-3);align-items:flex-start;text-align:left;background:var(--sup);border:1px solid var(--linea);border-radius:8px;padding:var(--e-3) var(--e-4);cursor:pointer;transition:border-color var(--t-micro) var(--curva),box-shadow var(--t-micro) var(--curva),transform var(--t-micro) var(--curva)}
-.l-usuario:hover{border-color:var(--verde-acento);box-shadow:var(--s-1);transform:translateY(-2px)}
-.l-usuario[aria-pressed="true"]{border-color:var(--verde-acento);background:var(--verde-tinte);box-shadow:0 0 0 2px var(--verde-tinte-2)}
-.l-usuario .u-ico{flex:none;width:40px;height:40px;border-radius:10px;background:var(--verde-tinte);color:var(--verde-tinta);display:grid;place-items:center}
-.l-usuario .u-ico svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.l-usuario b{display:block;color:var(--verde-tinta);font-size:var(--f-s)}
-.l-usuario span{display:block;font-size:var(--f-xs);color:var(--tinta-2);line-height:1.4}
-.l-usuario .mono{color:var(--tinta)}
+.l-usuarios{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--e-1)}
+.l-usuario{width:100%;display:flex;align-items:center;gap:var(--e-3);text-align:left;background:none;border:1px solid transparent;border-radius:var(--r-m);padding:var(--e-2) var(--e-3);cursor:pointer;font-weight:500;color:var(--tinta);transition:background var(--t-micro) var(--curva),border-color var(--t-micro) var(--curva)}
+.l-usuario:hover{background:var(--verde-tinte)}
+.l-usuario[aria-pressed="true"]{background:var(--verde-tinte);border-color:var(--verde-claro);color:var(--verde-tinta);font-weight:600}
+.l-usuario .ico{color:var(--verde-acento)}
+.l-usuario .ico.fin{margin-left:auto;color:var(--tinta-3)}
 .rol-chip{display:inline-flex;align-items:center;gap:6px;background:var(--verde-tinte);color:var(--verde-tinta);border:1px solid var(--verde-claro);border-radius:var(--r-pill);padding:4px 12px;font-weight:600;font-size:var(--f-s)}
 </style>
 
@@ -482,13 +478,11 @@ body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{d
       <p class="login-error" id="l-error" role="alert"></p>
       <button class="btn grande" type="submit">Ingresar</button>
       <p class="peq tenue">Simulación de ingreso: se valida el RUT y que el nombre coincida con la nómina. No se pide contraseña.</p>
+      <div class="login-prueba" role="group" aria-labelledby="t-prueba">
+        <h2 id="t-prueba">Usuarios de prueba</h2>
+        <ul id="l-usuarios" class="l-usuarios"></ul>
+      </div>
     </form>
-    <aside class="login-prueba" aria-labelledby="t-prueba">
-      <h2 id="t-prueba">Usuarios de prueba</h2>
-      <p class="tenue peq">Haga clic en un usuario para completar el RUT y el nombre, y luego presione «Ingresar».</p>
-      <div id="l-usuarios" class="l-usuarios"></div>
-      <p class="tenue peq">Cualquier otro funcionario de la nómina ficticia ingresa como solicitante, y las jefaturas como jefatura directa.</p>
-    </aside>
   </div>
 </section>
 
@@ -1666,7 +1660,7 @@ function iniciarSesion(p){
 function mostrarLogin(){
   cerrarCapa(); $("#capa2").innerHTML=""; document.body.classList.add("sin-sesion"); $("#login").hidden=false;
   $("#l-rut").value=""; $("#l-nom").value=""; $("#l-error").textContent=""; ["#l-rut","#l-nom"].forEach(s=>$(s).removeAttribute("aria-invalid"));
-  $("#l-usuarios").innerHTML=USUARIOS_PRUEBA.map(([k,ic,t])=>{const p=PX[QUIEN_BASE[k]]; return `<button type="button" class="l-usuario" data-u="${p.id}" aria-pressed="false"><span class="u-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-${ic}"/></svg></span><span><b>${t}</b><span>${esc(p.nom)}</span><span class="mono">${esc(p.rut)}</span><span>${esc(p.cargo)}</span></span></button>`}).join("");
+  $("#l-usuarios").innerHTML=USUARIOS_PRUEBA.map(([k,ic,t])=>`<li><button type="button" class="l-usuario" data-u="${QUIEN_BASE[k]}" aria-pressed="false">${ico(ic)}${t}${ico("flecha","ico fin")}</button></li>`).join("");
   $("#l-usuarios").querySelectorAll("[data-u]").forEach(b=>b.onclick=()=>{const p=PX[b.dataset.u]; $("#l-rut").value=p.rut; $("#l-nom").value=p.nom; $("#l-error").textContent=""; $("#l-usuarios").querySelectorAll("[data-u]").forEach(x=>x.setAttribute("aria-pressed",x===b)); $("#form-login button[type=submit]").focus();});
   $("#l-rut").focus();
 }
