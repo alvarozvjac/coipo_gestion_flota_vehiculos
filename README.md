@@ -42,6 +42,15 @@ Lo que ve el encargado de vehículos, y qué función de GESAD reemplaza cada pa
 
 Para ver el flujo completo: en **Inicio**, asigne la solicitud **OC-2026-000410** (el camión FXHB-90 queda descartado por su revisión técnica vencida). Luego entregue **OC-2026-000408** en «Salidas → Próximas» desmarcando un documento y recíbala registrando el odómetro y el combustible.
 
+## Manuales de usuario
+
+La pantalla de ingreso permite descargar, antes de entrar, un manual en PDF por perfil (carpeta `manuales/`):
+
+- [Funcionario solicitante](manuales/manual-solicitante.pdf)
+- [Jefatura directa](manuales/manual-jefatura.pdf)
+- [Encargado de vehículos](manuales/manual-encargado.pdf)
+- [Administrador nacional](manuales/manual-administrador.pdf)
+
 ## Análisis de GESAD
 
 Antes de diseñar el nuevo sistema, la UIA analizó GESAD, el sistema que hoy registra las salidas de vehículos y que dejará de operar a fines de 2026. El análisis se hizo con la base de datos, el código fuente y el menú que entregó el Departamento de Informática en respuesta al Memorándum N° 5772/2026.
@@ -62,6 +71,7 @@ Antes de diseñar el nuevo sistema, la UIA analizó GESAD, el sistema que hoy re
 - `.nojekyll`: indica a GitHub Pages que publique los archivos sin procesarlos.
 - `docs/gesad/`: análisis de GESAD (ver sección anterior).
 - `herramientas/`: script lector del respaldo de GESAD.
+- `manuales/`: manuales de usuario en PDF, uno por perfil.
 - `.gitignore`: impide versionar el respaldo y los CSV con datos personales.
 
 Documento de referencia: Informe Técnico y Especificación de Requerimientos de Software

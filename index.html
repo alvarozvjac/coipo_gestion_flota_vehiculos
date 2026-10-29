@@ -461,6 +461,11 @@ body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{d
 .doc-edit input{width:auto;min-width:160px}
 .faltan{border:2px solid var(--st-malo);background:var(--st-malo-bg);color:var(--tinta);border-radius:var(--r-m);padding:var(--e-3) var(--e-4)}
 .faltan ul{margin:var(--e-1) 0 0;padding-left:1.2em}
+.l-manuales{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:var(--e-1)}
+@media (max-width:559.98px){ .l-manuales{grid-template-columns:minmax(0,1fr)} }
+.l-manuales a{display:flex;align-items:center;gap:var(--e-2);padding:var(--e-2) var(--e-3);border-radius:var(--r-m);color:var(--verde-tinta);font-weight:500;text-decoration:none;border:1px solid var(--linea)}
+.l-manuales a:hover{background:var(--verde-tinte);border-color:var(--verde-claro)}
+.l-manuales .ico{color:var(--verde-acento)}
 </style>
 
 </head><body>
@@ -485,6 +490,15 @@ body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{d
       <div class="login-prueba" role="group" aria-labelledby="t-prueba">
         <h2 id="t-prueba">Usuarios de prueba</h2>
         <ul id="l-usuarios" class="l-usuarios"></ul>
+      </div>
+      <div class="login-prueba" role="group" aria-labelledby="t-manuales">
+        <h2 id="t-manuales">Manuales de usuario (PDF)</h2>
+        <ul class="l-manuales">
+          <li><a href="manuales/manual-solicitante.pdf" download><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-lista"/></svg>Funcionario solicitante</a></li>
+          <li><a href="manuales/manual-jefatura.pdf" download><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-lista"/></svg>Jefatura directa</a></li>
+          <li><a href="manuales/manual-encargado.pdf" download><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-lista"/></svg>Encargado de vehículos</a></li>
+          <li><a href="manuales/manual-administrador.pdf" download><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-lista"/></svg>Administrador nacional</a></li>
+        </ul>
       </div>
     </form>
   </div>
