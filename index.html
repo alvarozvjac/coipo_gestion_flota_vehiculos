@@ -496,8 +496,8 @@ let RES = [
  R({id:"OC-2026-000409",est:"CONFIRMADA",fSol:"2026-10-18T16:44",sol:"p6",jefe:"p5",salida:"2026-10-24T08:00",regreso:"2026-10-25T18:00",destinos:[{reg:"Biobío",com:"Santa Juana",lug:"Sede vecinal sector Tanahuillín"}],cometido:"Apoyo a simulacro comunitario de evacuación ante incendios forestales.",km:1050,cc:"48007",reqCond:true,cond:"c2",relevo:"c3",pas:["p13"],pat:"SFHW-60",req:{t4:true},dl799:{req:true,adj:"Autorización de circulación en día inhábil firmada por Director Ejecutivo (ejemplo)"}}),
  R({id:"OC-2026-000410",est:"APROBADA",fSol:"2026-10-19T10:15",sol:"p9",jefe:"p10",salida:"2026-10-27T07:00",regreso:"2026-10-30T20:00",destinos:[{reg:"Ñuble",com:"Chillán",lug:"Vivero Chillán (carga)"},{reg:"Atacama",com:"Copiapó",lug:"Vivero Copiapó (descarga)"}],cometido:"Traslado de plantas desde Vivero Chillán a Vivero Copiapó.",km:2700,cc:"48065",reqCond:true,pas:["p14"],req:{carga:true}}),
  R({id:"OC-2026-000411",est:"CONFIRMADA",fSol:"2026-10-19T14:02",sol:"p4",jefe:"p3",salida:"2026-10-28T08:00",regreso:"2026-10-30T18:00",destinos:[{reg:"La Araucanía",com:"Temuco",lug:"Dirección Regional La Araucanía"}],cometido:"Supervisión de inventario de bodega regional y cierre de procesos de compra.",km:1450,cc:"P01-601",reqCond:true,cond:"c2",pas:["p15"],pat:"KBSW-97"}),
- R({id:"OC-2026-000412",est:"PEND_JEFE",fSol:"2026-10-21T16:20",sol:"p4",jefe:"p3",salida:"2026-10-26T08:00",regreso:"2026-10-27T20:00",destinos:[{reg:"Ñuble",com:"Bulnes",lug:"Oficina Provincial Diguillín"}],cometido:"Capacitación en compras públicas al equipo regional de abastecimiento.",km:900,cc:"P01-601",reqCond:true,pas:["p15","p16"]}),
- R({id:"OC-2026-000413",est:"PEND_JEFE",fSol:"2026-10-22T08:47",sol:"p7",jefe:"p8",salida:"2026-10-29T08:00",regreso:"2026-10-29T18:00",destinos:[{reg:"Metropolitana",com:"Melipilla",lug:"Oficina Provincial Melipilla"}],cometido:"Fiscalización de plan de manejo en predio rural.",km:160,cc:"48046",cond:"p7",req:{t4:true}}),
+ R({id:"OC-2026-000412",est:"PEND_JEFE",fSol:"2026-10-21T16:20",sol:"p4",jefe:"p3",salida:"2026-10-26T08:00",regreso:"2026-10-27T20:00",destinos:[{reg:"Ñuble",com:"Bulnes",lug:"Oficina Provincial Diguillín"}],cometido:"Capacitación en compras públicas al equipo regional de abastecimiento.",km:900,cc:null,reqCond:true,pas:["p15","p16"]}),
+ R({id:"OC-2026-000413",est:"PEND_JEFE",fSol:"2026-10-22T08:47",sol:"p7",jefe:"p8",salida:"2026-10-29T08:00",regreso:"2026-10-29T18:00",destinos:[{reg:"Metropolitana",com:"Melipilla",lug:"Oficina Provincial Melipilla"}],cometido:"Fiscalización de plan de manejo en predio rural.",km:160,cc:null,cond:"p7",req:{t4:true}}),
  R({id:"OC-2026-000414",est:"CONFIRMADA",fSol:"2026-10-20T11:11",sol:"p9",jefe:"p10",salida:"2026-11-02T08:00",regreso:"2026-11-04T18:00",destinos:[{reg:"Maule",com:"Talca",lug:"Centro de Semillas"}],cometido:"Revisión de lotes de semillas y coordinación de despacho.",km:540,cc:"48065",reqCond:true,cond:"c1",pas:["c4"],pat:"JYDC-46"}),
 ];
 /* Histórico de ejemplo para reportería (sep-oct 2026) */
@@ -518,11 +518,11 @@ const ROLES = {
  super:{quien:"p1",nombre:"Administrador nacional",nav:[["panel","Panel"],["asignacion","Asignación"],["visor","Visor Gantt"],["porteria","Salida y regreso"],["flota","Flota"],["conductores","Conductores"],["reportes","Reportes"],["admin","Administración"]]},
 };
 const EST = {
- BORRADOR:["Borrador","c-neu","✎"], PEND_JEFE:["Pendiente jefatura","c-pend","◔"], OBSERVADA:["Observada por jefatura","c-pend","!"],
+ BORRADOR:["Solicitud sin enviar","c-neu","✎"], PEND_JEFE:["Pendiente jefatura","c-pend","◔"], OBSERVADA:["Observada por jefatura","c-pend","!"],
  APROBADA:["Aprobada · por asignar","c-pend","◑"], CONFIRMADA:["Confirmada","c-res","■"], EN_TERRENO:["En terreno","c-terr","▶"],
  FINALIZADA:["Finalizada","c-neu","✓"], RECHAZADA:["Rechazada","c-malo","✕"], SIN_DISP:["Sin disponibilidad","c-malo","∅"], ANULADA:["Anulada","c-neu","—"]};
 const EST_V = {DISP:["Disponible","c-disp","●"],TERR:["En terreno","c-terr","▶"],TALL_P:["En taller · preventiva","c-tall","⚙"],TALL_C:["En taller · correctiva","c-tall","⚙"],MALO:["Fuera de servicio","c-malo","✕"],EXCL:["Asignación exclusiva","c-excl","◆"],BAJA:["En proceso de baja","c-malo","↓"]};
-const ETAPAS = [["BORRADOR","Borrador"],["PEND_JEFE","Jefatura"],["APROBADA","Aprobada"],["CONFIRMADA","Asignada"],["EN_TERRENO","En terreno"],["FINALIZADA","Finalizada"]];
+const ETAPAS = [["BORRADOR","Solicitud"],["PEND_JEFE","Jefatura"],["APROBADA","Aprobada"],["CONFIRMADA","Asignada"],["EN_TERRENO","En terreno"],["FINALIZADA","Finalizada"]];
 
 /* ======================= UTILIDADES ======================= */
 const $ = s=>document.querySelector(s);
@@ -610,7 +610,7 @@ function tarjetaSol(r,{boton,seleccion}={}){
    <div class="fila"><span class="id">${r.id}</span>${chipR(r.est)}</div>
    <h3>${esc(r.cometido)}</h3>
    <div class="meta"><span><b>${fCorta(r.salida)}</b> → <b>${fCorta(r.regreso)}</b></span><span>${esc(r.destinos.map(d=>d.com+" ("+d.reg+")").join(" · "))}</span><span><b class="num">${km(r.km)}</b> km aprox.</span><span><b>${pasajeros(r)}</b> personas</span>${r.pat?`<span>${placa(r.pat)}</span>`:""}</div>
-   <div class="meta"><span>Solicita: <b>${esc(nom(r.sol))}</b></span><span>Imputación: <b class="mono">${esc(r.cc)}</b> ${cc?esc(cc.prog):""}</span>${r.dl799?.req?`<span>${chip("DL 799 · día inhábil","c-pend","!")}</span>`:""}</div>
+   <div class="meta"><span>Solicita: <b>${esc(nom(r.sol))}</b></span><span>Imputación: ${r.cc?`<b class="mono">${esc(r.cc)}</b> ${cc?esc(cc.prog):""}`:"<b>por definir (jefatura)</b>"}</span>${r.dl799?.req?`<span>${chip("DL 799 · día inhábil","c-pend","!")}</span>`:""}</div>
    ${flujoHTML(r.est)}
    ${r.obsLog?`<p class="nota">${esc(r.obsLog)}</p>`:""}
    ${boton||""}
@@ -620,7 +620,7 @@ function tarjetaSol(r,{boton,seleccion}={}){
 /* ======================= VISTAS: SOLICITANTE ======================= */
 function vMis(){
   const yo=ROLES[rol].quien, mias=RES.filter(r=>r.sol===yo).sort((a,b)=>b.fSol.localeCompare(a.fSol));
-  return cab("Mis solicitudes","Estado en tiempo real de tus reservas. Cuando el encargado asigna el vehículo, puedes ver y compartir la orden de salida con código QR.","ERS §4.3 · Perfil 4")+
+  return cab("Mis salidas","Estado en tiempo real de tus reservas. Cuando el encargado asigna el vehículo, puedes ver y compartir la orden de salida con código QR.","ERS §4.3 · Perfil 4")+
   `<div class="acciones" style="margin-bottom:var(--e-4)"><button class="btn" type="button" data-ir="nueva">Nueva solicitud</button></div>
    <div class="lista">${mias.length?mias.map(r=>tarjetaSol(r,{boton:`<div class="acciones">${["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)?`<button class="btn sec chico" type="button" data-orden="${r.id}">Ver orden de salida</button>`:""}${["PEND_JEFE","APROBADA","OBSERVADA","CONFIRMADA"].includes(r.est)?`<button class="btn peligro chico" type="button" data-anular="${r.id}">Anular solicitud</button>`:""}</div>`})).join(""):vacio("Aún no tienes solicitudes","Ingresa tu primera solicitud de vehículo para una salida a terreno.")}</div>`;
 }
@@ -634,7 +634,7 @@ function vNueva(){
   const b=borrador, yo=PX[ROLES[rol].quien];
   const jefes=PERS.filter(p=>p.jefe);
   const condOpts=(selId)=>`<option value="">— Seleccionar —</option>`+COND.map(c=>{const ap=condApto(c.id,{...b,id:"tmp",pas:[],req:{}},null);return `<option value="${c.id}" ${c.id===selId?"selected":""} ${ap.ok?"":"disabled"}>${esc(nom(c.id))} · ${c.tipo==="POOL"?"Pool":"Habilitado"}${ap.ok?"":" — bloqueado: "+esc(ap.motivos[0])}</option>`}).join("");
-  return cab("Nueva solicitud de vehículo","Reemplaza el formulario Word «Solicitud de vehículo para salida a terreno» y el correo de aprobación. Tus datos se cargan desde la nómina institucional.","ERS §4.3-A · Formulario vigente")+
+  return cab("Nueva solicitud de vehículo","Reemplaza el formulario Word «Solicitud de vehículo para salida a terreno» y el correo de aprobación. Tus datos se cargan desde la nómina institucional y la imputación presupuestaria la define tu jefatura al aprobar.","ERS §4.3-A · Formulario vigente")+
   (b.ejemplo?`<p class="nota" style="margin-bottom:var(--e-4)">Formulario precargado con un ejemplo para la demostración. <button class="btn sec chico" type="button" id="btn-limpiar">Limpiar formulario</button></p>`:"")+
   `<div class="grid g-form"><form id="form-sol" class="grid" novalidate>
    <fieldset><legend><span class="seccion-num">1</span>Identificación</legend><div class="campos">
@@ -646,18 +646,14 @@ function vNueva(){
      <div class="campo"><label for="f-reg">Regreso estimado</label><input type="datetime-local" id="f-reg" value="${b.regreso}"></div>
      <div class="campo ancho"><span class="lbl">Duración calculada</span><span id="f-dur" class="num"></span></div>
    </div></fieldset>
-   <fieldset><legend><span class="seccion-num">3</span>Imputación presupuestaria</legend><div class="campos">
-     <div class="campo"><label for="f-prog">Programa presupuestario</label><select id="f-prog">${Object.entries(PROGRAMAS).map(([k,t])=>`<option value="${k}" ${k===b.prog?"selected":""}>${t}</option>`).join("")}</select></div>
-     <div class="campo"><label for="f-cc-buscar">Centro de costo / folio</label><input type="search" id="f-cc-buscar" placeholder="Buscar por folio, código o nombre" autocomplete="off"><div class="cc-res" id="f-cc-res" role="listbox" aria-label="Centros de costo"></div><span class="ayuda" id="f-cc-sel"></span></div>
-   </div></fieldset>
-   <fieldset><legend><span class="seccion-num">4</span>Itinerario y cometido</legend><div class="campos">
+   <fieldset><legend><span class="seccion-num">3</span>Itinerario y cometido</legend><div class="campos">
      <div class="campo ancho"><label for="f-com">Cometido / objetivo del viaje</label><textarea id="f-com">${esc(b.cometido)}</textarea></div>
      <div class="campo ancho"><span class="lbl">Destinos</span><div id="f-dest" class="grid" style="gap:var(--e-2)"></div><div><button class="btn sec chico" type="button" id="btn-dest">Agregar destino o parada</button></div></div>
      <div class="campo"><label for="f-km">Kilómetros aproximados (ida, interno y regreso)</label><input type="number" id="f-km" min="0" step="10" value="${b.km}"></div>
      <div class="campo"><label for="f-tipo">Tipo de vehículo requerido</label><select id="f-tipo">${["Indistinto","Camioneta doble cabina","SUV / Station wagon","Furgón","Camión","Automóvil sedán"].map(t=>`<option ${t===b.tipo?"selected":""}>${t}</option>`).join("")}</select></div>
      <div class="campo ancho"><div class="opciones"><label><input type="checkbox" id="f-4x4" ${b.t4?"checked":""}> Requiere 4x4 (caminos forestales o rurales)</label><label><input type="checkbox" id="f-carga" ${b.carga?"checked":""}> Requiere espacio de carga</label></div></div>
    </div></fieldset>
-   <fieldset><legend><span class="seccion-num">5</span>Conductores y pasajeros</legend><div class="campos">
+   <fieldset><legend><span class="seccion-num">4</span>Conductores y pasajeros</legend><div class="campos">
      <div class="campo ancho"><span class="lbl">¿Requiere conductor del pool?</span><div class="opciones" role="radiogroup"><label><input type="radio" name="f-rc" value="si" ${b.reqCond?"checked":""}> Sí, que Logística asigne un conductor</label><label><input type="radio" name="f-rc" value="no" ${!b.reqCond?"checked":""}> No, conduce un integrante con caución vigente</label></div></div>
      <div class="campo" ${b.reqCond?"hidden":""} id="w-cond"><label for="f-cond">Conductor principal</label><select id="f-cond">${condOpts(b.cond)}</select><span class="ayuda">Los conductores con caución o licencia vencida aparecen bloqueados (DL 799).</span></div>
      <div class="campo" id="w-rel"><label for="f-rel">Conductor de relevo</label><select id="f-rel">${condOpts(b.relevo)}</select></div>
@@ -666,18 +662,16 @@ function vNueva(){
      <div class="campo"><label for="f-extj">Justificación de externos</label><input type="text" id="f-extj" value="${esc(b.extJust)}" placeholder="Institución y motivo"></div>
      <div class="campo ancho"><span class="lbl">Total de personas en el vehículo</span><span id="f-tot" class="num" style="font-size:var(--f-xl);font-weight:600"></span></div>
    </div></fieldset>
-   <div class="acciones"><button class="btn" type="submit" id="btn-enviar">Enviar a jefatura</button><button class="btn sec" type="button" id="btn-borr">Guardar borrador</button></div>
+   <div class="acciones"><button class="btn" type="submit" id="btn-enviar">Enviar a jefatura</button><button class="btn sec" type="button" id="btn-borr">Guardar sin enviar</button></div>
   </form>
   <aside class="panel" style="position:sticky;top:120px"><header><h2>Revisión automática</h2><span class="sub">Se actualiza al escribir</span></header><div class="cuerpo"><div class="revision" id="revision"></div></div></aside></div>`;
 }
 post.nueva = ()=>{
   const b=borrador;
   const pintarDest=()=>{$("#f-dest").innerHTML=b.destinos.map((d,i)=>`<div class="destino"><div class="campo"><label for="d-reg-${i}">Región</label><select id="d-reg-${i}" data-d="${i}" data-k="reg">${REGIONES.map(x=>`<option ${x===d.reg?"selected":""}>${x}</option>`).join("")}</select></div><div class="campo"><label for="d-com-${i}">Comuna</label><input type="text" id="d-com-${i}" data-d="${i}" data-k="com" value="${esc(d.com)}"></div><div class="campo"><label for="d-lug-${i}">Localidad o unidad</label><input type="text" id="d-lug-${i}" data-d="${i}" data-k="lug" value="${esc(d.lug)}"></div>${b.destinos.length>1?`<button class="btn peligro chico" type="button" data-quitar="${i}" aria-label="Quitar destino ${i+1}">Quitar</button>`:"<span></span>"}</div>`).join("")};
-  const pintarCC=()=>{const q=($("#f-cc-buscar").value||"").toLowerCase(); const lista=CC.filter(c=>c.prog===b.prog||q).filter(c=>!q||(c.folio+" "+c.t).toLowerCase().includes(q)).slice(0,30);
-    $("#f-cc-res").innerHTML=lista.length?lista.map(c=>`<button type="button" role="option" data-cc="${c.folio}" aria-selected="${c.folio===b.cc}"><span class="mono">${c.folio}</span><span>${esc(c.t)}</span></button>`).join(""):`<p class="tenue peq" style="padding:var(--e-2)">Sin centros de costo para «${esc(q)}». Prueba con el folio (ej. 48006).</p>`;
-    const c=CCX[b.cc]; $("#f-cc-sel").innerHTML=c?`Seleccionado: <b class="mono">${c.folio}</b> · ${esc(c.t)}`:"Ningún centro de costo seleccionado"; };
+  const pintarCC=()=>{};
   const pintarPas=()=>{const q=($("#f-pas-buscar").value||"").toLowerCase(); $("#f-pas").innerHTML=PERS.filter(p=>p.id!==ROLES[rol].quien&&(!q||p.nom.toLowerCase().includes(q))).map(p=>`<label><input type="checkbox" value="${p.id}" ${b.pas.includes(p.id)?"checked":""}> ${esc(p.nom)} <span class="tenue peq">· ${esc(p.cargo)}</span></label>`).join("")};
-  const leer=()=>{b.jefe=$("#f-jefe").value;b.salida=$("#f-sal").value;b.regreso=$("#f-reg").value;b.prog=$("#f-prog").value;b.cometido=$("#f-com").value;b.km=+$("#f-km").value||0;b.tipo=$("#f-tipo").value;b.t4=$("#f-4x4").checked;b.carga=$("#f-carga").checked;b.reqCond=document.querySelector('input[name="f-rc"]:checked').value==="si";b.cond=b.reqCond?"":$("#f-cond").value;b.relevo=$("#f-rel").value;b.externos=+$("#f-ext").value||0;b.extJust=$("#f-extj").value;};
+  const leer=()=>{b.jefe=$("#f-jefe").value;b.salida=$("#f-sal").value;b.regreso=$("#f-reg").value;b.cometido=$("#f-com").value;b.km=+$("#f-km").value||0;b.tipo=$("#f-tipo").value;b.t4=$("#f-4x4").checked;b.carga=$("#f-carga").checked;b.reqCond=document.querySelector('input[name="f-rc"]:checked').value==="si";b.cond=b.reqCond?"":$("#f-cond").value;b.relevo=$("#f-rel").value;b.externos=+$("#f-ext").value||0;b.extJust=$("#f-extj").value;};
   const revisar=()=>{
     leer(); $("#w-cond").hidden=b.reqCond;
     const r={...b,id:"tmp",req:{t4:b.t4,carga:b.carga}}; const tot=pasajeros(r);
@@ -694,11 +688,9 @@ post.nueva = ()=>{
     tot>maxCap? reg("bl","Capacidad excedida",`${tot} personas superan la capacidad máxima del pool (${maxCap}).`) : reg("ok","Capacidad",`${tot} personas. Hay vehículos del pool con capacidad suficiente.`);
     if(!b.reqCond){ if(!b.cond) reg("bl","Falta conductor","Selecciona un conductor con caución vigente o solicita uno del pool."); else { const a=condApto(b.cond,r); a.ok?reg("ok","Conductor habilitado",`${nom(b.cond)}: caución y licencia vigentes al regreso.`):reg("bl","Conductor no habilitado",a.motivos.join(" · ")); } }
     else reg("inf","Conductor del pool","Logística asignará un conductor institucional disponible.");
-    if(!CCX[b.cc]) reg("bl","Falta imputación","Selecciona un centro de costo del catálogo vigente."); else if(CCX[b.cc].prog!==b.prog) reg("av","Programa distinto",`El folio ${b.cc} pertenece a ${PROGRAMAS[CCX[b.cc].prog]||CCX[b.cc].prog}.`); else reg("ok","Imputación",`Folio ${b.cc} · ${CCX[b.cc].t}`);
+    reg("inf","Imputación presupuestaria","La define tu jefatura directa al aprobar la solicitud.");
     if(b.externos && !b.extJust.trim()) reg("bl","Justifica los externos","Indica institución y motivo de los pasajeros externos.");
     if(b.cometido.trim().length<15) reg("bl","Cometido incompleto","Describe la labor institucional a realizar (mín. 15 caracteres).");
-    const disp=VEH.filter(v=>vehApto(v,{...r,pat:null}).ok).length;
-    disp? reg("inf","Disponibilidad referencial",`${disp} vehículos del pool cumplen hoy los requisitos para esas fechas.`) : reg("av","Sin vehículos aptos",`Ningún vehículo del pool cumple requisitos y fechas. La solicitud puede quedar «Sin disponibilidad».`);
     $("#revision").innerHTML=out.join("");
     $("#btn-enviar").disabled = out.some(x=>x.includes('regla bl'));
     $("#f-sal").setAttribute("aria-invalid",!(dur>0)); $("#f-com").setAttribute("aria-invalid",b.cometido.trim().length<15);
@@ -710,9 +702,9 @@ post.nueva = ()=>{
   f.addEventListener("click",e=>{ const c=e.target.closest("[data-cc]"); if(c){b.cc=c.dataset.cc;pintarCC();revisar()} const q=e.target.closest("[data-quitar]"); if(q){b.destinos.splice(+q.dataset.quitar,1);pintarDest();revisar()} });
   $("#btn-dest").onclick=()=>{b.destinos.push({reg:"Metropolitana",com:"",lug:""});pintarDest();};
   const limpiar=$("#btn-limpiar"); if(limpiar) limpiar.onclick=()=>{borrador={jefe:PERS.find(p=>p.id===PX[ROLES[rol].quien].jefeDe)?.id||"p3",salida:"",regreso:"",prog:"P01",cc:"",cometido:"",destinos:[{reg:"Metropolitana",com:"",lug:""}],km:0,tipo:"Indistinto",t4:false,carga:false,reqCond:true,cond:"",relevo:"",pas:[],externos:0,extJust:"",ejemplo:false};render()};
-  $("#btn-borr").onclick=()=>{leer();tostada("Borrador guardado. Puedes retomarlo desde esta pantalla.")};
+  $("#btn-borr").onclick=()=>{leer();tostada("Solicitud guardada sin enviar. Puedes retomarla desde esta pantalla.")};
   f.addEventListener("submit",e=>{e.preventDefault();leer();
-    const r=R({id:nuevoId(),est:"PEND_JEFE",fSol:iso(HOY),sol:ROLES[rol].quien,jefe:b.jefe,salida:b.salida,regreso:b.regreso,destinos:b.destinos.map(d=>({...d})),cometido:b.cometido,km:b.km,cc:b.cc,reqCond:b.reqCond,cond:b.cond||null,relevo:b.relevo||null,pas:[...b.pas],externos:b.externos,req:{t4:b.t4,carga:b.carga},tipoReq:b.tipo});
+    const r=R({id:nuevoId(),est:"PEND_JEFE",fSol:iso(HOY),sol:ROLES[rol].quien,jefe:b.jefe,salida:b.salida,regreso:b.regreso,destinos:b.destinos.map(d=>({...d})),cometido:b.cometido,km:b.km,cc:null,reqCond:b.reqCond,cond:b.cond||null,relevo:b.relevo||null,pas:[...b.pas],externos:b.externos,req:{t4:b.t4,carga:b.carga},tipoReq:b.tipo});
     const inh=inhabiles(r.salida,r.regreso); if(inh.length) r.dl799={req:true,adj:null};
     r.hist.push({t:r.fSol,quien:r.sol,acc:"Solicitud ingresada"}); RES.push(r); audit("Crea solicitud",r.id,"—","Pendiente jefatura");
     borrador=null; tostada(`Solicitud ${r.id} enviada a ${nom(r.jefe)}.`); ir("mis");
@@ -724,7 +716,7 @@ function vBandeja(){
   const yo=ROLES[rol].quien, pend=RES.filter(r=>r.est==="PEND_JEFE"&&r.jefe===yo), res=RES.filter(r=>r.jefe===yo&&!["PEND_JEFE","BORRADOR"].includes(r.est));
   if(!sel.bandeja||!pend.some(r=>r.id===sel.bandeja)) sel.bandeja=pend[0]?.id||null;
   const r=RES.find(x=>x.id===sel.bandeja);
-  return cab("Bandeja de aprobación","Solicitudes de tu equipo directo. Revisa cometido, destino, ocupantes e imputación antes de que pasen al encargado de vehículos.","ERS §3.2 · Perfil 3")+
+  return cab("Bandeja de aprobación","Solicitudes de tu equipo directo. Revisa cometido, destino y ocupantes, y define la imputación presupuestaria antes de que pasen al encargado de vehículos.","ERS §3.2 · Perfil 3")+
   `<div class="grid g-2"><div class="grid"><section class="panel"><header><h2>Pendientes</h2><span class="sub num">${pend.length} por revisar</span></header><div class="cuerpo lista">${pend.length?pend.map(x=>tarjetaSol(x,{seleccion:x.id===sel.bandeja})).join(""):vacio("Bandeja al día","No hay solicitudes de tu equipo esperando visación.")}</div></section>
   <section class="panel"><header><h2>Resueltas recientemente</h2></header><div class="tabla-env"><table><thead><tr><th>ID</th><th>Solicitante</th><th>Salida</th><th>Estado</th></tr></thead><tbody>${res.map(x=>`<tr><td class="mono">${x.id}</td><td>${esc(nom(x.sol))}</td><td class="num">${fFH(x.salida)}</td><td>${chipR(x.est)}</td></tr>`).join("")||`<tr><td colspan="4" class="tenue">Sin registros.</td></tr>`}</tbody></table></div></section></div>
   <aside class="panel">${r?decisionHTML(r):`<div class="cuerpo">${vacio("Selecciona una solicitud","El detalle y la decisión aparecen aquí.")}</div>`}</aside></div>`;
@@ -736,7 +728,8 @@ function decisionHTML(r){
   <dt>Cometido</dt><dd>${esc(r.cometido)}</dd><dt>Destinos</dt><dd>${r.destinos.map(d=>esc(`${d.lug}, ${d.com} (${d.reg})`)).join("<br>")}</dd>
   <dt>Periodo</dt><dd class="num">${fFH(r.salida)} → ${fFH(r.regreso)}</dd><dt>Distancia</dt><dd class="num">${km(r.km)} km aprox.</dd>
   <dt>Ocupantes</dt><dd>${[r.cond?nom(r.cond)+" (conductor)":(r.reqCond?"Conductor del pool (por asignar)":""),...r.pas.map(nom)].filter(Boolean).map(esc).join("<br>")}</dd>
-  <dt>Imputación</dt><dd><span class="mono">${esc(r.cc)}</span> · ${cc?esc(cc.t):"<b>Folio no vigente</b>"}<br><span class="tenue peq">${cc?PROGRAMAS[cc.prog]:""}</span></dd></dl>
+  </dl>
+  <div class="campo"><label for="j-cc">Imputación presupuestaria (folio)</label><select id="j-cc"><option value="">— Seleccionar folio —</option>${Object.entries(PROGRAMAS).map(([k,n])=>`<optgroup label="${esc(n)}">${CC.filter(c=>c.prog===k).map(c=>`<option value="${c.folio}" ${c.folio===r.cc?"selected":""}>${c.folio} · ${esc(c.t)}</option>`).join("")}</optgroup>`).join("")}</select><span class="ayuda">Obligatoria para aprobar. Define a qué programa y centro de costo se imputa el gasto del cometido.</span></div>
   ${inh.length?`<div class="regla av"><span class="ico">!</span><div><b>Día inhábil · DL 799</b><span>${inh.join(", ")}. Al aprobar, se solicitará la autorización especial firmada por Dirección.</span></div></div>`:""}
   <div class="campo"><label for="j-com">Comentario para el solicitante</label><textarea id="j-com" placeholder="Obligatorio al observar o rechazar"></textarea></div>
   <div class="acciones"><button class="btn" type="button" data-dec="APROBADA">Aprobar</button><button class="btn aviso" type="button" data-dec="OBSERVADA">Observar</button><button class="btn peligro" type="button" data-dec="RECHAZADA">Rechazar</button></div>
@@ -748,6 +741,7 @@ post.bandeja = ()=>{
     const d=e.target.closest("[data-dec]"); if(!d) return;
     const r=RES.find(x=>x.id===sel.bandeja), com=$("#j-com").value.trim();
     if(d.dataset.dec!=="APROBADA"&&!com){$("#j-com").setAttribute("aria-invalid","true");$("#j-com").focus();tostada("Escribe un comentario para observar o rechazar.");return}
+    if(d.dataset.dec==="APROBADA"){ const ccv=$("#j-cc").value; if(!ccv){$("#j-cc").setAttribute("aria-invalid","true");$("#j-cc").focus();tostada("Selecciona el folio de imputación para aprobar.");return} r.cc=ccv; }
     const ant=EST[r.est][0]; r.est=d.dataset.dec; r.obsLog=com?(d.dataset.dec==="APROBADA"?"Jefatura: ":d.dataset.dec==="OBSERVADA"?"Observación de jefatura: ":"Rechazada: ")+com:"";
     r.hist.push({t:iso(HOY),quien:ROLES[rol].quien,acc:EST[r.est][0]}); audit("Visación jefatura",r.id,ant,EST[r.est][0]);
     tostada(`${r.id}: ${EST[r.est][0]}.`); sel.bandeja=null; render();
@@ -994,7 +988,7 @@ let CIERRES = [{mes:"2026-08",estado:"Cerrado",por:"p1",fecha:"2026-09-05"},{mes
 const mesCerrado = f=>CIERRES.some(c=>c.estado==="Cerrado"&&f.slice(0,7)===c.mes);
 
 /* ---------- Perfiles y navegación ---------- */
-ROLES.solicitante.nav=[["mis","Mis salidas"],["nueva","Nueva solicitud"],["visor","Disponibilidad"]];
+ROLES.solicitante.nav=[["nueva","Nueva solicitud"],["mis","Mis salidas"]];
 ROLES.jefatura.nav=[["bandeja","Por aprobar"],["equipo","Salidas de mi equipo"]];
 ROLES.encargado.nav=[["hoy","Hoy"],["salidas","Salidas"],["flota","Flota"],["conductores","Conductores"],["combustible","Combustible y gastos"],["reportes","Reportes"]];
 ROLES.conductor.nav=[["agenda","Mis viajes"]];
@@ -1124,7 +1118,7 @@ function abrirSalida(id){
   else if(r.est==="PEND_JEFE") accion = `<p class="nota">Esperando la visación de ${esc(nom(r.jefe))}.</p>`;
   else if(r.obsLog) accion = `<p class="nota">${esc(r.obsLog)}</p>`;
   const cuerpo=`<div class="estado-linea">${chipR(r.est)}${r.dl799?.req?chip("DL 799 · día inhábil","c-pend","!"):""}</div>${flujoHTML(r.est)}
-   <div class="seccion"><h3>Solicitud</h3><dl class="ficha"><dt>Cometido</dt><dd>${esc(r.cometido)}</dd><dt>Destino</dt><dd>${r.destinos.map(d=>esc(`${d.lug}, ${d.com} (${d.reg})`)).join("<br>")}</dd><dt>Periodo</dt><dd class="num">${fFH(r.salida)} → ${fFH(r.regreso)}</dd><dt>Personas</dt><dd>${pasajeros(r)} · ${[r.cond?nom(r.cond)+" (conductor)":r.reqCond?"conductor del pool":"",r.relevo?nom(r.relevo)+" (relevo)":"",...r.pas.map(nom)].filter(Boolean).map(esc).join(", ")}</dd><dt>Requisitos</dt><dd>${[r.req.t4?"4x4":"",r.req.carga?"espacio de carga":"",`${km(r.km)} km aprox.`].filter(Boolean).join(" · ")}</dd><dt>Solicita</dt><dd>${esc(nom(r.sol))} · autoriza ${esc(nom(r.jefe))}</dd><dt>Imputación</dt><dd><span class="mono">${esc(r.cc)}</span> ${cc?esc(cc.t):""}</dd>${r.pat?`<dt>Vehículo</dt><dd>${placa(r.pat)} ${esc(VX[r.pat].marca+" "+VX[r.pat].modelo)}</dd>`:""}</dl>
+   <div class="seccion"><h3>Solicitud</h3><dl class="ficha"><dt>Cometido</dt><dd>${esc(r.cometido)}</dd><dt>Destino</dt><dd>${r.destinos.map(d=>esc(`${d.lug}, ${d.com} (${d.reg})`)).join("<br>")}</dd><dt>Periodo</dt><dd class="num">${fFH(r.salida)} → ${fFH(r.regreso)}</dd><dt>Personas</dt><dd>${pasajeros(r)} · ${[r.cond?nom(r.cond)+" (conductor)":r.reqCond?"conductor del pool":"",r.relevo?nom(r.relevo)+" (relevo)":"",...r.pas.map(nom)].filter(Boolean).map(esc).join(", ")}</dd><dt>Requisitos</dt><dd>${[r.req.t4?"4x4":"",r.req.carga?"espacio de carga":"",`${km(r.km)} km aprox.`].filter(Boolean).join(" · ")}</dd><dt>Solicita</dt><dd>${esc(nom(r.sol))} · autoriza ${esc(nom(r.jefe))}</dd><dt>Imputación</dt><dd>${r.cc?`<span class="mono">${esc(r.cc)}</span> ${cc?esc(cc.t):""}`:"Por definir (jefatura)"}</dd>${r.pat?`<dt>Vehículo</dt><dd>${placa(r.pat)} ${esc(VX[r.pat].marca+" "+VX[r.pat].modelo)}</dd>`:""}</dl>
    ${["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)?`<div><button class="btn sec chico" type="button" data-orden="${r.id}">Ver orden de salida</button></div>`:""}</div>
    <div class="seccion" id="accion">${accion}</div>`;
   cajon(`<h2 id="t-cajon" style="font-size:var(--f-xl)" class="mono">${r.id}</h2>`, esc(r.destinos.map(d=>d.com).join(" · ")), cuerpo);
@@ -1387,7 +1381,7 @@ post.reportes = ()=>{
 /* ======================= JEFATURA: SALIDAS DEL EQUIPO ======================= */
 function vEquipo(){
   const yo=ROLES[rol].quien, lista=RES.filter(r=>r.jefe===yo).sort((a,b)=>b.salida.localeCompare(a.salida));
-  return cab("Salidas de mi equipo","Historial de las salidas que autorizaste.","Perfil 3")+`<section class="panel"><div class="tabla-env">${lista.length?`<table><thead><tr><th>ID</th><th>Estado</th><th>Funcionario</th><th>Salida</th><th>Destino</th><th>Folio</th></tr></thead><tbody>${lista.map(r=>`<tr class="clic" data-sal="${r.id}"><td class="mono">${r.id}</td><td>${chipR(r.est)}</td><td>${esc(nom(r.sol))}</td><td class="num">${fCorta(r.salida)}</td><td>${esc(r.destinos.map(d=>d.com).join(", "))}</td><td class="mono">${r.cc}</td></tr>`).join("")}</tbody></table>`:vacio("Sin salidas","")}</div></section>`;
+  return cab("Salidas de mi equipo","Historial de las salidas que autorizaste.","Perfil 3")+`<section class="panel"><div class="tabla-env">${lista.length?`<table><thead><tr><th>ID</th><th>Estado</th><th>Funcionario</th><th>Salida</th><th>Destino</th><th>Folio</th></tr></thead><tbody>${lista.map(r=>`<tr class="clic" data-sal="${r.id}"><td class="mono">${r.id}</td><td>${chipR(r.est)}</td><td>${esc(nom(r.sol))}</td><td class="num">${fCorta(r.salida)}</td><td>${esc(r.destinos.map(d=>d.com).join(", "))}</td><td class="mono">${r.cc||"Por definir"}</td></tr>`).join("")}</tbody></table>`:vacio("Sin salidas","")}</div></section>`;
 }
 
 /* ======================= CONDUCTOR ======================= */

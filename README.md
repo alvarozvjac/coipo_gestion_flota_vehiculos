@@ -20,8 +20,8 @@ El selector **«Ver como»** de la cabecera cambia entre los cinco perfiles del 
 
 | Perfil | Menú | Qué se puede probar |
 |---|---|---|
-| Funcionario solicitante | Mis salidas · Nueva solicitud · Disponibilidad | Solicitud con revisión automática (días inhábiles DL 799, relevo sobre 400 km diarios, capacidad, conductor habilitado, imputación) y seguimiento |
-| Jefatura directa | Por aprobar · Salidas de mi equipo | Aprobar, observar o rechazar con comentario; historial del equipo |
+| Funcionario solicitante | Nueva solicitud · Mis salidas | Solicitud con revisión automática (días inhábiles DL 799, relevo sobre 400 km diarios, capacidad, conductor habilitado) y seguimiento |
+| Jefatura directa | Por aprobar · Salidas de mi equipo | Definir la imputación presupuestaria (folio) y aprobar, observar o rechazar con comentario; historial del equipo |
 | Encargado de vehículos | Hoy · Salidas · Flota · Conductores · Combustible y gastos · Reportes | Ver detalle abajo |
 | Conductor | Mis viajes | Registrar la salida y el regreso del vehículo, con odómetro, combustible e inventario |
 | Administrador nacional | Lo mismo que el encargado, más Configuración | Catálogos, usuarios y accesos, cierre mensual, calidad de datos, traspasos y auditoría |
