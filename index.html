@@ -1141,7 +1141,8 @@ ROLES.super.nav=[...ROLES.encargado.nav,["config","Configuración"]];
 const puedeGestionar = ()=>["encargado","super"].includes(rol);
 const VISTAS_INICIO=["novedades","vencimientos"];
 /* Encargado y administrador: el menú sólo muestra «Inicio»; el resto se abre desde las tarjetas */
-ROLES.encargado.menu=[["hoy","Inicio"]]; ROLES.super.menu=[["hoy","Inicio"]];
+ROLES.encargado.menu=[["hoy","Inicio"]]; ROLES.super.menu=[["hoy","Inicio"]]; ROLES.solicitante.menu=[["inicio","Inicio"]]; ROLES.jefatura.menu=[["inicio","Inicio"]];
+const HOME=()=>ROLES[rol].nav[0][0];
 const NAV_ICO={inicio:"home",hoy:"home",nueva:"plus",mis:"lista",bandeja:"aprobar",equipo:"equipo",salidas:"ruta",flota:"car",conductores:"licencia",combustible:"combustible",reportes:"grafico",config:"config"};
 const ico=(n,c="ico")=>`<svg class="${c}" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 const iniciales=n=>String(n||"").split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase();
@@ -1160,7 +1161,7 @@ function pintarBarra(){
   const R0=ROLES[rol], p=PX[R0.quien], c=cuentas();
   $("#rol-chip").innerHTML=ico("escudo")+esc(R0.nombre);
   $("#quien").innerHTML=`<span class="avatar" aria-hidden="true">${iniciales(p.nom)}</span><span class="qtxt"><b>${esc(p.nom)}</b><span>${esc(p.cargo)}</span></span>`;
-  $("#nav").innerHTML=(R0.menu||R0.nav).map(([k,t])=>`<button type="button" data-v="${k}" ${k===vista||(R0.menu&&k==="hoy")||(k==="hoy"&&VISTAS_INICIO.includes(vista))?'aria-current="page"':""}>${ico(NAV_ICO[k]||"home")}${t}${c[k]?`<span class="cuenta num" aria-label="${c[k]} pendientes">${c[k]}</span>`:""}</button>`).join("");
+  $("#nav").innerHTML=(R0.menu||R0.nav).map(([k,t])=>`<button type="button" data-v="${k}" ${k===vista||(R0.menu&&k===HOME())?'aria-current="page"':""}>${ico(NAV_ICO[k]||"home")}${t}${c[k]?`<span class="cuenta num" aria-label="${c[k]} pendientes">${c[k]}</span>`:""}</button>`).join("");
 }
 function ir(v){ vista=v; try{history.replaceState(null,"","#"+v)}catch(e){} render(); $("#vista").focus({preventScroll:true}); }
 $("#nav").addEventListener("click",e=>{const b=e.target.closest("button[data-v]"); if(b) ir(b.dataset.v)});
@@ -1171,7 +1172,7 @@ function render(){
   pintarBarra();
   const viejo=$("#vista"), nuevo=viejo.cloneNode(false); viejo.replaceWith(nuevo);
   const fn={novedades:vNovedades,vencimientos:vVencimientos,inicio:vInicio,mis:vMis,nueva:vNueva,visor:vVisor,bandeja:vBandeja,equipo:vEquipo,hoy:vHoy,salidas:vSalidas,flota:vFlota,conductores:vConductores,combustible:vCombustible,reportes:vReportes,config:vConfig}[vista];
-  $("#vista").innerHTML=(ROLES[rol].menu&&vista!=="hoy"&&!VISTAS_INICIO.includes(vista)?volverHTML():"")+fn();
+  $("#vista").innerHTML=(ROLES[rol].menu&&vista!==HOME()&&!VISTAS_INICIO.includes(vista)?volverHTML():"")+fn();
   (post[vista]||(()=>{}))();
 }
 function cerrarCapa(){ $("#capa").innerHTML=""; }
@@ -1205,7 +1206,7 @@ function vHoy(){
   return heroHTML("Lo que requiere tu atención en la flota de Oficina Central: solicitudes por asignar, vehículos por entregar o recibir y vencimientos.")+
   `<h2 class="sec-tit">${ico("flecha")}¿Qué necesitas hacer?</h2>`+accesosHTML(accesosGestion());
 }
-const volverHTML=()=>`<div class="acciones" style="margin-bottom:var(--e-4)"><button class="btn sec chico" type="button" data-ir="hoy">${ico("home")}Volver al inicio</button></div>`;
+const volverHTML=()=>`<div class="acciones" style="margin-bottom:var(--e-4)"><button class="btn sec chico" type="button" data-ir="${HOME()}">${ico("home")}Volver al inicio</button></div>`;
 function novedadesPend(){ return RES.filter(r=>r.bit?.nov&&r.bit.nov!=="Sin novedades"&&!r.bit.ot).sort((x,y)=>(y.bit.reg||"").localeCompare(x.bit.reg||"")); }
 function vNovedades(){
   const L=novedadesPend();
