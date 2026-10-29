@@ -24,8 +24,8 @@ Desde la versión 0.4 la maqueta sigue la línea gráfica de www.conaf.cl (letra
 |---|---|---|
 | Funcionario solicitante | Inicio · Nueva solicitud · Mis salidas | Solicitud con revisión automática (fechas, destinos, capacidad, conductor habilitado de la región) y seguimiento |
 | Jefatura directa | Inicio · Por aprobar · Salidas de mi equipo | Definir la imputación presupuestaria (folio) y aprobar, observar o rechazar con comentario; historial del equipo |
-| Encargado de vehículos | Inicio · Salidas · Flota · Conductores · Combustible y gastos · Reportes | Ver detalle abajo |
-| Administrador nacional | Lo mismo que el encargado, más Configuración | **Agregar vehículos** (Flota) y **agregar conductores** (Conductores), sólo en este perfil; catálogos, usuarios y accesos, cierre mensual, calidad de datos, traspasos y auditoría |
+| Encargado de vehículos | Inicio (cada módulo se abre desde su tarjeta; las pantallas tienen «Volver al inicio») | Ver detalle abajo |
+| Administrador nacional | Inicio, con las tarjetas del encargado más Configuración | **Agregar vehículos** (Flota) y **agregar conductores** (Conductores), sólo en este perfil; catálogos, usuarios y accesos, cierre mensual, calidad de datos, traspasos y auditoría |
 
 El conductor no tiene perfil: no accede a la plataforma. La entrega y la recepción del vehículo (odómetro, combustible y documentación entregada) las registra el encargado de vehículos.
 

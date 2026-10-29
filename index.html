@@ -490,7 +490,7 @@ body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{d
 
 <div class="barra">
   <div class="barra-in">
-    <div class="app-nombre"><span class="app-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-car"/></svg></span><span class="app-txt"><b>Gestión de Flota</b><small>CONAF</small></span></div>
+    <div class="app-nombre" id="app-home" role="link" tabindex="0" title="Ir al inicio" style="cursor:pointer"><span class="app-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-car"/></svg></span><span class="app-txt"><b>Gestión de Flota</b><small>CONAF</small></span></div>
     <div class="perfil">
       <span class="rol-chip" id="rol-chip"></span>
       <div class="quien" id="quien"></div>
@@ -1140,6 +1140,8 @@ delete ROLES.conductor; // el conductor no usa la plataforma: la salida y el reg
 ROLES.super.nav=[...ROLES.encargado.nav,["config","Configuración"]];
 const puedeGestionar = ()=>["encargado","super"].includes(rol);
 const VISTAS_INICIO=["novedades","vencimientos"];
+/* Encargado y administrador: el menú sólo muestra «Inicio»; el resto se abre desde las tarjetas */
+ROLES.encargado.menu=[["hoy","Inicio"]]; ROLES.super.menu=[["hoy","Inicio"]];
 const NAV_ICO={inicio:"home",hoy:"home",nueva:"plus",mis:"lista",bandeja:"aprobar",equipo:"equipo",salidas:"ruta",flota:"car",conductores:"licencia",combustible:"combustible",reportes:"grafico",config:"config"};
 const ico=(n,c="ico")=>`<svg class="${c}" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 const iniciales=n=>String(n||"").split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase();
@@ -1158,16 +1160,18 @@ function pintarBarra(){
   const R0=ROLES[rol], p=PX[R0.quien], c=cuentas();
   $("#rol-chip").innerHTML=ico("escudo")+esc(R0.nombre);
   $("#quien").innerHTML=`<span class="avatar" aria-hidden="true">${iniciales(p.nom)}</span><span class="qtxt"><b>${esc(p.nom)}</b><span>${esc(p.cargo)}</span></span>`;
-  $("#nav").innerHTML=R0.nav.map(([k,t])=>`<button type="button" data-v="${k}" ${k===vista||(k==="hoy"&&VISTAS_INICIO.includes(vista))?'aria-current="page"':""}>${ico(NAV_ICO[k]||"home")}${t}${c[k]?`<span class="cuenta num" aria-label="${c[k]} pendientes">${c[k]}</span>`:""}</button>`).join("");
+  $("#nav").innerHTML=(R0.menu||R0.nav).map(([k,t])=>`<button type="button" data-v="${k}" ${k===vista||(R0.menu&&k==="hoy")||(k==="hoy"&&VISTAS_INICIO.includes(vista))?'aria-current="page"':""}>${ico(NAV_ICO[k]||"home")}${t}${c[k]?`<span class="cuenta num" aria-label="${c[k]} pendientes">${c[k]}</span>`:""}</button>`).join("");
 }
 function ir(v){ vista=v; try{history.replaceState(null,"","#"+v)}catch(e){} render(); $("#vista").focus({preventScroll:true}); }
 $("#nav").addEventListener("click",e=>{const b=e.target.closest("button[data-v]"); if(b) ir(b.dataset.v)});
+const irInicio=()=>{ if(document.body.classList.contains("sin-sesion")) return; cerrarCapa(); ir(ROLES[rol].nav[0][0]); };
+$("#app-home").addEventListener("click",irInicio); $("#app-home").addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); irInicio(); } });
 function render(){
   if(!ROLES[rol].nav.some(n=>n[0]===vista) && !(puedeGestionar()&&VISTAS_INICIO.includes(vista))) vista=ROLES[rol].nav[0][0];
   pintarBarra();
   const viejo=$("#vista"), nuevo=viejo.cloneNode(false); viejo.replaceWith(nuevo);
   const fn={novedades:vNovedades,vencimientos:vVencimientos,inicio:vInicio,mis:vMis,nueva:vNueva,visor:vVisor,bandeja:vBandeja,equipo:vEquipo,hoy:vHoy,salidas:vSalidas,flota:vFlota,conductores:vConductores,combustible:vCombustible,reportes:vReportes,config:vConfig}[vista];
-  $("#vista").innerHTML=fn();
+  $("#vista").innerHTML=(ROLES[rol].menu&&vista!=="hoy"&&!VISTAS_INICIO.includes(vista)?volverHTML():"")+fn();
   (post[vista]||(()=>{}))();
 }
 function cerrarCapa(){ $("#capa").innerHTML=""; }
