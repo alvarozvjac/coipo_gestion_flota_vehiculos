@@ -16,7 +16,7 @@ vencimientos legales y combustible. Requerimiento de la Sección Servicios Gener
 
 ## Cómo probarla
 
-El selector **«Ver como»** de la cabecera cambia entre los cinco perfiles del ERS. Desde la versión 0.3 la navegación se ordena por tareas y no por las pantallas de GESAD: cada perfil ve sólo lo que usa, y el detalle de una salida, un vehículo o un conductor se abre en un panel lateral.
+El selector **«Ver como»** de la cabecera cambia entre los cuatro perfiles con acceso a la plataforma. Desde la versión 0.3 la navegación se ordena por tareas y no por las pantallas de GESAD: cada perfil ve sólo lo que usa, y el detalle de una salida, un vehículo o un conductor se abre en un panel lateral.
 
 Desde la versión 0.4 la maqueta sigue la línea gráfica de www.conaf.cl (letra Noto Sans, verdes institucionales, tarjetas con sombra e íconos), y cada perfil parte en una pantalla de **Inicio** con accesos grandes a lo que necesita hacer.
 
@@ -25,8 +25,9 @@ Desde la versión 0.4 la maqueta sigue la línea gráfica de www.conaf.cl (letra
 | Funcionario solicitante | Inicio · Nueva solicitud · Mis salidas | Solicitud con revisión automática (días inhábiles DL 799, capacidad, conductor habilitado de la región) y seguimiento |
 | Jefatura directa | Inicio · Por aprobar · Salidas de mi equipo | Definir la imputación presupuestaria (folio) y aprobar, observar o rechazar con comentario; historial del equipo |
 | Encargado de vehículos | Inicio · Salidas · Flota · Conductores · Combustible y gastos · Reportes | Ver detalle abajo |
-| Conductor | Inicio · Mis viajes | Registrar la salida y el regreso del vehículo, con odómetro, combustible e inventario |
 | Administrador nacional | Lo mismo que el encargado, más Configuración | Catálogos, usuarios y accesos, cierre mensual, calidad de datos, traspasos y auditoría |
+
+El conductor no tiene perfil: no accede a la plataforma. La entrega y la recepción del vehículo (odómetro, combustible e inventario) las registra el encargado de vehículos.
 
 Lo que ve el encargado de vehículos, y qué función de GESAD reemplaza cada parte:
 

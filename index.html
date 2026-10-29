@@ -457,7 +457,6 @@ footer.pie-app{background:var(--verde-tinta);color:#e9f1e7;border-top:4px solid 
         <option value="solicitante">Funcionario solicitante</option>
         <option value="jefatura">Jefatura directa</option>
         <option value="encargado" selected>Encargado de vehículos</option>
-        <option value="conductor">Conductor</option>
         <option value="super">Administrador nacional</option>
       </select>
       <div class="quien" id="quien"></div>
@@ -1143,10 +1142,10 @@ const mesCerrado = f=>CIERRES.some(c=>c.estado==="Cerrado"&&f.slice(0,7)===c.mes
 ROLES.solicitante.nav=[["inicio","Inicio"],["nueva","Nueva solicitud"],["mis","Mis salidas"]];
 ROLES.jefatura.nav=[["inicio","Inicio"],["bandeja","Por aprobar"],["equipo","Salidas de mi equipo"]];
 ROLES.encargado.nav=[["hoy","Inicio"],["salidas","Salidas"],["flota","Flota"],["conductores","Conductores"],["combustible","Combustible y gastos"],["reportes","Reportes"]];
-ROLES.conductor.nav=[["inicio","Inicio"],["agenda","Mis viajes"]];
+delete ROLES.conductor; // el conductor no usa la plataforma: la salida y el regreso los registra el encargado
 ROLES.super.nav=[...ROLES.encargado.nav,["config","Configuración"]];
 const puedeGestionar = ()=>["encargado","super"].includes(rol);
-const NAV_ICO={inicio:"home",hoy:"home",nueva:"plus",mis:"lista",bandeja:"aprobar",equipo:"equipo",salidas:"ruta",flota:"car",conductores:"licencia",combustible:"combustible",reportes:"grafico",agenda:"calendario",config:"config"};
+const NAV_ICO={inicio:"home",hoy:"home",nueva:"plus",mis:"lista",bandeja:"aprobar",equipo:"equipo",salidas:"ruta",flota:"car",conductores:"licencia",combustible:"combustible",reportes:"grafico",config:"config"};
 const ico=(n,c="ico")=>`<svg class="${c}" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 const iniciales=n=>String(n||"").split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase();
 
@@ -1161,7 +1160,6 @@ function cuentas(){
   const yo=ROLES[rol].quien;
   return {bandeja:RES.filter(r=>r.est==="PEND_JEFE"&&r.jefe===yo).length,
     salidas:RES.filter(r=>r.est==="APROBADA").length,
-    agenda:RES.filter(r=>(r.cond==="c1"||r.relevo==="c1")&&["CONFIRMADA","EN_TERRENO"].includes(r.est)).length,
     hoy:tareasHoy().length};
 }
 function pintarBarra(){
@@ -1176,7 +1174,7 @@ function render(){
   if(!ROLES[rol].nav.some(n=>n[0]===vista)) vista=ROLES[rol].nav[0][0];
   pintarBarra();
   const viejo=$("#vista"), nuevo=viejo.cloneNode(false); viejo.replaceWith(nuevo);
-  const fn={inicio:vInicio,mis:vMis,nueva:vNueva,visor:vVisor,bandeja:vBandeja,equipo:vEquipo,hoy:vHoy,salidas:vSalidas,flota:vFlota,conductores:vConductores,combustible:vCombustible,reportes:vReportes,agenda:vAgenda,config:vConfig}[vista];
+  const fn={inicio:vInicio,mis:vMis,nueva:vNueva,visor:vVisor,bandeja:vBandeja,equipo:vEquipo,hoy:vHoy,salidas:vSalidas,flota:vFlota,conductores:vConductores,combustible:vCombustible,reportes:vReportes,config:vConfig}[vista];
   $("#vista").innerHTML=fn();
   (post[vista]||(()=>{}))();
 }
@@ -1286,12 +1284,7 @@ function vInicio(){
       `<h2 class="sec-tit">${ico("flecha")}¿Qué necesitas hacer?</h2>`+accesosHTML(ACCESOS)+
       (pend.length?`<h2 class="sec-tit">${ico("reloj")}Esperan tu decisión</h2><section class="panel"><div class="cuerpo">${pend.map(r=>`<div class="tarea">${chipR(r.est)}<div class="q">${esc(nom(r.sol))} · ${esc(r.destinos.map(d=>d.com).join(" · "))}<small>${r.id} · sale ${fCorta(r.salida)} · ${esc(r.cometido)}</small></div><button class="btn chico" type="button" data-ir="bandeja">Revisar</button></div>`).join("")}</div></section>`:"");
   }
-  // conductor
-  const mias=RES.filter(r=>(r.cond===yo||r.relevo===yo)&&["CONFIRMADA","EN_TERRENO"].includes(r.est)).sort((a,b)=>a.salida.localeCompare(b.salida)), c=CX[yo];
-  ACCESOS=[{v:"agenda",ico:"calendario",t:"Mis viajes",d:"Registra el kilometraje, el combustible y el inventario al retirar y al devolver el vehículo.",cta:"Ver mis viajes",n:mias.length,nl:"próximos",principal:true}];
-  return heroHTML("Aquí ves los cometidos que te asignaron y registras la salida y el regreso del vehículo.")+
-    `<h2 class="sec-tit">${ico("flecha")}¿Qué necesitas hacer?</h2>`+accesosHTML(ACCESOS)+
-    `<h2 class="sec-tit">${ico("licencia")}Tu habilitación</h2><div class="contadores"><div class="contador"><b>${c.clases.join("·")}</b><span>licencia vigente<br>hasta ${fF(c.licHasta)}</span></div><div class="contador"><b>✓</b><span>caución vigente<br>hasta ${fF(c.cauHasta)}</span></div><div class="contador"><b>${mias.length}</b><span>viajes<br>próximos</span></div></div>`;
+  return "";
 }
 post.inicio = ()=>postAccesos();
 
@@ -1597,15 +1590,6 @@ function vEquipo(){
 }
 
 /* ======================= CONDUCTOR ======================= */
-function vAgenda(){
-  const mias=RES.filter(r=>(r.cond==="c1"||r.relevo==="c1")&&["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)).sort((a,b)=>a.salida.localeCompare(b.salida)), c=CX.c1;
-  const prox=mias.filter(r=>r.est!=="FINALIZADA"), pas=mias.filter(r=>r.est==="FINALIZADA");
-  const fila=r=>`<div class="tarea">${r.pat?placa(r.pat):""}<div class="q">${esc(r.destinos.map(d=>d.com).join(" · "))} · ${fCorta(r.salida)}<small>${r.id} · ${esc(r.cometido)}</small></div>${r.est==="FINALIZADA"?chipR(r.est):`<button class="btn chico" type="button" data-sal="${r.id}">${r.est==="EN_TERRENO"?"Registrar regreso":"Registrar salida"}</button>`}</div>`;
-  return cab("Mis viajes","Cometidos asignados a ti. Registra aquí el kilometraje, el combustible y el inventario al retirar y devolver el vehículo.","Perfil 5")+
-  `<div class="contadores"><div class="contador"><b>${prox.length}</b><span>próximos</span></div><div class="contador"><b>${c.clases.join("·")}</b><span>licencia hasta<br>${fF(c.licHasta)}</span></div><div class="contador"><b>✓</b><span>caución vigente<br>hasta ${fF(c.cauHasta)}</span></div></div>
-  <section class="panel"><header><h2>Próximos</h2></header><div class="cuerpo">${prox.map(fila).join("")||`<p class="vacio-chico">Sin viajes asignados.</p>`}</div></section>
-  <section class="panel" style="margin-top:var(--e-4)"><header><h2>Realizados</h2></header><div class="cuerpo">${pas.map(fila).join("")||`<p class="vacio-chico">Aún no hay viajes realizados.</p>`}</div></section>`;
-}
 
 /* ======================= CONFIGURACIÓN (administrador) ======================= */
 function vConfig(){
