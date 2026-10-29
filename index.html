@@ -1313,7 +1313,7 @@ function vInicio(){
              {v:"equipo",ico:"equipo",t:"Salidas de mi equipo",d:"Historial y estado de las salidas que autorizaste.",cta:"Ver historial",n:eq.filter(r=>["CONFIRMADA","EN_TERRENO"].includes(r.est)).length,nl:"en curso"}];
     return heroHTML(pend.length?`Tienes ${pend.length} ${pend.length===1?"solicitud":"solicitudes"} de tu equipo esperando tu aprobación.`:"No tienes solicitudes pendientes de aprobación.")+
       `<h2 class="sec-tit">${ico("flecha")}¿Qué necesitas hacer?</h2>`+accesosHTML(ACCESOS)+
-      (pend.length?`<h2 class="sec-tit">${ico("reloj")}Esperan tu decisión</h2><section class="panel"><div class="cuerpo">${pend.map(r=>`<div class="tarea">${chipR(r.est)}<div class="q">${esc(nom(r.sol))} · ${esc(r.destinos.map(d=>d.com).join(" · "))}<small>${r.id} · sale ${fCorta(r.salida)} · ${esc(r.cometido)}</small></div><button class="btn chico" type="button" data-ir="bandeja">Revisar</button></div>`).join("")}</div></section>`:"");
+      "";
   }
   return "";
 }
