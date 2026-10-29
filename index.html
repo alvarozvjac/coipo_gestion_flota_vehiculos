@@ -518,6 +518,7 @@ body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{d
 <symbol id="i-escudo" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol>
 <symbol id="i-check" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></symbol>
 <symbol id="i-salir" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></symbol>
+<symbol id="i-taller" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
 <symbol id="i-reloj" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
 </defs></svg>
 <main id="vista" tabindex="-1"></main>
@@ -1162,7 +1163,7 @@ ROLES.encargado.nav=[["hoy","Inicio"],["salidas","Salidas"],["flota","Flota"],["
 delete ROLES.conductor; // el conductor no usa la plataforma: la salida y el regreso los registra el encargado
 ROLES.super.nav=[...ROLES.encargado.nav,["config","Configuración"]];
 const puedeGestionar = ()=>["encargado","super"].includes(rol);
-const VISTAS_INICIO=["pendientes","vencimientos","guardia"];
+const VISTAS_INICIO=["novedades","vencimientos","guardia"];
 const NAV_ICO={inicio:"home",hoy:"home",nueva:"plus",mis:"lista",bandeja:"aprobar",equipo:"equipo",salidas:"ruta",flota:"car",conductores:"licencia",combustible:"combustible",reportes:"grafico",config:"config"};
 const ico=(n,c="ico")=>`<svg class="${c}" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 const iniciales=n=>String(n||"").split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase();
@@ -1175,8 +1176,7 @@ let sel = {repTab:"km", tes:{modo:"mes",mes:10,anio:2026}, bandeja:null, gantt:{
 function cuentas(){
   const yo=ROLES[rol].quien;
   return {bandeja:RES.filter(r=>r.est==="PEND_JEFE"&&r.jefe===yo).length,
-    salidas:RES.filter(r=>r.est==="APROBADA").length,
-    hoy:tareasHoy().length};
+    salidas:RES.filter(r=>r.est==="APROBADA").length};
 }
 function pintarBarra(){
   const R0=ROLES[rol], p=PX[R0.quien], c=cuentas();
@@ -1190,7 +1190,7 @@ function render(){
   if(!ROLES[rol].nav.some(n=>n[0]===vista) && !(puedeGestionar()&&VISTAS_INICIO.includes(vista))) vista=ROLES[rol].nav[0][0];
   pintarBarra();
   const viejo=$("#vista"), nuevo=viejo.cloneNode(false); viejo.replaceWith(nuevo);
-  const fn={pendientes:vPendientes,vencimientos:vVencimientos,guardia:vGuardia,inicio:vInicio,mis:vMis,nueva:vNueva,visor:vVisor,bandeja:vBandeja,equipo:vEquipo,hoy:vHoy,salidas:vSalidas,flota:vFlota,conductores:vConductores,combustible:vCombustible,reportes:vReportes,config:vConfig}[vista];
+  const fn={novedades:vNovedades,vencimientos:vVencimientos,guardia:vGuardia,inicio:vInicio,mis:vMis,nueva:vNueva,visor:vVisor,bandeja:vBandeja,equipo:vEquipo,hoy:vHoy,salidas:vSalidas,flota:vFlota,conductores:vConductores,combustible:vCombustible,reportes:vReportes,config:vConfig}[vista];
   $("#vista").innerHTML=fn();
   (post[vista]||(()=>{}))();
 }
@@ -1228,18 +1228,13 @@ function vHoy(){
   `<h2 class="sec-tit">${ico("flecha")}¿Qué necesitas hacer?</h2>`+accesosHTML(accesosGestion());
 }
 const volverHTML=()=>`<div class="acciones" style="margin-bottom:var(--e-4)"><button class="btn sec chico" type="button" data-ir="hoy">${ico("home")}Volver al inicio</button></div>`;
-function vPendientes(){
-  const t=tareasHoy(), I=ICO_T();
-  return volverHTML()+cab("Pendientes de hoy · "+DS[HOY.getDay()]+" "+fF(HOY),"Solicitudes por asignar, vehículos por entregar o recibir, novedades mecánicas y cierre del libro de guardia.","")+
-  `<section class="panel"><header><h2>Pendientes</h2><span class="sub num">${t.length}</span></header><div class="cuerpo">${t.length?t.map((x,i)=>`<div class="tarea">${I[x.k]}<div class="q">${esc(x.txt)}<small>${esc(x.sub)}</small></div><button class="btn chico" type="button" data-tarea="${i}">${x.btn}</button></div>`).join(""):`<p class="vacio-chico">No hay tareas pendientes.</p>`}</div></section>`;
+function novedadesPend(){ return RES.filter(r=>r.bit?.nov&&r.bit.nov!=="Sin novedades"&&!r.bit.ot).sort((x,y)=>(y.bit.reg||"").localeCompare(x.bit.reg||"")); }
+function vNovedades(){
+  const L=novedadesPend();
+  return volverHTML()+cab("Novedades mecánicas","Desperfectos reportados al recibir los vehículos. Cree la orden de trabajo para enviarlos a taller.","")+
+  `<section class="panel"><header><h2>Por atender</h2><span class="sub num">${L.length}</span></header><div class="cuerpo">${L.length?L.map(r=>`<div class="tarea">${placa(r.pat)}<div class="q">${esc(r.bit.nov)}<small>${r.id} · reportada al regreso ${r.bit.reg?fFH(r.bit.reg):""} · ${esc(nom(r.cond))}</small></div><button class="btn chico" type="button" data-nov="${r.id}">Crear orden</button></div>`).join(""):`<p class="vacio-chico">No hay novedades mecánicas pendientes.</p>`}</div></section>`;
 }
-post.pendientes = ()=>{
-  const t=tareasHoy();
-  $("#vista").querySelectorAll("[data-tarea]").forEach(b=>b.onclick=()=>{const x=t[+b.dataset.tarea];
-    if(x.k==="guardia"){ ir("guardia"); return; }
-    if(x.k==="novedad"){ abrirFicha(x.r.pat,"mant",{nuevaOT:true,desde:x.r.id}); return; }
-    abrirSalida(x.r.id); });
-};
+post.novedades = ()=>{ $("#vista").querySelectorAll("[data-nov]").forEach(b=>b.onclick=()=>{const r=RES.find(x=>x.id===b.dataset.nov); abrirFicha(r.pat,"mant",{nuevaOT:true,desde:r.id});}); };
 function vVencimientos(){
   const ven=vencimientos(), nv=ven.filter(a=>a.e==="VENC").length;
   return volverHTML()+cab("Próximos vencimientos","Documentos de los vehículos y extintores vencidos o que vencen en los próximos 30 días.","")+
@@ -1279,13 +1274,13 @@ function postAccesos(){ $("#vista").querySelectorAll("[data-acc]").forEach(b=>b.
 function accesosGestion(){
   const n=e=>RES.filter(r=>r.est===e).length, alertas=VEH.filter(v=>alertasVeh(v)>0).length;
   const cond=COND.map(c=>estCond(c).est), porVencer=cond.filter(e=>e==="POR"||e==="BLOQ").length;
-  const est=VEH.map(estadoHoy), ne=k=>est.filter(e=>e===k).length, tar=tareasHoy(), ven=vencimientos(), venc=ven.filter(a=>a.e==="VENC").length, guardHecha=GUARDE.some(g=>g.fecha===iso(HOY).slice(0,10));
+  const est=VEH.map(estadoHoy), ne=k=>est.filter(e=>e===k).length, ven=vencimientos(), nov=novedadesPend().length, venc=ven.filter(a=>a.e==="VENC").length, guardHecha=GUARDE.some(g=>g.fecha===iso(HOY).slice(0,10));
   ACCESOS=[
-   {v:"pendientes",ico:"reloj",t:"Pendientes de hoy",d:"Asignaciones, entregas, recepciones y novedades mecánicas que requieren tu atención hoy.",cta:"Ver pendientes",n:tar.length,nl:"pendientes",principal:true},
-   {v:"salidas",ico:"aprobar",t:"Asignar vehículos",d:"Solicitudes aprobadas por la jefatura que esperan vehículo y conductor.",cta:"Ir a asignar",n:n("APROBADA"),nl:"por asignar",pre:()=>{sel.salFiltro="asignar";sel.salModo="lista"}},
+   {v:"salidas",ico:"aprobar",t:"Asignar vehículos",d:"Solicitudes aprobadas por la jefatura que esperan vehículo y conductor.",cta:"Ir a asignar",n:n("APROBADA"),nl:"por asignar",principal:true,pre:()=>{sel.salFiltro="asignar";sel.salModo="lista"}},
    {v:"salidas",ico:"llave",t:"Entregar y recibir",d:"Vehículos que salen o regresan: odómetro, combustible e inventario de accesorios.",cta:"Ver salidas",n:n("CONFIRMADA")+n("EN_TERRENO"),nl:"en curso",pre:()=>{sel.salFiltro="proximas";sel.salModo="lista"}},
    {v:"salidas",ico:"calendario",t:"Calendario de la flota",d:"Ocupación de cada vehículo día a día, con reservas y mantenciones.",cta:"Abrir calendario",pre:()=>{sel.salModo="calendario"}},
    {v:"flota",ico:"car",t:"Flota",d:`Hoy: ${ne("DISP")} disponibles de ${VEH.length}, ${ne("TERR")} en terreno, ${ne("TALL_P")+ne("TALL_C")} en taller y ${ne("MALO")+ne("EXCL")+ne("BAJA")} fuera de servicio o exclusivos.`,cta:"Ver vehículos",n:alertas,nl:"con alertas",aviso:alertas>0},
+   {v:"novedades",ico:"taller",t:"Novedades mecánicas",d:"Desperfectos reportados al recibir los vehículos, para crear la orden de trabajo.",cta:"Ver novedades",n:nov,nl:"novedades por atender",aviso:nov>0},
    {v:"vencimientos",ico:"alerta",t:"Próximos vencimientos",d:`Revisión técnica, gases, SOAP, permiso de circulación y extintores. ${venc} vencidos y ${ven.length-venc} por vencer en 30 días.`,cta:"Ver vencimientos",n:ven.length,nl:"vencimientos",aviso:venc>0},
    {v:"guardia",ico:"check",t:"Libro de guardia",d:guardHecha?"La jornada de hoy ya está cerrada.":"Cierre de jornada: ubicación, kilometraje y combustible de cada vehículo en recinto.",cta:guardHecha?"Ver registro":"Registrar cierre",n:guardHecha?0:1,nl:"cierre pendiente"},
    {v:"conductores",ico:"licencia",t:"Conductores",d:"Caución y licencia de cada conductor. Los bloqueados no se pueden asignar.",cta:"Ver padrón",n:porVencer,nl:"por vencer o bloqueados",aviso:porVencer>0},

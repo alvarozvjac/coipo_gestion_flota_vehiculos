@@ -33,7 +33,7 @@ Lo que ve el encargado de vehículos, y qué función de GESAD reemplaza cada pa
 
 | Menú | Contenido | Reemplaza en GESAD |
 |---|---|---|
-| Inicio | Tarjetas de acceso a cada tarea; las de pendientes del día, próximos vencimientos y libro de guardia abren su propia pantalla. Pendientes del día (asignar, entregar, recibir, novedades mecánicas), próximos vencimientos y **cierre de jornada del libro de guardia** | Salidas del día, Guarde de vehículos, Movimiento diario |
+| Inicio | Tarjetas de acceso a cada tarea, sin información repetida; las de novedades mecánicas, próximos vencimientos y libro de guardia abren su propia pantalla. Pendientes del día (asignar, entregar, recibir, novedades mecánicas), próximos vencimientos y **cierre de jornada del libro de guardia** | Salidas del día, Guarde de vehículos, Movimiento diario |
 | Salidas | Lista única con filtros (por asignar, próximas, en terreno, finalizadas) o vista de calendario. Desde el detalle se asigna, se entrega y se recibe el vehículo, con **inventario de accesorios** al entregar y al recibir | Ingreso de solicitudes, Consulta de salidas, Consulta por conductor y por pasajeros |
 | Flota | **Hoja de vida** de cada vehículo: documentos, mantención (órdenes de trabajo y cierre con factura), combustible, gastos, **accidentes**, inventario, libro de guardia y salidas | Ficha de vehículos, Seguros, Accidentes de tránsito, Ubicación, Mantenciones, Ficha de taller, Orden de trabajo |
 | Conductores | Padrón con caución y licencia; los bloqueados no aparecen en las asignaciones | Conductores, Ficha de conductores |
