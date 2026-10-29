@@ -717,6 +717,7 @@ function vehApto(v, r){
   if(["TALL_P","TALL_C"].includes(v.estado)) m.push("En taller");
   if(v.estado==="MALO") m.push("Fuera de servicio");
   if(v.estado==="EXCL") m.push("Asignación exclusiva Dirección");
+  if(v.estado==="BAJA") m.push("En proceso de baja fiscal");
   const pas=pasajeros(r); if(pas>v.cap) m.push(`Capacidad ${v.cap} < ${pas} personas`);
   if(r.req.t4 && v.trac==="4x2") m.push("Requiere 4x4");
   if(r.req.carga && !["CAMIONETA","CAMIÓN","FURGÓN"].includes(v.tipo)) m.push("Sin espacio de carga");
@@ -1025,7 +1026,7 @@ function abrirOrden(id){
    ${r.km?`<tr><td>Km aproximados</td><td>${km(r.km)}</td></tr>`:""}
    <tr><td>Lugar de guarda</td><td>${esc(v.unidad)}${r.destinos.length&&r.km>500?" · pernoctación autorizada en destino":""}</td></tr>
 
-   <tr><td>Tarjeta combustible</td><td>${esc(v.tarjeta)}</td></tr>
+   <tr><td>Tarjeta combustible</td><td>${esc(r.tarjeta||v.tarjeta)}</td></tr>
   </tbody></table>
   <p style="margin-top:12px;font-size:12px">1. En caso de colisión o choque: dejar constancia en Carabineros indicando la póliza ${v.poliza}, vigente hasta ${fF(v.polizaVence)}.<br>2. Asistencia en viaje: 22 826 1101 · 22 797 6100, indicando patente ${esc(r.pat)} y RUT 61.313.000-4 CONAF.<br>3. Devolver con el estanque al menos en 1/4.</p>
   <div class="pie"><div>Firma conductor</div><div>V°B° Unidad de Vehículos</div><div>Recepción conforme</div></div></div>
@@ -1337,7 +1338,7 @@ post.salidas = ()=>{
 };
 
 /* ----- Detalle de una salida: asignar, entregar, recibir ----- */
-let asig={pat:null,cond:null,rel:null};
+let asig={pat:null,cond:null,rel:null,tarj:null};
 function abrirSalida(id){
   const r=RES.find(x=>x.id===id); if(!r) return;
   const cc=CCX[r.cc], gestor=puedeGestionar(), cond=rol==="conductor"&&(r.cond==="c1"||r.relevo==="c1");
@@ -1357,17 +1358,21 @@ function abrirSalida(id){
 }
 function asignacionHTML(r){
   const tmp={...r,pat:asig.pat};
-  const cand=VEH.map(v=>({v,a:vehApto(v,r)})), aptos=cand.filter(x=>x.a.ok), no=cand.filter(x=>!x.a.ok);
+  const cand=VEH.map(v=>({v,a:vehApto(v,r)})), aptos=cand.filter(x=>x.a.ok), vSel=cand.find(x=>x.v.pat===asig.pat);
+  const tarjetas=VEH.filter(v=>v.tarjetaEstado==="Activa"&&v.tarjeta&&v.tarjeta!=="Sin tarjeta").map(v=>({t:v.tarjeta,pat:v.pat,cupo:v.cupo})).sort((a,b)=>(b.pat===asig.pat)-(a.pat===asig.pat));
+  if(asig.pat&&!asig.tarj){ const p=tarjetas.find(x=>x.pat===asig.pat); if(p) asig.tarj=p.t; }
   const conds=COND.filter(c=>c.tipo==="POOL").map(c=>({c,a:condApto(c.id,tmp)}));
   const kmDia=r.km/Math.max(1,Math.ceil((F(r.regreso)-F(r.salida))/DIA));
   return `<h3>Asignar</h3>
-  <p class="tenue peq">Se muestran sólo los vehículos que cumplen capacidad (${pasajeros(r)} personas)${r.req.t4?", 4x4":""}${r.req.carga?", carga":""}, documentos vigentes y horario libre.</p>
-  <fieldset><legend>Vehículo</legend><div class="lista-opciones">${aptos.length?aptos.map(({v,a})=>`<label class="opcion"><input type="radio" name="a-pat" value="${v.pat}" ${asig.pat===v.pat?"checked":""}>${placa(v.pat)}<span>${esc(v.marca+" "+v.modelo)}<small>${v.tipo} · ${v.trac} · ${v.cap} plazas · ${km(v.km)} km</small></span><span>${a.avisos.map(m=>chip(m,"c-pend","!")).join(" ")}</span></label>`).join(""):`<p class="nota">Ningún vehículo cumple. Marca «Sin disponibilidad» para avisar al solicitante.</p>`}
-  ${no.length?`<details class="no-aptos"><summary>No disponibles (${no.length})</summary><div class="lista-opciones" style="margin-top:var(--e-2)">${no.map(({v,a})=>`<div class="opcion off">${placa(v.pat)}<span>${esc(v.marca+" "+v.modelo)}<small>${esc(a.motivos.join(" · "))}</small></span></div>`).join("")}</div></details>`:""}</div></fieldset>
-  ${r.reqCond?`<fieldset><legend>Conductor del pool</legend><div class="campos"><div class="campo"><label for="a-cond">Conductor</label><select id="a-cond"><option value="">— Seleccionar —</option>${conds.map(({c,a})=>`<option value="${c.id}" ${a.ok?"":"disabled"} ${asig.cond===c.id?"selected":""}>${esc(nom(c.id))} · ${c.clases.join("/")}${a.ok?"":" — "+esc(a.motivos[0])}</option>`).join("")}</select></div>
+  <p class="tenue peq">Sólo se listan vehículos disponibles: fuera de taller y de baja, con capacidad (${pasajeros(r)} personas)${r.req.t4?", 4x4":""}${r.req.carga?", carga":""}, documentos vigentes y horario libre.</p>
+  <div class="campos">
+   <div class="campo ancho"><label for="a-pat">Vehículo disponible</label>${aptos.length?`<select id="a-pat"><option value="">— Seleccionar vehículo (${aptos.length} disponibles) —</option>${aptos.map(({v,a})=>`<option value="${v.pat}" ${asig.pat===v.pat?"selected":""}>${v.pat} · ${esc(v.marca+" "+v.modelo)} · ${esc(v.tipo)} · ${v.trac} · ${v.cap} plazas · ${km(v.km)} km${a.avisos.length?" · ⚠ "+esc(a.avisos.join(", ")):""}</option>`).join("")}</select>`:`<p class="nota">No hay vehículos disponibles que cumplan los requisitos. Use «Sin disponibilidad».</p>`}${asig.pat&&vSel?.a.avisos.length?`<span class="ayuda">${vSel.a.avisos.map(m=>chip(m,"c-pend","!")).join(" ")}</span>`:""}</div>
+   <div class="campo ancho"><label for="a-tarj">Tarjeta de combustible</label><select id="a-tarj" ${asig.pat?"":"disabled"}><option value="">${asig.pat?"— Seleccionar tarjeta —":"— Elija primero el vehículo —"}</option>${tarjetas.map(x=>`<option value="${esc(x.t)}" ${asig.tarj===x.t?"selected":""}>${esc(x.t)} · ${x.pat===asig.pat?"tarjeta del vehículo":"tarjeta de "+x.pat} · ${esc(x.cupo||"")}</option>`).join("")}</select><span class="ayuda">Sólo tarjetas activas. Por defecto, la del vehículo asignado.</span></div>
+  </div>
+  ${r.reqCond?`<fieldset><legend>Conductor del pool</legend><div class="campos"><div class="campo"><label for="a-cond">Conductor disponible</label><select id="a-cond"><option value="">— Seleccionar —</option>${conds.filter(x=>x.a.ok).map(({c})=>`<option value="${c.id}" ${asig.cond===c.id?"selected":""}>${esc(nom(c.id))} · licencia ${c.clases.join("/")}</option>`).join("")}</select></div>
    <div class="campo"><label for="a-rel">Relevo${kmDia>400?" (sugerido: más de 400 km por día)":""}</label><select id="a-rel"><option value="">Sin relevo</option>${conds.filter(x=>x.a.ok&&x.c.id!==asig.cond).map(({c})=>`<option value="${c.id}" ${asig.rel===c.id?"selected":""}>${esc(nom(c.id))}</option>`).join("")}</select></div></div></fieldset>`:`<p class="nota">Conduce ${esc(nom(r.cond))}.</p>`}
   <div class="campo"><label for="a-obs">Observaciones para la entrega</label><input type="text" id="a-obs" placeholder="Opcional"></div>
-  <div class="acciones"><button class="btn" type="button" id="a-ok" ${asig.pat&&(!r.reqCond||asig.cond)?"":"disabled"}>Confirmar asignación</button><button class="btn peligro" type="button" id="a-sd">Sin disponibilidad</button></div>`;
+  <div class="acciones"><button class="btn" type="button" id="a-ok" ${asig.pat&&asig.tarj&&(!r.reqCond||asig.cond)?"":"disabled"}>Confirmar asignación</button><button class="btn peligro" type="button" id="a-sd">Sin disponibilidad</button></div>`;
 }
 function checklistHTML(pat, pref){
   const inv=INV[pat].items;
@@ -1397,11 +1402,12 @@ function cierreHTML(r){
 }
 function postSalida(r){
   const C=$("#capa");
-  C.querySelectorAll('input[name="a-pat"]').forEach(i=>i.onchange=()=>{asig.pat=i.value;asig.cond=null;asig.rel=null;abrirSalida(r.id)});
+  const ap=$("#a-pat"); if(ap) ap.onchange=()=>{asig.pat=ap.value||null;asig.cond=null;asig.rel=null;asig.tarj=null;abrirSalida(r.id)};
+  const at=$("#a-tarj"); if(at) at.onchange=()=>{asig.tarj=at.value||null;abrirSalida(r.id)};
   const ac=$("#a-cond"); if(ac) ac.onchange=()=>{asig.cond=ac.value||null;abrirSalida(r.id)};
   const ar=$("#a-rel"); if(ar) ar.onchange=()=>{asig.rel=ar.value||null};
-  const ok=$("#a-ok"); if(ok) ok.onclick=()=>{ r.pat=asig.pat; if(r.reqCond){r.cond=asig.cond; r.relevo=asig.rel||null} r.est="CONFIRMADA"; const o=$("#a-obs").value.trim(); if(o) r.obsLog="Logística: "+o;
-    r.hist.push({t:iso(HOY),quien:ROLES[rol].quien,acc:"Asignada"}); audit("Asigna vehículo y conductor",r.id,"Aprobada",r.pat+" · "+nom(r.cond)); asig={pat:null,cond:null,rel:null}; tostada(`${r.id} confirmada con ${r.pat}.`); abrirSalida(r.id); };
+  const ok=$("#a-ok"); if(ok) ok.onclick=()=>{ r.pat=asig.pat; r.tarjeta=asig.tarj; if(r.reqCond){r.cond=asig.cond; r.relevo=asig.rel||null} r.est="CONFIRMADA"; const o=$("#a-obs").value.trim(); if(o) r.obsLog="Logística: "+o;
+    r.hist.push({t:iso(HOY),quien:ROLES[rol].quien,acc:"Asignada"}); audit("Asigna vehículo y conductor",r.id,"Aprobada",r.pat+" · "+nom(r.cond)); asig={pat:null,cond:null,rel:null,tarj:null}; tostada(`${r.id} confirmada con ${r.pat}.`); abrirSalida(r.id); };
   const sd=$("#a-sd"); if(sd) sd.onclick=()=>{ r.est="SIN_DISP"; r.obsLog="Logística: sin vehículos del pool que cumplan requisitos."; audit("Marca sin disponibilidad",r.id,"Aprobada","Sin disponibilidad"); tostada(`${r.id}: se avisó al solicitante.`); abrirSalida(r.id); };
   const so=$("#s-ok"); if(so) so.onclick=()=>{ const v=VX[r.pat], odo=+$("#s-odo").value;
     if(odo<v.km){$("#s-odo").setAttribute("aria-invalid","true");tostada(`El odómetro no puede ser menor a ${km(v.km)} km.`);return}
