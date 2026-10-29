@@ -633,6 +633,8 @@ const R = (o)=>({pas:[],destinos:[],req:{t4:false,carga:false},reqCond:false,con
 let RES = [
  R({id:"OC-2026-000372",est:"FINALIZADA",fSol:"2026-09-08T10:20",sol:"p7",jefe:"p8",salida:"2026-09-14T07:30",regreso:"2026-09-15T19:00",destinos:[{reg:"Maule",com:"Constitución",lug:"Predio sector Putú"}],cometido:"Fiscalización de plan de manejo en plantación forestal.",km:760,cc:"48046",cond:"p7",pas:["p12"],pat:"FHWT-20",req:{t4:true},bit:{sal:"2026-09-14T07:42",odoS:244980,combS:"Lleno",docs:true,reg:"2026-09-15T18:51",odoR:245746,combR:"1/4",nov:"Sin novedades"}}),
  R({id:"OC-2026-000388",est:"FINALIZADA",fSol:"2026-09-21T15:05",sol:"p6",jefe:"p5",salida:"2026-09-28T08:00",regreso:"2026-09-30T18:30",destinos:[{reg:"Biobío",com:"Concepción",lug:"Dirección Regional del Biobío"},{reg:"Biobío",com:"Florida",lug:"Sede comunitaria sector Copiulemu"}],cometido:"Talleres de prevención social de incendios forestales con comunidades de interfaz.",km:1180,cc:"48010",reqCond:true,cond:"c2",relevo:"c3",pas:["p13","p11"],pat:"SFHW-60",bit:{sal:"2026-09-28T08:05",odoS:60790,combS:"Lleno",docs:true,reg:"2026-09-30T18:20",odoR:61972,combR:"1/2",nov:"Sin novedades"}}),
+ R({id:"OC-2026-000351",est:"FINALIZADA",fSol:"2026-08-10T11:05",sol:"p4",jefe:"p3",salida:"2026-08-18T08:00",regreso:"2026-08-18T19:00",destinos:[{reg:"O'Higgins",com:"Rancagua",lug:"Oficina Regional O'Higgins"}],cometido:"Revisión de bodega regional y toma de inventario de materiales de oficina.",km:180,cc:"P01-601",reqCond:true,cond:"c2",pas:["p15"],pat:"SZCK-83",bit:{sal:"2026-08-18T08:05",odoS:51210,combS:"Lleno",docs:true,reg:"2026-08-18T18:40",odoR:51398,combR:"1/2",nov:"Sin novedades"}}),
+ R({id:"OC-2026-000366",est:"FINALIZADA",fSol:"2026-09-01T10:20",sol:"p4",jefe:"p3",salida:"2026-09-08T07:30",regreso:"2026-09-09T19:00",destinos:[{reg:"Maule",com:"Talca",lug:"Oficina Regional Maule"}],cometido:"Apoyo al proceso de compra de insumos para la temporada de incendios.",km:540,cc:"P01-601",reqCond:true,cond:"c1",pas:["p16"],pat:"SZWZ-31",bit:{sal:"2026-09-08T07:40",odoS:59870,combS:"Lleno",docs:true,reg:"2026-09-09T18:30",odoR:60418,combR:"1/4",nov:"Sin novedades"}}),
  R({id:"OC-2026-000395",est:"FINALIZADA",fSol:"2026-10-01T09:40",sol:"p4",jefe:"p3",salida:"2026-10-06T08:00",regreso:"2026-10-07T19:30",destinos:[{reg:"Valparaíso",com:"Viña del Mar",lug:"Oficina Provincial Marga Marga"}],cometido:"Capacitación en uso de convenio marco a equipos provinciales de abastecimiento.",km:290,cc:"P01-601",reqCond:true,cond:"c1",pas:["p15","p16"],pat:"SHPY-15",bit:{sal:"2026-10-06T08:12",odoS:90421,combS:"Lleno",docs:true,reg:"2026-10-07T19:02",odoR:90713,combR:"3/4",nov:"Sin novedades"}}),
  R({id:"OC-2026-000398",est:"FINALIZADA",fSol:"2026-10-07T12:00",sol:"p6",jefe:"p5",salida:"2026-10-13T07:00",regreso:"2026-10-15T20:00",destinos:[{reg:"La Araucanía",com:"Lonquimay",lug:"Sector Malalcahuello"}],cometido:"Supervisión de faenas de silvicultura preventiva en cortafuegos comunales.",km:1340,cc:"48011",reqCond:true,cond:"c3",pas:["p11"],pat:"SZCK-83",req:{t4:true},bit:{sal:"2026-10-13T07:08",odoS:51062,combS:"Lleno",docs:true,reg:"2026-10-15T19:47",odoR:52410,combR:"1/2",nov:"Sin novedades"}}),
  R({id:"OC-2026-000401",est:"FINALIZADA",fSol:"2026-10-14T09:12",sol:"p6",jefe:"p5",salida:"2026-10-19T08:00",regreso:"2026-10-20T19:00",destinos:[{reg:"Ñuble",com:"Quillón",lug:"Oficina Provincial Diguillín"}],cometido:"Reunión técnica de análisis de causalidad con equipo provincial, previo a la temporada 2026-2027.",km:860,cc:"48006",cond:"p6",pas:["p11"],pat:"SZWY-98",bit:{sal:"2026-10-19T08:10",odoS:79952,combS:"Lleno",docs:true,reg:"2026-10-20T18:42",odoR:80812,combR:"1/2",nov:"Sin novedades"}}),
@@ -764,12 +766,44 @@ function tarjetaSol(r,{boton,seleccion}={}){
 }
 
 /* ======================= VISTAS: SOLICITANTE ======================= */
+/* ---------- Excel de salidas realizadas (solicitante y jefatura) ---------- */
+const EXP={modo:"mes",mes:10,anio:2026};
+function salidasRealizadas(tipo){
+  const yo=ROLES[rol].quien;
+  return RES.filter(r=>r.est==="FINALIZADA"&&r.bit?.sal&&(tipo==="mis"?r.sol===yo:r.jefe===yo)).filter(r=>{const f=F(r.bit.sal); return f.getFullYear()===EXP.anio&&(EXP.modo==="anio"||f.getMonth()+1===EXP.mes);}).sort((a,b)=>a.bit.sal.localeCompare(b.bit.sal));
+}
+function exportHTML(tipo){
+  const L=salidasRealizadas(tipo), per=EXP.modo==="mes"?`${MESES[EXP.mes-1]} de ${EXP.anio}`:`año ${EXP.anio}`;
+  return `<section class="panel" style="margin-bottom:var(--e-5)"><header><div><h2>${tipo==="mis"?"Mis salidas realizadas":"Salidas realizadas por mi equipo"}</h2><span class="sub">Salidas finalizadas · ${per} · ${L.length} ${L.length===1?"salida":"salidas"}</span></div>
+   <div class="gantt-ctl"><div class="seg" role="group" aria-label="Periodo"><button type="button" data-em="mes" aria-pressed="${EXP.modo==="mes"}">Mensual</button><button type="button" data-em="anio" aria-pressed="${EXP.modo==="anio"}">Anual</button></div>
+   ${EXP.modo==="mes"?`<label class="sr" for="e-mes">Mes</label><select id="e-mes" style="width:auto">${MESES.map((m,i)=>`<option value="${i+1}" ${i+1===EXP.mes?"selected":""}>${m[0].toUpperCase()+m.slice(1)}</option>`).join("")}</select>`:""}
+   <label class="sr" for="e-anio">Año</label><select id="e-anio" style="width:auto"><option ${EXP.anio===2026?"selected":""}>2026</option><option ${EXP.anio===2025?"selected":""}>2025</option></select>
+   <button class="btn chico" type="button" id="btn-exp" ${L.length?"":"disabled"}>Descargar Excel</button></div></header></section>`;
+}
+function postExport(tipo){
+  const V=$("#vista");
+  V.querySelectorAll("[data-em]").forEach(b=>b.onclick=()=>{EXP.modo=b.dataset.em;render()});
+  const m=$("#e-mes"); if(m) m.onchange=e=>{EXP.mes=+e.target.value;render()};
+  const a=$("#e-anio"); if(a) a.onchange=e=>{EXP.anio=+e.target.value;render()};
+  const bx=$("#btn-exp"); if(bx) bx.onclick=()=>{
+    if(typeof XLSX==="undefined"){tostada("No se pudo cargar el generador de Excel. Revisa tu conexión.");return}
+    const L=salidasRealizadas(tipo), p=PX[ROLES[rol].quien], per=EXP.modo==="mes"?MESES[EXP.mes-1]+" de "+EXP.anio:"año "+EXP.anio;
+    const cab_=[...(tipo==="equipo"?["Funcionario","RUT"]:[]),"ID salida","Salida real","Regreso real","Días","Destino","Cometido","Vehículo","Conductor","Personas","Km recorridos","Folio de imputación"];
+    const filas=L.map(r=>{const d=Math.max(1,Math.ceil((F(r.bit.reg||r.regreso)-F(r.bit.sal))/DIA)); return [...(tipo==="equipo"?[nom(r.sol),PX[r.sol]?.rut||""]:[]),r.id,fFH(r.bit.sal),r.bit.reg?fFH(r.bit.reg):"",d,r.destinos.map(x=>`${x.lug||x.otro||""}, ${x.com} (${x.reg})`).join(" · "),r.cometido,r.pat||"",nom(r.cond),pasajeros(r),r.bit.odoR?r.bit.odoR-r.bit.odoS:"",r.cc||""];});
+    const aoa=[[tipo==="mis"?"Mis salidas realizadas · Sistema Nacional de Gestión de Flota · CONAF":"Salidas realizadas por mi equipo · Sistema Nacional de Gestión de Flota · CONAF"],[`Periodo: ${per}`,"",`${tipo==="mis"?"Funcionario":"Jefatura"}: ${p.nom}`,"","Emitido: "+fFH(HOY)],[],cab_,...filas];
+    const ws=XLSX.utils.aoa_to_sheet(aoa); ws["!cols"]=(tipo==="equipo"?[28,13]:[]).concat([16,17,17,6,48,50,10,26,9,13,12]).map(w=>({wch:w}));
+    const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,"Salidas");
+    const nombre=`${tipo==="mis"?"mis_salidas":"salidas_equipo"}_${EXP.anio}${EXP.modo==="mes"?"_"+String(EXP.mes).padStart(2,"0"):""}.xlsx`;
+    try{ XLSX.writeFile(wb,nombre); audit("Descarga Excel de salidas realizadas",nombre,"—",filas.length+" filas"); tostada(`Excel generado: ${nombre} (${filas.length} ${filas.length===1?"salida":"salidas"}).`); }catch(e){ tostada("La descarga fue bloqueada en esta vista. Ábrela desde GitHub Pages."); }
+  };
+}
 function vMis(){
   const yo=ROLES[rol].quien, mias=RES.filter(r=>r.sol===yo).sort((a,b)=>b.fSol.localeCompare(a.fSol));
-  return cab("Mis salidas","Estado en tiempo real de tus reservas. Cuando el encargado asigna el vehículo, puedes ver y compartir la orden de salida.","ERS §4.3 · Perfil 4")+
+  return cab("Mis salidas","Estado en tiempo real de tus reservas. Cuando el encargado asigna el vehículo, puedes ver y compartir la orden de salida.","ERS §4.3 · Perfil 4")+exportHTML("mis")+
   `<div class="lista">${mias.length?mias.map(r=>tarjetaSol(r,{boton:`<div class="acciones">${["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)?`<button class="btn sec chico" type="button" data-orden="${r.id}">Ver orden de salida</button>`:""}${["PEND_JEFE","APROBADA","OBSERVADA","CONFIRMADA"].includes(r.est)?`<button class="btn peligro chico" type="button" data-anular="${r.id}">Anular solicitud</button>`:""}</div>`})).join(""):vacio("Aún no tienes solicitudes","Ingresa tu primera solicitud de vehículo para una salida a terreno.")}</div>`;
 }
-post.mis = ()=>{};
+post.mis = ()=>postExport("mis");
+post.equipo = ()=>postExport("equipo");
 function vacio(t,d){return `<div class="vacio"><h3>${t}</h3><p>${d}</p></div>`}
 
 let borrador = null;
@@ -1568,7 +1602,7 @@ post.reportes = ()=>{
 /* ======================= JEFATURA: SALIDAS DEL EQUIPO ======================= */
 function vEquipo(){
   const yo=ROLES[rol].quien, lista=RES.filter(r=>r.jefe===yo).sort((a,b)=>b.salida.localeCompare(a.salida));
-  return cab("Salidas de mi equipo","Historial de las salidas que autorizaste.","Perfil 3")+`<section class="panel"><div class="tabla-env">${lista.length?`<table><thead><tr><th>ID</th><th>Estado</th><th>Funcionario</th><th>Salida</th><th>Destino</th><th>Folio</th></tr></thead><tbody>${lista.map(r=>`<tr class="clic" data-sal="${r.id}"><td class="mono">${r.id}</td><td>${chipR(r.est)}</td><td>${esc(nom(r.sol))}</td><td class="num">${fCorta(r.salida)}</td><td>${esc(r.destinos.map(d=>d.com).join(", "))}</td><td class="mono">${r.cc||"Por definir"}</td></tr>`).join("")}</tbody></table>`:vacio("Sin salidas","")}</div></section>`;
+  return cab("Salidas de mi equipo","Historial de las salidas que autorizaste.","Perfil 3")+exportHTML("equipo")+`<section class="panel"><div class="tabla-env">${lista.length?`<table><thead><tr><th>ID</th><th>Estado</th><th>Funcionario</th><th>Salida</th><th>Destino</th><th>Folio</th></tr></thead><tbody>${lista.map(r=>`<tr class="clic" data-sal="${r.id}"><td class="mono">${r.id}</td><td>${chipR(r.est)}</td><td>${esc(nom(r.sol))}</td><td class="num">${fCorta(r.salida)}</td><td>${esc(r.destinos.map(d=>d.com).join(", "))}</td><td class="mono">${r.cc||"Por definir"}</td></tr>`).join("")}</tbody></table>`:vacio("Sin salidas","")}</div></section>`;
 }
 
 /* ======================= CONDUCTOR ======================= */

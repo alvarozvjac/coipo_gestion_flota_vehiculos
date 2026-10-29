@@ -22,8 +22,8 @@ Desde la versión 0.4 la maqueta sigue la línea gráfica de www.conaf.cl (letra
 
 | Perfil | Menú | Qué se puede probar |
 |---|---|---|
-| Funcionario solicitante | Inicio (tarjetas: Solicitar un vehículo · Mis salidas) | Solicitud con revisión automática (fechas, destinos, capacidad, conductor habilitado de la región) y seguimiento |
-| Jefatura directa | Inicio (tarjetas: Aprobar solicitudes · Salidas de mi equipo) | Definir la imputación presupuestaria (folio) y aprobar, observar o rechazar con comentario; historial del equipo |
+| Funcionario solicitante | Inicio (tarjetas: Solicitar un vehículo · Mis salidas) | Solicitud con revisión automática (fechas, destinos, kilómetros, capacidad, conductor habilitado de la región), seguimiento y **Excel mensual o anual de sus salidas realizadas** |
+| Jefatura directa | Inicio (tarjetas: Aprobar solicitudes · Salidas de mi equipo) | Definir la imputación presupuestaria (folio) y aprobar, observar o rechazar con comentario; historial del equipo y **Excel mensual o anual de las salidas realizadas por el equipo** |
 | Encargado de vehículos | Inicio (cada módulo se abre desde su tarjeta; las pantallas tienen «Volver al inicio») | Ver detalle abajo |
 | Administrador nacional | Inicio, con las tarjetas del encargado más Configuración | **Agregar vehículos** (Flota) y **agregar conductores** (Conductores), sólo en este perfil; catálogos, usuarios y accesos, cierre mensual, calidad de datos, traspasos y auditoría |
 
