@@ -286,8 +286,6 @@ dl.ficha dd{margin:0;min-width:0}
 .orden table td:first-child{color:#555;width:30%;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
 .orden .pie{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--e-4);margin-top:var(--e-6);text-align:center;font-size:12px;color:#333}
 .orden .pie div{border-top:1px solid #333;padding-top:4px}
-.orden .qr{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:#333}
-.orden .qr canvas,.orden .qr img{width:112px;height:112px}
 .orden .sello{display:inline-block;border:2px solid #1d4f8c;color:#1d4f8c;padding:2px 8px;font-weight:700;font-size:11px;letter-spacing:.08em;transform:rotate(-2deg)}
 
 /* Barras de reporte */
@@ -525,7 +523,6 @@ body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{d
 <symbol id="i-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
 <symbol id="i-escudo" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol>
 <symbol id="i-check" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></symbol>
-<symbol id="i-qr" viewBox="0 0 24 24"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3M21 21v.01M12 7v3a2 2 0 0 1-2 2H7M3 12h.01M12 3h.01M12 16v.01M16 12h1M21 12v.01M12 21v-1"/></symbol>
 <symbol id="i-salir" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></symbol>
 <symbol id="i-reloj" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
 </defs></svg>
@@ -535,7 +532,6 @@ body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{d
 <div id="capa"></div>
 <div id="capa2"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 "use strict";
@@ -774,7 +770,7 @@ function tarjetaSol(r,{boton,seleccion}={}){
 /* ======================= VISTAS: SOLICITANTE ======================= */
 function vMis(){
   const yo=ROLES[rol].quien, mias=RES.filter(r=>r.sol===yo).sort((a,b)=>b.fSol.localeCompare(a.fSol));
-  return cab("Mis salidas","Estado en tiempo real de tus reservas. Cuando el encargado asigna el vehículo, puedes ver y compartir la orden de salida con código QR.","ERS §4.3 · Perfil 4")+
+  return cab("Mis salidas","Estado en tiempo real de tus reservas. Cuando el encargado asigna el vehículo, puedes ver y compartir la orden de salida.","ERS §4.3 · Perfil 4")+
   `<div class="lista">${mias.length?mias.map(r=>tarjetaSol(r,{boton:`<div class="acciones">${["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)?`<button class="btn sec chico" type="button" data-orden="${r.id}">Ver orden de salida</button>`:""}${["PEND_JEFE","APROBADA","OBSERVADA","CONFIRMADA"].includes(r.est)?`<button class="btn peligro chico" type="button" data-anular="${r.id}">Anular solicitud</button>`:""}</div>`})).join(""):vacio("Aún no tienes solicitudes","Ingresa tu primera solicitud de vehículo para una salida a terreno.")}</div>`;
 }
 post.mis = ()=>{};
@@ -1034,7 +1030,7 @@ function abrirOrden(id){
   const r=RES.find(x=>x.id===id), v=VX[r.pat], cc=CCX[r.cc];
   const inh=inhabiles(r.salida,r.regreso);
   $("#capa2").innerHTML=`<div class="velo" id="velo2"><div class="cajon" role="dialog" aria-modal="true" aria-labelledby="t-orden"><header><h2 id="t-orden" style="font-size:var(--f-l)">Orden de salida · <span class="mono">${r.id}</span></h2><button class="btn sec chico" type="button" id="cerrar2">Cerrar</button></header><div class="cuerpo">
-  <div class="orden"><div class="enc"><div><b>Corporación Nacional Forestal</b><br>Gerencia de Finanzas y Administración · Unidad de Vehículos<h3>Orden de salida de vehículo fiscal</h3><span class="mono">N° ${r.id}</span> · emitida ${fFH(HOY)}</div><div class="qr"><div id="qr"></div><span>Verificación en línea<br>Carabineros · auditoría</span></div></div>
+  <div class="orden"><div class="enc"><div><b>Corporación Nacional Forestal</b><br>Gerencia de Finanzas y Administración · Unidad de Vehículos<h3>Orden de salida de vehículo fiscal</h3><span class="mono">N° ${r.id}</span> · emitida ${fFH(HOY)}</div></div>
   <table><tbody>
    <tr><td>Solicitado por</td><td>${esc(nom(r.sol))} · ${esc(PX[r.sol].ger)}</td></tr>
    <tr><td>Autorizado por</td><td>${esc(nom(r.jefe))} · ${esc(PX[r.jefe].cargo)} <span class="sello">FIRMA ELECTRÓNICA</span></td></tr>
@@ -1052,8 +1048,7 @@ function abrirOrden(id){
   </tbody></table>
   <p style="margin-top:12px;font-size:12px">1. En caso de colisión o choque: dejar constancia en Carabineros indicando la póliza ${v.poliza}, vigente hasta ${fF(v.polizaVence)}.<br>2. Asistencia en viaje: 22 826 1101 · 22 797 6100, indicando patente ${esc(r.pat)} y RUT 61.313.000-4 CONAF.<br>3. Devolver con el estanque al menos en 1/4.</p>
   <div class="pie"><div>Firma conductor</div><div>V°B° Unidad de Vehículos</div><div>Recepción conforme</div></div></div>
-  <p class="tenue peq">Formato basado en el comprobante «Salida Vehículo» de GESAD, con firma electrónica de la jefatura y código QR (ERS §5.2). La póliza indicada es ficticia.</p></div></div></div>`;
-  try{ new QRCode(document.getElementById("qr"),{text:"https://flota.conaf.cl/verificar/"+r.id,width:112,height:112,colorDark:"#000000",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M}); }catch(e){ document.getElementById("qr").textContent="QR no disponible"; }
+  <p class="tenue peq">Formato basado en el comprobante «Salida Vehículo» de GESAD, con firma electrónica de la jefatura. La póliza indicada es ficticia.</p></div></div></div>`;
   const cerrar=()=>{$("#capa2").innerHTML="";document.removeEventListener("keydown",esc_)}; const esc_=e=>{if(e.key==="Escape")cerrar()};
   $("#cerrar2").onclick=cerrar; $("#velo2").onclick=e=>{if(e.target.id==="velo2")cerrar()}; document.addEventListener("keydown",esc_); $("#cerrar2").focus();
 }
@@ -1309,12 +1304,12 @@ function vInicio(){
     const mias=RES.filter(r=>r.sol===yo), curso=mias.filter(r=>["PEND_JEFE","OBSERVADA","APROBADA","CONFIRMADA","EN_TERRENO"].includes(r.est)), obs=mias.filter(r=>r.est==="OBSERVADA").length;
     const prox=mias.filter(r=>r.est==="CONFIRMADA").sort((a,b)=>a.salida.localeCompare(b.salida))[0];
     ACCESOS=[{v:"nueva",ico:"plus",t:"Solicitar un vehículo",d:"Indica destino, fechas, cometido y acompañantes. Tu jefatura recibirá la solicitud para aprobarla.",cta:"Nueva solicitud",principal:true},
-             {v:"mis",ico:"lista",t:"Mis salidas",d:"Revisa en qué etapa está cada solicitud y abre la orden de salida con código QR.",cta:"Ver mis salidas",n:curso.length,nl:"en curso"}];
+             {v:"mis",ico:"lista",t:"Mis salidas",d:"Revisa en qué etapa está cada solicitud y abre la orden de salida.",cta:"Ver mis salidas",n:curso.length,nl:"en curso"}];
     if(obs) ACCESOS.push({v:"mis",ico:"alerta",t:"Solicitudes observadas",d:"Tu jefatura pidió corregir algo antes de aprobar.",cta:"Corregir",n:obs,nl:"observadas",aviso:true});
     return heroHTML("Desde aquí pides un vehículo para tus salidas a terreno y sigues cada solicitud hasta recibir la orden de salida.")+
       `<h2 class="sec-tit">${ico("flecha")}¿Qué necesitas hacer?</h2>`+accesosHTML(ACCESOS)+
-      (prox?`<h2 class="sec-tit">${ico("car")}Tu próxima salida</h2><section class="panel" style="margin-bottom:var(--e-6)"><div class="cuerpo"><div class="tarea">${prox.pat?placa(prox.pat):""}<div class="q">${esc(prox.destinos.map(d=>d.com).join(" · "))} · ${fCorta(prox.salida)}<small>${prox.id} · conductor ${esc(nom(prox.cond))}</small></div><button class="btn" type="button" data-orden="${prox.id}">${ico("qr")}Ver orden de salida</button></div></div></section>`:"")+
-      `<h2 class="sec-tit">${ico("ruta")}Cómo funciona</h2><div class="pasos"><div class="paso"><b>1</b><span><strong>Solicitas</strong>Destino, fechas, cometido y acompañantes.</span></div><div class="paso"><b>2</b><span><strong>Tu jefatura aprueba</strong>Y define con qué presupuesto se imputa el gasto.</span></div><div class="paso"><b>3</b><span><strong>Se asigna el vehículo</strong>El encargado elige vehículo y conductor habilitado.</span></div><div class="paso"><b>4</b><span><strong>Recibes la orden</strong>Con código QR para presentar al retirar el vehículo.</span></div></div>`;
+      (prox?`<h2 class="sec-tit">${ico("car")}Tu próxima salida</h2><section class="panel" style="margin-bottom:var(--e-6)"><div class="cuerpo"><div class="tarea">${prox.pat?placa(prox.pat):""}<div class="q">${esc(prox.destinos.map(d=>d.com).join(" · "))} · ${fCorta(prox.salida)}<small>${prox.id} · conductor ${esc(nom(prox.cond))}</small></div><button class="btn" type="button" data-orden="${prox.id}">Ver orden de salida</button></div></div></section>`:"")+
+      `<h2 class="sec-tit">${ico("ruta")}Cómo funciona</h2><div class="pasos"><div class="paso"><b>1</b><span><strong>Solicitas</strong>Destino, fechas, cometido y acompañantes.</span></div><div class="paso"><b>2</b><span><strong>Tu jefatura aprueba</strong>Y define con qué presupuesto se imputa el gasto.</span></div><div class="paso"><b>3</b><span><strong>Se asigna el vehículo</strong>El encargado elige vehículo y conductor habilitado.</span></div><div class="paso"><b>4</b><span><strong>Recibes la orden</strong>La orden de salida para presentar al retirar el vehículo.</span></div></div>`;
   }
   if(rol==="jefatura"){
     const pend=RES.filter(r=>r.est==="PEND_JEFE"&&r.jefe===yo), eq=RES.filter(r=>r.jefe===yo);
