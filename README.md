@@ -2,7 +2,7 @@
 
 Maqueta de validación del sistema que reemplazará a GESAD para administrar el pool de
 vehículos de CONAF: solicitud y autorización de salidas a terreno, asignación de patente
-y conductor, control de caución y licencia (Decreto Ley N° 799), mantenciones,
+y conductor, control de caución y licencia, mantenciones,
 vencimientos legales y combustible. Requerimiento de la Sección Servicios Generales
 (GEFA), elaborado por la Unidad de Información y Análisis (UIA).
 
@@ -22,7 +22,7 @@ Desde la versión 0.4 la maqueta sigue la línea gráfica de www.conaf.cl (letra
 
 | Perfil | Menú | Qué se puede probar |
 |---|---|---|
-| Funcionario solicitante | Inicio · Nueva solicitud · Mis salidas | Solicitud con revisión automática (días inhábiles DL 799, capacidad, conductor habilitado de la región) y seguimiento |
+| Funcionario solicitante | Inicio · Nueva solicitud · Mis salidas | Solicitud con revisión automática (fechas, destinos, capacidad, conductor habilitado de la región) y seguimiento |
 | Jefatura directa | Inicio · Por aprobar · Salidas de mi equipo | Definir la imputación presupuestaria (folio) y aprobar, observar o rechazar con comentario; historial del equipo |
 | Encargado de vehículos | Inicio · Salidas · Flota · Conductores · Combustible y gastos · Reportes | Ver detalle abajo |
 | Administrador nacional | Lo mismo que el encargado, más Configuración | Catálogos, usuarios y accesos, cierre mensual, calidad de datos, traspasos y auditoría |
