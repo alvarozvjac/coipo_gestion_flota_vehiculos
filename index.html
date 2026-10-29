@@ -609,7 +609,7 @@ function tarjetaSol(r,{boton,seleccion}={}){
   return `<article class="sol ${seleccion!==undefined?"seleccionable":""}" ${seleccion!==undefined?`role="button" tabindex="0" data-sel="${r.id}" aria-pressed="${seleccion}"`:""}>
    <div class="fila"><span class="id">${r.id}</span>${chipR(r.est)}</div>
    <h3>${esc(r.cometido)}</h3>
-   <div class="meta"><span><b>${fCorta(r.salida)}</b> → <b>${fCorta(r.regreso)}</b></span><span>${esc(r.destinos.map(d=>d.com+" ("+d.reg+")").join(" · "))}</span><span><b class="num">${km(r.km)}</b> km aprox.</span><span><b>${pasajeros(r)}</b> personas</span>${r.pat?`<span>${placa(r.pat)}</span>`:""}</div>
+   <div class="meta"><span><b>${fCorta(r.salida)}</b> → <b>${fCorta(r.regreso)}</b></span><span>${esc(r.destinos.map(d=>d.com+" ("+d.reg+")").join(" · "))}</span>${r.km?`<span><b class="num">${km(r.km)}</b> km aprox.</span>`:""}<span><b>${pasajeros(r)}</b> personas</span>${r.pat?`<span>${placa(r.pat)}</span>`:""}</div>
    <div class="meta"><span>Solicita: <b>${esc(nom(r.sol))}</b></span><span>Imputación: ${r.cc?`<b class="mono">${esc(r.cc)}</b> ${cc?esc(cc.prog):""}`:"<b>por definir (jefatura)</b>"}</span>${r.dl799?.req?`<span>${chip("DL 799 · día inhábil","c-pend","!")}</span>`:""}</div>
    ${flujoHTML(r.est)}
    ${r.obsLog?`<p class="nota">${esc(r.obsLog)}</p>`:""}
@@ -647,10 +647,9 @@ function vNueva(){
      <div class="campo ancho"><span class="lbl">Duración calculada</span><span id="f-dur" class="num"></span></div>
    </div></fieldset>
    <fieldset><legend><span class="seccion-num">3</span>Itinerario y cometido</legend><div class="campos">
-     <div class="campo ancho"><label for="f-com">Cometido / objetivo del viaje</label><textarea id="f-com">${esc(b.cometido)}</textarea></div>
      <div class="campo ancho"><span class="lbl">Destinos</span><div id="f-dest" class="grid" style="gap:var(--e-2)"></div><div><button class="btn sec chico" type="button" id="btn-dest">Agregar destino o parada</button></div></div>
-     <div class="campo"><label for="f-km">Kilómetros aproximados (ida, interno y regreso)</label><input type="number" id="f-km" min="0" step="10" value="${b.km}"></div>
-     <div class="campo"><label for="f-tipo">Tipo de vehículo requerido</label><select id="f-tipo">${["Indistinto","Camioneta doble cabina","SUV / Station wagon","Furgón","Camión","Automóvil sedán"].map(t=>`<option ${t===b.tipo?"selected":""}>${t}</option>`).join("")}</select></div>
+     <div class="campo ancho"><label for="f-com">Cometido / objetivo del viaje</label><textarea id="f-com">${esc(b.cometido)}</textarea></div>
+     <div class="campo ancho"><label for="f-tipo">Tipo de vehículo requerido</label><select id="f-tipo">${["Indistinto","Camioneta doble cabina","SUV / Station wagon","Furgón","Camión","Automóvil sedán"].map(t=>`<option ${t===b.tipo?"selected":""}>${t}</option>`).join("")}</select></div>
      <div class="campo ancho"><div class="opciones"><label><input type="checkbox" id="f-4x4" ${b.t4?"checked":""}> Requiere 4x4 (caminos forestales o rurales)</label><label><input type="checkbox" id="f-carga" ${b.carga?"checked":""}> Requiere espacio de carga</label></div></div>
    </div></fieldset>
    <fieldset><legend><span class="seccion-num">4</span>Conductores y pasajeros</legend><div class="campos">
@@ -671,7 +670,7 @@ post.nueva = ()=>{
   const pintarDest=()=>{$("#f-dest").innerHTML=b.destinos.map((d,i)=>`<div class="destino"><div class="campo"><label for="d-reg-${i}">Región</label><select id="d-reg-${i}" data-d="${i}" data-k="reg">${REGIONES.map(x=>`<option ${x===d.reg?"selected":""}>${x}</option>`).join("")}</select></div><div class="campo"><label for="d-com-${i}">Comuna</label><input type="text" id="d-com-${i}" data-d="${i}" data-k="com" value="${esc(d.com)}"></div><div class="campo"><label for="d-lug-${i}">Localidad o unidad</label><input type="text" id="d-lug-${i}" data-d="${i}" data-k="lug" value="${esc(d.lug)}"></div>${b.destinos.length>1?`<button class="btn peligro chico" type="button" data-quitar="${i}" aria-label="Quitar destino ${i+1}">Quitar</button>`:"<span></span>"}</div>`).join("")};
   const pintarCC=()=>{};
   const pintarPas=()=>{const q=($("#f-pas-buscar").value||"").toLowerCase(); $("#f-pas").innerHTML=PERS.filter(p=>p.id!==ROLES[rol].quien&&(!q||p.nom.toLowerCase().includes(q))).map(p=>`<label><input type="checkbox" value="${p.id}" ${b.pas.includes(p.id)?"checked":""}> ${esc(p.nom)} <span class="tenue peq">· ${esc(p.cargo)}</span></label>`).join("")};
-  const leer=()=>{b.jefe=$("#f-jefe").value;b.salida=$("#f-sal").value;b.regreso=$("#f-reg").value;b.cometido=$("#f-com").value;b.km=+$("#f-km").value||0;b.tipo=$("#f-tipo").value;b.t4=$("#f-4x4").checked;b.carga=$("#f-carga").checked;b.reqCond=document.querySelector('input[name="f-rc"]:checked').value==="si";b.cond=b.reqCond?"":$("#f-cond").value;b.relevo=$("#f-rel").value;b.externos=+$("#f-ext").value||0;b.extJust=$("#f-extj").value;};
+  const leer=()=>{b.jefe=$("#f-jefe").value;b.salida=$("#f-sal").value;b.regreso=$("#f-reg").value;b.cometido=$("#f-com").value;b.tipo=$("#f-tipo").value;b.t4=$("#f-4x4").checked;b.carga=$("#f-carga").checked;b.reqCond=document.querySelector('input[name="f-rc"]:checked').value==="si";b.cond=b.reqCond?"":$("#f-cond").value;b.relevo=$("#f-rel").value;b.externos=+$("#f-ext").value||0;b.extJust=$("#f-extj").value;};
   const revisar=()=>{
     leer(); $("#w-cond").hidden=b.reqCond;
     const r={...b,id:"tmp",req:{t4:b.t4,carga:b.carga}}; const tot=pasajeros(r);
@@ -683,7 +682,6 @@ post.nueva = ()=>{
     const inh=inhabiles(b.salida,b.regreso);
     inh.length? reg("av","Día inhábil · Decreto Ley N° 799",`Abarca ${inh.join(", ")}. Se exigirá la autorización especial de circulación firmada por el Director Ejecutivo o Regional.`) : reg("ok","Sin días inhábiles","No requiere autorización especial (DL 799).");
     const dias=Math.max(1,Math.ceil(dur/24)); const kmd=b.km/dias;
-    if(kmd>400 && !b.relevo) reg("av","Conductor de relevo sugerido",`${km(kmd)} km por día supera el umbral de 400 km diarios.`); else if(kmd>400) reg("ok","Relevo registrado",`${km(kmd)} km por día con conductor de relevo.`);
     const maxCap=Math.max(...VEH.filter(v=>v.estado==="DISP").map(v=>v.cap));
     tot>maxCap? reg("bl","Capacidad excedida",`${tot} personas superan la capacidad máxima del pool (${maxCap}).`) : reg("ok","Capacidad",`${tot} personas. Hay vehículos del pool con capacidad suficiente.`);
     if(!b.reqCond){ if(!b.cond) reg("bl","Falta conductor","Selecciona un conductor con caución vigente o solicita uno del pool."); else { const a=condApto(b.cond,r); a.ok?reg("ok","Conductor habilitado",`${nom(b.cond)}: caución y licencia vigentes al regreso.`):reg("bl","Conductor no habilitado",a.motivos.join(" · ")); } }
@@ -726,7 +724,7 @@ function decisionHTML(r){
   return `<header><h2>Decisión · <span class="mono">${r.id}</span></h2></header><div class="cuerpo grid">
   <dl class="ficha"><dt>Solicitante</dt><dd>${esc(nom(r.sol))}<br><span class="tenue peq">${esc(PX[r.sol].cargo)}</span></dd>
   <dt>Cometido</dt><dd>${esc(r.cometido)}</dd><dt>Destinos</dt><dd>${r.destinos.map(d=>esc(`${d.lug}, ${d.com} (${d.reg})`)).join("<br>")}</dd>
-  <dt>Periodo</dt><dd class="num">${fFH(r.salida)} → ${fFH(r.regreso)}</dd><dt>Distancia</dt><dd class="num">${km(r.km)} km aprox.</dd>
+  <dt>Periodo</dt><dd class="num">${fFH(r.salida)} → ${fFH(r.regreso)}</dd>${r.km?`<dt>Distancia</dt><dd class="num">${km(r.km)} km aprox.</dd>`:""}
   <dt>Ocupantes</dt><dd>${[r.cond?nom(r.cond)+" (conductor)":(r.reqCond?"Conductor del pool (por asignar)":""),...r.pas.map(nom)].filter(Boolean).map(esc).join("<br>")}</dd>
   </dl>
   <div class="campo"><label for="j-cc">Imputación presupuestaria (folio)</label><select id="j-cc"><option value="">— Seleccionar folio —</option>${Object.entries(PROGRAMAS).map(([k,n])=>`<optgroup label="${esc(n)}">${CC.filter(c=>c.prog===k).map(c=>`<option value="${c.folio}" ${c.folio===r.cc?"selected":""}>${c.folio} · ${esc(c.t)}</option>`).join("")}</optgroup>`).join("")}</select><span class="ayuda">Obligatoria para aprobar. Define a qué programa y centro de costo se imputa el gasto del cometido.</span></div>
@@ -852,7 +850,7 @@ function abrirOrden(id){
    <tr><td>Conductor</td><td>${esc(nom(r.cond))} · RUT ${PX[r.cond]?.rut||""} · caución ${CX[r.cond]?.polCau||"—"}${r.relevo?`<br>Relevo: ${esc(nom(r.relevo))}`:""}</td></tr>
    <tr><td>Salida / regreso</td><td>${fFH(r.salida)} → ${fFH(r.regreso)} · ${Math.max(1,Math.ceil((F(r.regreso)-F(r.salida))/DIA))} día(s) · ${pasajeros(r)} personas</td></tr>
    <tr><td>Acompañantes</td><td>${r.pas.map(nom).map(esc).join(", ")||"—"}</td></tr>
-   <tr><td>Km aproximados</td><td>${km(r.km)}</td></tr>
+   ${r.km?`<tr><td>Km aproximados</td><td>${km(r.km)}</td></tr>`:""}
    <tr><td>Lugar de guarda</td><td>${esc(v.unidad)}${r.destinos.length&&r.km>500?" · pernoctación autorizada en destino":""}</td></tr>
    <tr><td>Día inhábil (DL 799)</td><td>${inh.length?esc(inh.join(", "))+" · "+esc(r.dl799?.adj||"Autorización pendiente de adjuntar"):"No aplica"}</td></tr>
    <tr><td>Tarjeta combustible</td><td>${esc(v.tarjeta)}</td></tr>
@@ -1118,7 +1116,7 @@ function abrirSalida(id){
   else if(r.est==="PEND_JEFE") accion = `<p class="nota">Esperando la visación de ${esc(nom(r.jefe))}.</p>`;
   else if(r.obsLog) accion = `<p class="nota">${esc(r.obsLog)}</p>`;
   const cuerpo=`<div class="estado-linea">${chipR(r.est)}${r.dl799?.req?chip("DL 799 · día inhábil","c-pend","!"):""}</div>${flujoHTML(r.est)}
-   <div class="seccion"><h3>Solicitud</h3><dl class="ficha"><dt>Cometido</dt><dd>${esc(r.cometido)}</dd><dt>Destino</dt><dd>${r.destinos.map(d=>esc(`${d.lug}, ${d.com} (${d.reg})`)).join("<br>")}</dd><dt>Periodo</dt><dd class="num">${fFH(r.salida)} → ${fFH(r.regreso)}</dd><dt>Personas</dt><dd>${pasajeros(r)} · ${[r.cond?nom(r.cond)+" (conductor)":r.reqCond?"conductor del pool":"",r.relevo?nom(r.relevo)+" (relevo)":"",...r.pas.map(nom)].filter(Boolean).map(esc).join(", ")}</dd><dt>Requisitos</dt><dd>${[r.req.t4?"4x4":"",r.req.carga?"espacio de carga":"",`${km(r.km)} km aprox.`].filter(Boolean).join(" · ")}</dd><dt>Solicita</dt><dd>${esc(nom(r.sol))} · autoriza ${esc(nom(r.jefe))}</dd><dt>Imputación</dt><dd>${r.cc?`<span class="mono">${esc(r.cc)}</span> ${cc?esc(cc.t):""}`:"Por definir (jefatura)"}</dd>${r.pat?`<dt>Vehículo</dt><dd>${placa(r.pat)} ${esc(VX[r.pat].marca+" "+VX[r.pat].modelo)}</dd>`:""}</dl>
+   <div class="seccion"><h3>Solicitud</h3><dl class="ficha"><dt>Cometido</dt><dd>${esc(r.cometido)}</dd><dt>Destino</dt><dd>${r.destinos.map(d=>esc(`${d.lug}, ${d.com} (${d.reg})`)).join("<br>")}</dd><dt>Periodo</dt><dd class="num">${fFH(r.salida)} → ${fFH(r.regreso)}</dd><dt>Personas</dt><dd>${pasajeros(r)} · ${[r.cond?nom(r.cond)+" (conductor)":r.reqCond?"conductor del pool":"",r.relevo?nom(r.relevo)+" (relevo)":"",...r.pas.map(nom)].filter(Boolean).map(esc).join(", ")}</dd><dt>Requisitos</dt><dd>${[r.req.t4?"4x4":"",r.req.carga?"espacio de carga":"",r.km?`${km(r.km)} km aprox.`:""].filter(Boolean).join(" · ")}</dd><dt>Solicita</dt><dd>${esc(nom(r.sol))} · autoriza ${esc(nom(r.jefe))}</dd><dt>Imputación</dt><dd>${r.cc?`<span class="mono">${esc(r.cc)}</span> ${cc?esc(cc.t):""}`:"Por definir (jefatura)"}</dd>${r.pat?`<dt>Vehículo</dt><dd>${placa(r.pat)} ${esc(VX[r.pat].marca+" "+VX[r.pat].modelo)}</dd>`:""}</dl>
    ${["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)?`<div><button class="btn sec chico" type="button" data-orden="${r.id}">Ver orden de salida</button></div>`:""}</div>
    <div class="seccion" id="accion">${accion}</div>`;
   cajon(`<h2 id="t-cajon" style="font-size:var(--f-xl)" class="mono">${r.id}</h2>`, esc(r.destinos.map(d=>d.com).join(" · ")), cuerpo);
