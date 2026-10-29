@@ -523,6 +523,7 @@ body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{d
 <symbol id="i-check" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></symbol>
 <symbol id="i-salir" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></symbol>
 <symbol id="i-taller" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
+<symbol id="i-medidor" viewBox="0 0 24 24"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></symbol>
 <symbol id="i-reloj" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
 </defs></svg>
 <main id="vista" tabindex="-1"></main>
@@ -1177,6 +1178,7 @@ let OT = [
  {id:"OT-2026-0035",pat:"SFHW-60",fecha:"2026-08-12",km:52011,taller:"Concesionario de la marca",tipo:"Preventiva (cada 10.000 km)",trabajos:["Afinamiento de motor","Rotación de neumáticos"],estado:"Cerrada",factura:{n:"F-55120",monto:289000},obs:""},
 ];
 let nOT=44;
+OT.filter(o=>o.estado==="Cerrada"&&o.tipo!=="Reparación").forEach(o=>{ const v=VX[o.pat]; if(v&&o.km>(v.ultMant||0)){ v.ultMant=o.km; v.proxMant=o.km+10000; } });
 let GASTOS = [
  {id:1,fecha:"2026-08-14",pat:"SFHW-60",doc:"Factura",n:"F-55120",prov:"Concesionario de la marca",tipo:"MR",monto:289000,km:52011,folio:"P01-601",ot:"OT-2026-0035"},
  {id:2,fecha:"2026-09-03",pat:"FXHB-90",doc:"Factura",n:"F-10288",prov:"Planta de revisión técnica",tipo:"RV",monto:32500,km:488900,folio:"P01-601"},
@@ -1196,7 +1198,7 @@ ROLES.encargado.nav=[["hoy","Inicio"],["salidas","Salidas"],["flota","Flota"],["
 delete ROLES.conductor; // el conductor no usa la plataforma: la salida y el regreso los registra el encargado
 ROLES.super.nav=[...ROLES.encargado.nav,["config","Configuración"]];
 const puedeGestionar = ()=>["encargado","super"].includes(rol);
-const VISTAS_INICIO=["novedades","vencimientos"];
+const VISTAS_INICIO=["novedades","vencimientos","mantenciones"];
 /* Encargado y administrador: el menú sólo muestra «Inicio»; el resto se abre desde las tarjetas */
 ROLES.encargado.menu=[["hoy","Inicio"]]; ROLES.super.menu=[["hoy","Inicio"]]; ROLES.solicitante.menu=[["inicio","Inicio"]]; ROLES.jefatura.menu=[["inicio","Inicio"]];
 const HOME=()=>ROLES[rol].nav[0][0];
@@ -1228,7 +1230,7 @@ function render(){
   if(!ROLES[rol].nav.some(n=>n[0]===vista) && !(puedeGestionar()&&VISTAS_INICIO.includes(vista))) vista=ROLES[rol].nav[0][0];
   pintarBarra();
   const viejo=$("#vista"), nuevo=viejo.cloneNode(false); viejo.replaceWith(nuevo);
-  const fn={novedades:vNovedades,vencimientos:vVencimientos,inicio:vInicio,mis:vMis,nueva:vNueva,visor:vVisor,bandeja:vBandeja,equipo:vEquipo,hoy:vHoy,salidas:vSalidas,flota:vFlota,conductores:vConductores,combustible:vCombustible,reportes:vReportes,config:vConfig}[vista];
+  const fn={mantenciones:vMantenciones,novedades:vNovedades,vencimientos:vVencimientos,inicio:vInicio,mis:vMis,nueva:vNueva,visor:vVisor,bandeja:vBandeja,equipo:vEquipo,hoy:vHoy,salidas:vSalidas,flota:vFlota,conductores:vConductores,combustible:vCombustible,reportes:vReportes,config:vConfig}[vista];
   $("#vista").innerHTML=(ROLES[rol].menu&&vista!==HOME()&&!VISTAS_INICIO.includes(vista)?volverHTML():"")+fn();
   (post[vista]||(()=>{}))();
 }
@@ -1270,6 +1272,20 @@ function vNovedades(){
   return volverHTML()+cab("Novedades mecánicas","Desperfectos reportados al recibir los vehículos. Cree la orden de trabajo para enviarlos a taller.","")+
   `<section class="panel"><header><h2>Por atender</h2><span class="sub num">${L.length}</span></header><div class="cuerpo">${L.length?L.map(r=>`<div class="tarea">${placa(r.pat)}<div class="q">${esc(r.bit.nov)}<small>${r.id} · reportada al regreso ${r.bit.reg?fFH(r.bit.reg):""} · ${esc(nom(r.cond))}</small></div><button class="btn chico" type="button" data-nov="${r.id}">Crear orden</button></div>`).join(""):`<p class="vacio-chico">No hay novedades mecánicas pendientes.</p>`}</div></section>`;
 }
+function mantStats(){ const ab=OT.filter(o=>o.estado==="En taller"), s=new Set(ab.map(o=>o.pat)), L=VEH.filter(v=>!s.has(v.pat)&&v.estado!=="BAJA"); return {ot:ab.length,venc:L.filter(v=>mant(v).est==="VENC").length,prox:L.filter(v=>mant(v).est==="PROX").length}; }
+function vMantenciones(){
+  const abiertas=OT.filter(o=>o.estado==="En taller"), enTaller=new Set(abiertas.map(o=>o.pat));
+  const porMant=VEH.filter(v=>!enTaller.has(v.pat)&&v.estado!=="BAJA"&&mant(v).est!=="OK").sort((a,b)=>mant(a).resta-mant(b).resta);
+  const nv=porMant.filter(v=>mant(v).est==="VENC").length;
+  return volverHTML()+cab("Mantenciones","Órdenes de trabajo en taller y vehículos con la mantención preventiva vencida o próxima (cada 10.000 km).","")+
+  `<div class="contadores"><div class="contador"><b>${abiertas.length}</b><span>órdenes de trabajo<br>en taller</span></div><div class="contador ${nv?"alerta":""}"><b>${nv}</b><span>mantenciones<br>vencidas</span></div><div class="contador"><b>${porMant.length-nv}</b><span>próximas<br>(menos de 1.000 km)</span></div></div>
+  <section class="panel" style="margin-bottom:var(--e-5)"><header><h2>En taller</h2><span class="sub num">${abiertas.length}</span></header><div class="cuerpo">${abiertas.length?abiertas.map(o=>`<div class="tarea">${placa(o.pat)}<div class="q">${esc(o.tipo)} · ${esc(o.taller)}<small>${o.id} · desde ${fF(o.fecha)} · ${esc(o.trabajos.join(", "))}</small></div><button class="btn chico" type="button" data-mcot="${o.id}">Cerrar con factura</button></div>`).join(""):`<p class="vacio-chico">No hay vehículos en taller.</p>`}</div></section>
+  <section class="panel"><header><h2>Mantención vencida o próxima</h2><span class="sub num">${porMant.length}</span></header><div class="tabla-env"><table><thead><tr><th>Patente</th><th>Vehículo</th><th>Kilometraje</th><th>Próxima mantención</th><th>Estado</th><th></th></tr></thead><tbody>${porMant.map(v=>`<tr><td>${placa(v.pat)}</td><td>${esc(v.marca)} ${esc(v.modelo)}</td><td class="d">${km(v.km)}</td><td class="d">${km(v.proxMant)}</td><td>${chipMant(v)}</td><td class="d"><button class="btn sec chico" type="button" data-mot="${v.pat}">Crear orden</button></td></tr>`).join("")||`<tr><td colspan="6" class="tenue">Toda la flota tiene su mantención al día.</td></tr>`}</tbody></table></div></section>`;
+}
+post.mantenciones = ()=>{ const V=$("#vista");
+  V.querySelectorAll("[data-mot]").forEach(b=>b.onclick=()=>abrirFicha(b.dataset.mot,"mant",{nuevaOT:true}));
+  V.querySelectorAll("[data-mcot]").forEach(b=>b.onclick=()=>{ const o=OT.find(x=>x.id===b.dataset.mcot); abrirFicha(o.pat,"mant"); const c=document.querySelector(`[data-cerrar-ot="${o.id}"]`); if(c){ c.click(); document.getElementById("co-n")?.focus(); } });
+};
 post.novedades = ()=>{ $("#vista").querySelectorAll("[data-nov]").forEach(b=>b.onclick=()=>{const r=RES.find(x=>x.id===b.dataset.nov); abrirFicha(r.pat,"mant",{nuevaOT:true,desde:r.id});}); };
 function vVencimientos(){
   const ven=vencimientos(), nv=ven.filter(a=>a.e==="VENC").length;
@@ -1297,6 +1313,7 @@ function accesosGestion(){
    {v:"salidas",ico:"llave",t:"Entregar y recibir",d:"Vehículos que salen o regresan: odómetro, combustible y documentación del vehículo.",cta:"Ver salidas",n:n("CONFIRMADA")+n("EN_TERRENO"),nl:"en curso",pre:()=>{sel.salFiltro="entregar";sel.salModo="lista"}},
    {v:"salidas",ico:"calendario",t:"Calendario de la flota",d:"Ocupación de cada vehículo día a día, con reservas y mantenciones.",cta:"Abrir calendario",pre:()=>{sel.salModo="calendario"}},
    {v:"flota",ico:"car",t:"Flota",d:`Hoy: ${ne("DISP")} disponibles de ${VEH.length}, ${ne("TERR")} en terreno, ${ne("TALL_P")+ne("TALL_C")} en taller y ${ne("MALO")+ne("EXCL")+ne("BAJA")} fuera de servicio o exclusivos.`,cta:"Ver vehículos",n:alertas,nl:"con alertas",aviso:alertas>0},
+   {v:"mantenciones",ico:"medidor",t:"Mantenciones",d:(()=>{const s=mantStats(); return `${s.venc} ${s.venc===1?"vencida":"vencidas"}, ${s.prox} ${s.prox===1?"próxima":"próximas"} y ${s.ot} ${s.ot===1?"vehículo":"vehículos"} en taller. Crea y cierra órdenes de trabajo.`;})(),cta:"Ver mantenciones",n:mantStats().venc+mantStats().prox+mantStats().ot,nl:"mantenciones por atender",aviso:mantStats().venc>0},
    {v:"novedades",ico:"taller",t:"Novedades mecánicas",d:"Desperfectos reportados al recibir los vehículos, para crear la orden de trabajo.",cta:"Ver novedades",n:nov,nl:"novedades por atender",aviso:nov>0},
    {v:"vencimientos",ico:"alerta",t:"Próximos vencimientos",d:`Revisión técnica, gases, SOAP, permiso de circulación y póliza. ${venc} vencidos y ${ven.length-venc} por vencer en 30 días.`,cta:"Ver vencimientos",n:ven.length,nl:"vencimientos",aviso:venc>0},
    {v:"conductores",ico:"licencia",t:"Conductores",d:"Caución y licencia de cada conductor. Los bloqueados no se pueden asignar.",cta:"Ver padrón",n:porVencer,nl:"por vencer o bloqueados",aviso:porVencer>0},
@@ -1515,14 +1532,14 @@ function postFicha(pat, op){
   const ft=$("#ot-tipo"); if(ft) ft.onchange=()=>abrirFicha(pat,"mant",{...op,nuevaOT:true,tipoOT:ft.value});
   const fo=$("#f-ot"); if(fo) fo.onsubmit=e=>{e.preventDefault(); const tr=[...C.querySelectorAll(".ot-tr:checked")].map(i=>i.value); if(!tr.length){tostada("Marca al menos un trabajo.");return}
     const o={id:"OT-2026-00"+(nOT++),pat,fecha:iso(HOY).slice(0,10),km:+$("#ot-km").value,taller:$("#ot-taller").value,tipo:$("#ot-tipo").value,trabajos:tr,estado:"En taller",obs:$("#ot-obs").value};
-    OT.unshift(o); v.estado=o.tipo==="Reparación"?"TALL_C":"TALL_P"; if(op.desde){const r=RES.find(x=>x.id===op.desde); if(r) r.bit.ot=o.id;}
+    o.estadoPrevio=["TALL_P","TALL_C"].includes(v.estado)?(OT.find(x=>x.pat===pat&&x.estado==="En taller")?.estadoPrevio||"DISP"):v.estado; OT.unshift(o); v.estado=o.tipo==="Reparación"?"TALL_C":"TALL_P"; if(op.desde){const r=RES.find(x=>x.id===op.desde); if(r) r.bit.ot=o.id;}
     audit("Abre orden de trabajo",o.id+" · "+pat,"Disponible",EST_V[v.estado][0]); tostada(`${o.id} abierta. ${pat} queda en taller y no se puede asignar.`); abrirFicha(pat,"mant"); };
   C.querySelectorAll("[data-cerrar-ot]").forEach(b=>b.onclick=()=>{ const o=OT.find(x=>x.id===b.dataset.cerrarOt);
-    $("#cierre-ot").innerHTML=`<form class="seccion" id="f-cot" style="border:1px solid var(--linea);border-radius:var(--r-m);padding:var(--e-4)"><h3>Cerrar ${o.id}</h3><div class="campos"><div class="campo"><label for="co-n">N° de factura</label><input type="text" id="co-n" required></div><div class="campo"><label for="co-m">Monto ($)</label><input type="number" id="co-m" min="1" required></div></div><p class="tenue peq">Al cerrar, el vehículo vuelve a estar disponible y la factura queda registrada como gasto de mantención.</p><div class="acciones"><button class="btn" type="submit">Cerrar orden</button></div></form>`;
+    $("#cierre-ot").innerHTML=`<form class="seccion" id="f-cot" style="border:1px solid var(--linea);border-radius:var(--r-m);padding:var(--e-4)"><h3>Cerrar ${o.id}</h3><div class="campos"><div class="campo"><label for="co-n">N° de factura</label><input type="text" id="co-n" required></div><div class="campo"><label for="co-m">Monto ($)</label><input type="number" id="co-m" min="1" required></div></div><p class="tenue peq">Al cerrar, el vehículo vuelve al estado que tenía antes de entrar a taller y la factura queda registrada como gasto de mantención.</p><div class="acciones"><button class="btn" type="submit">Cerrar orden</button></div></form>`;
     $("#f-cot").onsubmit=e=>{e.preventDefault(); const n=$("#co-n").value.trim(), mo=+$("#co-m").value; if(!n||!mo){tostada("Ingresa número y monto de la factura.");return}
-      o.estado="Cerrada"; o.factura={n,monto:mo}; v.estado="DISP"; if(o.tipo!=="Reparación"){v.ultMant=v.km; v.proxMant=v.km+10000;}
+      o.estado="Cerrada"; o.factura={n,monto:mo}; const otraAbierta=OT.find(x=>x.pat===pat&&x.estado==="En taller"); v.estado=otraAbierta?(otraAbierta.tipo==="Reparación"?"TALL_C":"TALL_P"):(o.estadoPrevio&&!["TALL_P","TALL_C"].includes(o.estadoPrevio)?o.estadoPrevio:"DISP"); if(o.tipo!=="Reparación"){v.ultMant=v.km; v.proxMant=v.km+10000;}
       GASTOS.unshift({id:nGasto++,fecha:iso(HOY).slice(0,10),pat,doc:"Factura",n,prov:o.taller,tipo:"MR",monto:mo,km:v.km,folio:"P01-601",ot:o.id});
-      audit("Cierra orden de trabajo",o.id,"En taller","Cerrada · "+clp(mo)); tostada(`${o.id} cerrada. ${pat} disponible.`); abrirFicha(pat,"mant"); }; });
+      audit("Cierra orden de trabajo",o.id,"En taller","Cerrada · "+clp(mo)); tostada(`${o.id} cerrada. ${pat}: ${EST_V[v.estado][0].toLowerCase()}.`); abrirFicha(pat,"mant"); }; });
   const fg=$("#f-gasto"); if(fg) fg.onsubmit=e=>{e.preventDefault(); const mo=+$("#ga-monto").value, n=$("#ga-n").value.trim(); if(!mo||!n){tostada("Ingresa número de documento y monto.");return}
     if(mesCerrado(iso(HOY))){tostada("El período está cerrado.");return}
     GASTOS.unshift({id:nGasto++,fecha:iso(HOY).slice(0,10),pat,doc:$("#ga-doc").value,n,prov:$("#ga-prov").value||"—",tipo:$("#ga-tipo").value,monto:mo,km:+$("#ga-km").value,folio:$("#ga-folio").value});

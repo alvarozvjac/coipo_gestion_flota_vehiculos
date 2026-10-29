@@ -33,7 +33,7 @@ Lo que ve el encargado de vehículos, y qué función de GESAD reemplaza cada pa
 
 | Menú | Contenido | Reemplaza en GESAD |
 |---|---|---|
-| Inicio | Tarjetas de acceso a cada tarea, sin información repetida; las de novedades mecánicas y próximos vencimientos abren su propia pantalla | Salidas del día, Movimiento diario |
+| Inicio | Tarjetas de acceso a cada tarea, sin información repetida; las de mantenciones, novedades mecánicas y próximos vencimientos abren su propia pantalla | Salidas del día, Movimiento diario |
 | Salidas | Lista única con filtros (por asignar, entregar o recibir, finalizadas) o vista de calendario. Desde el detalle se asigna, se entrega y se recibe el vehículo, con la **documentación entregada** (padrón, revisión técnica, SOAP, permiso de circulación y tarjeta de combustible) | Ingreso de solicitudes, Consulta de salidas, Consulta por conductor y por pasajeros |
 | Flota | **Hoja de vida** de cada vehículo: documentos, mantención (órdenes de trabajo y cierre con factura), combustible, gastos, **recinto de guarda** y salidas. El encargado **actualiza los documentos** (revisión técnica, gases, SOAP, permiso de circulación y póliza) con su nueva fecha | Ficha de vehículos, Seguros, Ubicación, Mantenciones, Ficha de taller, Orden de trabajo |
 | Conductores | Padrón con caución y licencia; los bloqueados no aparecen en las asignaciones | Conductores, Ficha de conductores |
