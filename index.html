@@ -790,7 +790,7 @@ function personaDe(x){ const p=personaPorRut(x.rut); if(p) return p.id; const n=
 
 function borradorVacio(){ return {jefe:PERS.find(p=>p.id===PX[ROLES[rol].quien].jefeDe)?.id||"p3",salida:"",regreso:"",cometido:"",destinos:[{reg:"",prov:"",com:"",lug:"",otro:""}],km:0,tipo:"Indistinto",t4:false,carga:false,reqCond:true,cond:"",rel:{rut:"",nom:""},pasList:[{rut:"",nom:""}],externos:0,extJust:"",ejemplo:false}; }
 function borradorEjemplo(){ return {jefe:"p3",salida:"2026-11-06T08:00",regreso:"2026-11-07T18:00",cometido:"Supervisión del cierre de inventario anual en bodega de la Dirección Regional del Maule.",
-  destinos:[{reg:"Maule",prov:"Talca",com:"Talca",lug:"Oficina Regional Maule",otro:""}],km:0,tipo:"Camioneta doble cabina",t4:false,carga:false,reqCond:true,cond:"",rel:{rut:"",nom:""},
+  destinos:[{reg:"Maule",prov:"Talca",com:"Talca",lug:"Oficina Regional Maule",otro:""}],km:520,tipo:"Camioneta doble cabina",t4:false,carga:false,reqCond:true,cond:"",rel:{rut:"",nom:""},
   pasList:[{rut:PX.p15.rut,nom:PX.p15.nom}],externos:0,extJust:"",ejemplo:true}; }
 function vNueva(){
   if(!borrador) borrador=borradorEjemplo();
@@ -814,6 +814,7 @@ function vNueva(){
    <fieldset><legend><span class="seccion-num">3</span>Itinerario y cometido</legend><div class="campos">
      <div class="campo ancho"><span class="lbl">Destinos</span><div id="f-dest" class="grid" style="gap:var(--e-3)"></div><div><button class="btn sec chico" type="button" id="btn-dest">Agregar destino o parada</button></div></div>
      <div class="campo ancho"><label for="f-com">Cometido / objetivo del viaje</label><textarea id="f-com">${esc(b.cometido)}</textarea></div>
+     <div class="campo"><label for="f-km">Kilómetros aproximados</label><input type="number" id="f-km" min="1" max="10000" step="10" value="${b.km||""}" placeholder="Ej.: 520"><span class="ayuda">Distancia total estimada: ida, desplazamientos internos y regreso.</span></div>
      <div class="campo ancho"><label for="f-tipo">Tipo de vehículo requerido</label><select id="f-tipo">${["Indistinto","Camioneta doble cabina","SUV / Station wagon","Furgón","Camión","Automóvil sedán"].map(t=>`<option ${t===b.tipo?"selected":""}>${t}</option>`).join("")}</select></div>
      <div class="campo ancho"><div class="opciones"><label><input type="checkbox" id="f-4x4" ${b.t4?"checked":""}> Requiere 4x4 (caminos forestales o rurales)</label><label><input type="checkbox" id="f-carga" ${b.carga?"checked":""}> Requiere espacio de carga</label></div></div>
    </div></fieldset>
@@ -839,7 +840,7 @@ post.nueva = ()=>{
     ${b.destinos.length>1?`<button class="btn peligro chico" type="button" data-quitar="${i}" aria-label="Quitar destino ${i+1}">Quitar</button>`:"<span></span>"}</div>`}).join("")};
   const pintarPas=()=>{$("#f-pas").innerHTML=b.pasList.map((x,i)=>`<div class="persona"><input type="text" class="rut" data-p="${i}" data-k="rut" value="${esc(x.rut)}" placeholder="12.345.678-9" maxlength="12" aria-label="RUT acompañante ${i+1}"><input type="text" data-p="${i}" data-k="nom" value="${esc(x.nom)}" placeholder="Nombre completo" aria-label="Nombre acompañante ${i+1}"><button class="btn peligro chico" type="button" data-qpas="${i}" aria-label="Quitar acompañante ${i+1}">Quitar</button></div>`).join("")||`<p class="tenue peq">Sin acompañantes.</p>`};
   const pasValidos=()=>b.pasList.filter(x=>x.rut||x.nom);
-  const leer=()=>{b.jefe=$("#f-jefe").value;b.salida=$("#f-sal").value;b.regreso=$("#f-reg").value;b.cometido=$("#f-com").value;b.tipo=$("#f-tipo").value;b.t4=$("#f-4x4").checked;b.carga=$("#f-carga").checked;b.reqCond=document.querySelector('input[name="f-rc"]:checked').value==="si";b.cond=b.reqCond?"":$("#f-cond").value;b.externos=0;b.extJust="";};
+  const leer=()=>{b.jefe=$("#f-jefe").value;b.salida=$("#f-sal").value;b.regreso=$("#f-reg").value;b.cometido=$("#f-com").value;b.km=+$("#f-km").value||0;b.tipo=$("#f-tipo").value;b.t4=$("#f-4x4").checked;b.carga=$("#f-carga").checked;b.reqCond=document.querySelector('input[name="f-rc"]:checked').value==="si";b.cond=b.reqCond?"":$("#f-cond").value;b.externos=0;b.extJust="";};
   const revisar=()=>{
     leer(); $("#w-cond").hidden=b.reqCond;
     const pv=pasValidos(), relOk=false;
@@ -850,6 +851,7 @@ post.nueva = ()=>{
     const out=[]; const reg=(c,t,d)=>out.push(`<div class="regla ${c}"><span class="ico" aria-hidden="true">${{ok:"✓",av:"!",bl:"✕",inf:"i"}[c]}</span><div><b>${t}</b><span>${d}</span></div></div>`);
     if(!(dur>0)) reg("bl","Fechas incoherentes","El regreso debe ser posterior a la salida."); else if(F(b.salida)<HOY) reg("bl","Salida en el pasado","La fecha de salida es anterior a hoy."); else reg("ok","Fechas válidas",`Salida ${fCorta(b.salida)} · regreso ${fCorta(b.regreso)}.`);
     const destOk=b.destinos.every(d=>d.reg&&d.prov&&d.com&&d.lug&&(d.lug!==OTRA||d.otro.trim()));
+    b.km>0? reg("ok","Kilómetros aproximados",`${km(b.km)} km en total`+((F(b.regreso)-F(b.salida))>0?` · ${km(b.km/Math.max(1,Math.ceil((F(b.regreso)-F(b.salida))/DIA)))} km por día`:"")) : reg("bl","Faltan los kilómetros","Indica la distancia total estimada del viaje (ida, desplazamientos internos y regreso).");
     destOk? reg("ok","Destinos",b.destinos.map(d=>d.com).join(" · ")) : reg("bl","Destino incompleto","Completa región, provincia, comuna y localidad de cada destino.");
     const maxCap=Math.max(...VEH.filter(v=>v.estado==="DISP").map(v=>v.cap));
     tot>maxCap? reg("bl","Capacidad excedida",`${tot} personas superan la capacidad máxima del pool (${maxCap}).`) : reg("ok","Capacidad",`${tot} personas.`);
@@ -887,7 +889,7 @@ post.nueva = ()=>{
     const destinos=b.destinos.map(d=>({reg:d.reg,prov:d.prov,com:d.com,lug:d.lug===OTRA?d.otro.trim():d.lug}));
     const relevo=null;
     const pas=pasValidos().map(personaDe);
-    const r=R({id:nuevoId(),est:"PEND_JEFE",fSol:iso(HOY),sol:ROLES[rol].quien,jefe:b.jefe,salida:b.salida,regreso:b.regreso,destinos,cometido:b.cometido,km:0,cc:null,reqCond:b.reqCond,cond:b.cond||null,relevo,pas,externos:b.externos,req:{t4:b.t4,carga:b.carga},tipoReq:b.tipo});
+    const r=R({id:nuevoId(),est:"PEND_JEFE",fSol:iso(HOY),sol:ROLES[rol].quien,jefe:b.jefe,salida:b.salida,regreso:b.regreso,destinos,cometido:b.cometido,km:b.km,cc:null,reqCond:b.reqCond,cond:b.cond||null,relevo,pas,externos:b.externos,req:{t4:b.t4,carga:b.carga},tipoReq:b.tipo});
     r.hist.push({t:r.fSol,quien:r.sol,acc:"Solicitud ingresada"}); RES.push(r); audit("Crea solicitud",r.id,"—","Pendiente jefatura");
     borrador=null; tostada(`Solicitud ${r.id} enviada a ${nom(r.jefe)}.`); ir("mis");
   });
