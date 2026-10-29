@@ -35,12 +35,12 @@ Lo que ve el encargado de vehículos, y qué función de GESAD reemplaza cada pa
 |---|---|---|
 | Inicio | Tarjetas de acceso a cada tarea, sin información repetida; las de novedades mecánicas, próximos vencimientos y libro de guardia abren su propia pantalla. Pendientes del día (asignar, entregar, recibir, novedades mecánicas), próximos vencimientos y **cierre de jornada del libro de guardia** | Salidas del día, Guarde de vehículos, Movimiento diario |
 | Salidas | Lista única con filtros (por asignar, próximas, en terreno, finalizadas) o vista de calendario. Desde el detalle se asigna, se entrega y se recibe el vehículo, con **inventario de accesorios** al entregar y al recibir | Ingreso de solicitudes, Consulta de salidas, Consulta por conductor y por pasajeros |
-| Flota | **Hoja de vida** de cada vehículo: documentos, mantención (órdenes de trabajo y cierre con factura), combustible, gastos, **accidentes**, inventario, libro de guardia y salidas | Ficha de vehículos, Seguros, Accidentes de tránsito, Ubicación, Mantenciones, Ficha de taller, Orden de trabajo |
+| Flota | **Hoja de vida** de cada vehículo: documentos, mantención (órdenes de trabajo y cierre con factura), combustible, gastos, inventario, libro de guardia y salidas | Ficha de vehículos, Seguros, Ubicación, Mantenciones, Ficha de taller, Orden de trabajo |
 | Conductores | Padrón con caución y licencia; los bloqueados no aparecen en las asignaciones | Conductores, Ficha de conductores |
 | Combustible y gastos | Cargas, **importación validada del archivo COPEC**, compras a granel y gastos por documento (factura o boleta) | Carga archivo Copec, Ingreso combustible en efectivo, Compra a granel, Ingreso de gastos |
 | Reportes | Kilómetros y costos, **Tesorería** (Excel mensual o anual), operatividad mensual, rendimiento de combustible y gastos por vehículo | Reportes de consumo, rendimiento, gastos y operatividad mensual |
 
-Para ver el flujo completo: en **Inicio**, asigne la solicitud **OC-2026-000410** (el camión FXHB-90 queda descartado por su revisión técnica vencida). Luego entregue **OC-2026-000408** en «Salidas → Próximas» desmarcando un accesorio y recíbala marcando «Hubo un accidente»: se abre el registro del accidente en la hoja de vida del vehículo.
+Para ver el flujo completo: en **Inicio**, asigne la solicitud **OC-2026-000410** (el camión FXHB-90 queda descartado por su revisión técnica vencida). Luego entregue **OC-2026-000408** en «Salidas → Próximas» desmarcando un accesorio y recíbala registrando el odómetro y el combustible.
 
 ## Análisis de GESAD
 
