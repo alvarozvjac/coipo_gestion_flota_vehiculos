@@ -1015,7 +1015,7 @@ function abrirOrden(id){
   <div class="orden"><div class="enc"><div><b>Corporación Nacional Forestal</b><br>Gerencia de Finanzas y Administración · Unidad de Vehículos<h3>Orden de salida de vehículo fiscal</h3><span class="mono">N° ${r.id}</span> · emitida ${fFH(HOY)}</div></div>
   <table><tbody>
    <tr><td>Solicitado por</td><td>${esc(nom(r.sol))} · ${esc(PX[r.sol].ger)}</td></tr>
-   <tr><td>Autorizado por</td><td>${esc(nom(r.jefe))} · ${esc(PX[r.jefe].cargo)} <span class="sello">FIRMA ELECTRÓNICA</span></td></tr>
+   <tr><td>Autorizado por</td><td>${esc(nom(r.jefe))} · ${esc(PX[r.jefe].cargo)}</td></tr>
    <tr><td>Cometido</td><td>${esc(r.cometido)}</td></tr>
    <tr><td>Destino</td><td>${esc(r.destinos.map(d=>`${d.lug}, ${d.com}, Región de ${d.reg}`).join(" · "))}</td></tr>
    <tr><td>Imputación</td><td>${esc(r.cc)} · ${esc(cc?.t||"")}</td></tr>
@@ -1030,7 +1030,7 @@ function abrirOrden(id){
   </tbody></table>
   <p style="margin-top:12px;font-size:12px">1. En caso de colisión o choque: dejar constancia en Carabineros indicando la póliza ${v.poliza}, vigente hasta ${fF(v.polizaVence)}.<br>2. Asistencia en viaje: 22 826 1101 · 22 797 6100, indicando patente ${esc(r.pat)} y RUT 61.313.000-4 CONAF.<br>3. Devolver con el estanque al menos en 1/4.</p>
   <div class="pie"><div>Firma conductor</div><div>V°B° Unidad de Vehículos</div><div>Recepción conforme</div></div></div>
-  <p class="tenue peq">Formato basado en el comprobante «Salida Vehículo» de GESAD, con firma electrónica de la jefatura. La póliza indicada es ficticia.</p></div></div></div>`;
+  <p class="tenue peq">Formato basado en el comprobante «Salida Vehículo» de GESAD. La póliza indicada es ficticia.</p></div></div></div>`;
   const cerrar=()=>{$("#capa2").innerHTML="";document.removeEventListener("keydown",esc_)}; const esc_=e=>{if(e.key==="Escape")cerrar()};
   $("#cerrar2").onclick=cerrar; $("#velo2").onclick=e=>{if(e.target.id==="velo2")cerrar()}; document.addEventListener("keydown",esc_); $("#cerrar2").focus();
 }
