@@ -438,6 +438,31 @@ footer.pie-app{background:var(--verde-tinta);color:#e9f1e7;border-top:4px solid 
 .paso span strong{display:block;color:var(--tinta);font-weight:600;font-size:var(--f-m);margin-bottom:2px}
 @media (max-width:899.98px){ .pasos{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} .paso:nth-child(3){border-left:0} .paso:nth-child(n+3){border-top:1px solid var(--linea)} }
 @media (max-width:559.98px){ .pasos{grid-template-columns:minmax(0,1fr)} .paso+.paso{border-left:0;border-top:1px solid var(--linea)} .hero{padding:var(--e-5)} .quien{border-left:0;padding-left:0} }
+
+/* Ingreso (login simulado) */
+body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{display:none}
+.login{padding:var(--e-7) var(--gutter-r) var(--e-7) var(--gutter-l);background:linear-gradient(180deg,var(--verde-tinte),var(--bg) 60%);min-height:70vh}
+.login-caja{max-width:1040px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:var(--e-5);align-items:start}
+@media (max-width:899.98px){ .login-caja{grid-template-columns:minmax(0,1fr)} }
+.login-form,.login-prueba{background:var(--sup);border:1px solid var(--linea);border-top:4px solid var(--verde-acento);border-radius:10px;box-shadow:var(--s-2);padding:var(--e-6);display:flex;flex-direction:column;gap:var(--e-4)}
+.login-prueba{border-top-color:var(--verde-claro)}
+.login-form h1{font-size:var(--f-2xl);font-weight:600;color:var(--verde-tinta)}
+.login-prueba h2{font-size:var(--f-xl);font-weight:600}
+.app-ico.grande{width:60px;height:60px}
+.app-ico.grande svg{width:32px;height:32px}
+.btn.grande{min-height:48px;font-size:var(--f-m)}
+.login-error{color:var(--st-malo);font-weight:600;min-height:1.4em;margin:0}
+.l-usuarios{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--e-3)}
+@media (max-width:559.98px){ .l-usuarios{grid-template-columns:minmax(0,1fr)} }
+.l-usuario{display:flex;gap:var(--e-3);align-items:flex-start;text-align:left;background:var(--sup);border:1px solid var(--linea);border-radius:8px;padding:var(--e-3) var(--e-4);cursor:pointer;transition:border-color var(--t-micro) var(--curva),box-shadow var(--t-micro) var(--curva),transform var(--t-micro) var(--curva)}
+.l-usuario:hover{border-color:var(--verde-acento);box-shadow:var(--s-1);transform:translateY(-2px)}
+.l-usuario[aria-pressed="true"]{border-color:var(--verde-acento);background:var(--verde-tinte);box-shadow:0 0 0 2px var(--verde-tinte-2)}
+.l-usuario .u-ico{flex:none;width:40px;height:40px;border-radius:10px;background:var(--verde-tinte);color:var(--verde-tinta);display:grid;place-items:center}
+.l-usuario .u-ico svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.l-usuario b{display:block;color:var(--verde-tinta);font-size:var(--f-s)}
+.l-usuario span{display:block;font-size:var(--f-xs);color:var(--tinta-2);line-height:1.4}
+.l-usuario .mono{color:var(--tinta)}
+.rol-chip{display:inline-flex;align-items:center;gap:6px;background:var(--verde-tinte);color:var(--verde-tinta);border:1px solid var(--verde-claro);border-radius:var(--r-pill);padding:4px 12px;font-weight:600;font-size:var(--f-s)}
 </style>
 
 </head><body>
@@ -448,18 +473,34 @@ footer.pie-app{background:var(--verde-tinta);color:#e9f1e7;border-top:4px solid 
 </div>
 <div class="franja" role="note"><b>Maqueta no operacional</b><span>Vehículos y vencimientos: datos reales de Oficina Central (números de motor y chasis enmascarados) (planilla de mantenciones al 28-09-2026). Personas, RUT, pólizas y cargas de combustible: ficticios. Fecha de referencia: jueves 22-10-2026.</span></div>
 
+<section class="login" id="login" aria-labelledby="t-login" hidden>
+  <div class="login-caja">
+    <form class="login-form" id="form-login" novalidate>
+      <span class="app-ico grande" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-car"/></svg></span>
+      <h1 id="t-login">Ingreso al sistema</h1>
+      <p class="tenue">Sistema Nacional de Gestión de Flota · CONAF</p>
+      <div class="campo"><label for="l-rut">RUT</label><input type="text" id="l-rut" class="mono" inputmode="text" autocomplete="username" placeholder="12.345.678-9" maxlength="12"></div>
+      <div class="campo"><label for="l-nom">Nombre completo</label><input type="text" id="l-nom" autocomplete="name" placeholder="Nombre y apellidos"></div>
+      <p class="login-error" id="l-error" role="alert"></p>
+      <button class="btn grande" type="submit">Ingresar</button>
+      <p class="peq tenue">Simulación de ingreso: se valida el RUT y que el nombre coincida con la nómina. No se pide contraseña.</p>
+    </form>
+    <aside class="login-prueba" aria-labelledby="t-prueba">
+      <h2 id="t-prueba">Usuarios de prueba</h2>
+      <p class="tenue peq">Haga clic en un usuario para completar el RUT y el nombre, y luego presione «Ingresar».</p>
+      <div id="l-usuarios" class="l-usuarios"></div>
+      <p class="tenue peq">Cualquier otro funcionario de la nómina ficticia ingresa como solicitante, y las jefaturas como jefatura directa.</p>
+    </aside>
+  </div>
+</section>
+
 <div class="barra">
   <div class="barra-in">
     <div class="app-nombre"><span class="app-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-car"/></svg></span><span class="app-txt"><b>Gestión de Flota</b><small>CONAF</small></span></div>
     <div class="perfil">
-      <label for="sel-rol"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-user"/></svg>Ver como</label>
-      <select id="sel-rol">
-        <option value="solicitante">Funcionario solicitante</option>
-        <option value="jefatura">Jefatura directa</option>
-        <option value="encargado" selected>Encargado de vehículos</option>
-        <option value="super">Administrador nacional</option>
-      </select>
+      <span class="rol-chip" id="rol-chip"></span>
       <div class="quien" id="quien"></div>
+      <button class="btn sec chico" type="button" id="btn-salir"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-salir"/></svg>Cerrar sesión</button>
     </div>
   </div>
   <nav class="nav" id="nav" aria-label="Módulos"></nav>
@@ -485,6 +526,7 @@ footer.pie-app{background:var(--verde-tinta);color:#e9f1e7;border-top:4px solid 
 <symbol id="i-escudo" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></symbol>
 <symbol id="i-check" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></symbol>
 <symbol id="i-qr" viewBox="0 0 24 24"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3M21 21v.01M12 7v3a2 2 0 0 1-2 2H7M3 12h.01M12 3h.01M12 16v.01M16 12h1M21 12v.01M12 21v-1"/></symbol>
+<symbol id="i-salir" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></symbol>
 <symbol id="i-reloj" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
 </defs></svg>
 <main id="vista" tabindex="-1"></main>
@@ -1153,8 +1195,6 @@ const iniciales=n=>String(n||"").split(/\s+/).filter(Boolean).slice(0,2).map(x=>
 let rol = "encargado", vista = "hoy";
 let sel = {repTab:"km", tes:{modo:"mes",mes:10,anio:2026}, bandeja:null, gantt:{ini:F("2026-10-19"),dias:14}, ganttSel:null,
   salFiltro:"asignar", salModo:"lista", salQ:"", flotaFiltro:"todos", flotaQ:"", condFiltro:"todos", combTab:"cargas", cfgTab:"catalogos"};
-try{ const g=localStorage.getItem("flota-rol"); if(g&&ROLES[g]) rol=g; }catch(e){}
-document.getElementById("sel-rol").value=rol;
 
 function cuentas(){
   const yo=ROLES[rol].quien;
@@ -1164,12 +1204,12 @@ function cuentas(){
 }
 function pintarBarra(){
   const R0=ROLES[rol], p=PX[R0.quien], c=cuentas();
+  $("#rol-chip").innerHTML=ico("escudo")+esc(R0.nombre);
   $("#quien").innerHTML=`<span class="avatar" aria-hidden="true">${iniciales(p.nom)}</span><span class="qtxt"><b>${esc(p.nom)}</b><span>${esc(p.cargo)}</span></span>`;
   $("#nav").innerHTML=R0.nav.map(([k,t])=>`<button type="button" data-v="${k}" ${k===vista?'aria-current="page"':""}>${ico(NAV_ICO[k]||"home")}${t}${c[k]?`<span class="cuenta num" aria-label="${c[k]} pendientes">${c[k]}</span>`:""}</button>`).join("");
 }
 function ir(v){ vista=v; try{history.replaceState(null,"","#"+v)}catch(e){} render(); $("#vista").focus({preventScroll:true}); }
 $("#nav").addEventListener("click",e=>{const b=e.target.closest("button[data-v]"); if(b) ir(b.dataset.v)});
-$("#sel-rol").addEventListener("change",e=>{rol=e.target.value; try{localStorage.setItem("flota-rol",rol)}catch(_){} vista=ROLES[rol].nav[0][0]; cerrarCapa(); render(); tostada("Vista cambiada a: "+ROLES[rol].nombre)});
 function render(){
   if(!ROLES[rol].nav.some(n=>n[0]===vista)) vista=ROLES[rol].nav[0][0];
   pintarBarra();
@@ -1616,8 +1656,38 @@ document.addEventListener("click",e=>{
   const i=e.target.closest("[data-ir]"); if(i){cerrarCapa();ir(i.dataset.ir);return}
   const an=e.target.closest("[data-anular]"); if(an){const r=RES.find(x=>x.id===an.dataset.anular); if(an.dataset.conf){const ant=EST[r.est][0]; r.est="ANULADA"; r.obsLog="Anulada por el solicitante."; audit("Anula solicitud",r.id,ant,"Anulada"); tostada(`${r.id} anulada.`); render();} else {an.dataset.conf="1"; an.textContent="Confirmar anulación";} return}
 });
-const h=(location.hash||"").slice(1); if(h && ROLES[rol].nav.some(n=>n[0]===h)) vista=h;
-render();
+/* ======================= INGRESO (login simulado con RUT y nombre) ======================= */
+const QUIEN_BASE=Object.fromEntries(Object.entries(ROLES).map(([k,r])=>[k,r.quien]));
+const USUARIOS_PRUEBA=[["solicitante","plus","Funcionario solicitante"],["jefatura","aprobar","Jefatura directa"],["encargado","car","Encargado de vehículos"],["super","config","Administrador nacional"]];
+const normNom=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/\s+/g," ").trim();
+function rolDe(p){ const k=Object.keys(QUIEN_BASE).find(k=>QUIEN_BASE[k]===p.id); return k||(p.jefe?"jefatura":"solicitante"); }
+function iniciarSesion(p){
+  rol=rolDe(p); ROLES[rol].quien=p.id; vista=ROLES[rol].nav[0][0]; borrador=null;
+  try{ localStorage.setItem("flota-sesion",p.id); }catch(e){}
+  document.body.classList.remove("sin-sesion"); $("#login").hidden=true;
+  const h=(location.hash||"").slice(1); if(h && ROLES[rol].nav.some(n=>n[0]===h)) vista=h;
+  render(); tostada("Sesión iniciada: "+p.nom+" · "+ROLES[rol].nombre);
+}
+function mostrarLogin(){
+  cerrarCapa(); $("#capa2").innerHTML=""; document.body.classList.add("sin-sesion"); $("#login").hidden=false;
+  $("#l-rut").value=""; $("#l-nom").value=""; $("#l-error").textContent=""; ["#l-rut","#l-nom"].forEach(s=>$(s).removeAttribute("aria-invalid"));
+  $("#l-usuarios").innerHTML=USUARIOS_PRUEBA.map(([k,ic,t])=>{const p=PX[QUIEN_BASE[k]]; return `<button type="button" class="l-usuario" data-u="${p.id}" aria-pressed="false"><span class="u-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-${ic}"/></svg></span><span><b>${t}</b><span>${esc(p.nom)}</span><span class="mono">${esc(p.rut)}</span><span>${esc(p.cargo)}</span></span></button>`}).join("");
+  $("#l-usuarios").querySelectorAll("[data-u]").forEach(b=>b.onclick=()=>{const p=PX[b.dataset.u]; $("#l-rut").value=p.rut; $("#l-nom").value=p.nom; $("#l-error").textContent=""; $("#l-usuarios").querySelectorAll("[data-u]").forEach(x=>x.setAttribute("aria-pressed",x===b)); $("#form-login button[type=submit]").focus();});
+  $("#l-rut").focus();
+}
+$("#l-rut").addEventListener("input",e=>{ const v=e.target.value; if(rutLimpio(v).length>=2) e.target.value=rutFormato(v); });
+$("#form-login").addEventListener("submit",e=>{
+  e.preventDefault(); const rut=$("#l-rut").value, nm=$("#l-nom").value, err=m=>{$("#l-error").textContent=m;};
+  ["#l-rut","#l-nom"].forEach(s=>$(s).removeAttribute("aria-invalid"));
+  if(!rutValido(rut)){ $("#l-rut").setAttribute("aria-invalid","true"); err("El RUT no es válido. Revise el número y el dígito verificador."); return; }
+  if(!nm.trim()){ $("#l-nom").setAttribute("aria-invalid","true"); err("Ingrese su nombre completo."); return; }
+  const p=personaPorRut(rut);
+  if(!p){ $("#l-rut").setAttribute("aria-invalid","true"); err("El RUT no está registrado en la nómina institucional."); return; }
+  if(normNom(p.nom)!==normNom(nm)){ $("#l-nom").setAttribute("aria-invalid","true"); err("El nombre no coincide con el registrado para ese RUT."); return; }
+  iniciarSesion(p);
+});
+$("#btn-salir").addEventListener("click",()=>{ try{localStorage.removeItem("flota-sesion")}catch(e){} Object.entries(QUIEN_BASE).forEach(([k,q])=>ROLES[k].quien=q); mostrarLogin(); tostada("Sesión cerrada."); });
+(()=>{ let id=null; try{ id=localStorage.getItem("flota-sesion"); }catch(e){} if(id&&PX[id]) iniciarSesion(PX[id]); else mostrarLogin(); })();
 
 </script>
 </body></html>

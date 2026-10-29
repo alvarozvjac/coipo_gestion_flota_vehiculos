@@ -16,7 +16,7 @@ vencimientos legales y combustible. Requerimiento de la Sección Servicios Gener
 
 ## Cómo probarla
 
-El selector **«Ver como»** de la cabecera cambia entre los cuatro perfiles con acceso a la plataforma. Desde la versión 0.3 la navegación se ordena por tareas y no por las pantallas de GESAD: cada perfil ve sólo lo que usa, y el detalle de una salida, un vehículo o un conductor se abre en un panel lateral.
+La maqueta parte en una **pantalla de ingreso** que pide RUT y nombre completo (simulación: se valida el RUT y que el nombre coincida con la nómina ficticia; no hay contraseña). Al lado aparecen cuatro **usuarios de prueba**, uno por perfil; al hacer clic en uno se completan sus datos. Para probar otro perfil, use «Cerrar sesión» e ingrese con otro usuario. Desde la versión 0.3 la navegación se ordena por tareas y no por las pantallas de GESAD: cada perfil ve sólo lo que usa, y el detalle de una salida, un vehículo o un conductor se abre en un panel lateral.
 
 Desde la versión 0.4 la maqueta sigue la línea gráfica de www.conaf.cl (letra Noto Sans, verdes institucionales, tarjetas con sombra e íconos), y cada perfil parte en una pantalla de **Inicio** con accesos grandes a lo que necesita hacer.
 
