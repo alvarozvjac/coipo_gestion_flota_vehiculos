@@ -656,7 +656,9 @@ function vNueva(){
   if(!borrador) borrador=borradorEjemplo();
   const b=borrador, yo=PX[ROLES[rol].quien];
   const jefes=PERS.filter(p=>p.jefe);
-  const condOpts=(selId)=>`<option value="">— Seleccionar —</option>`+COND.map(c=>{const ap=condApto(c.id,{...b,id:"tmp",pas:[],req:{}},null);return `<option value="${c.id}" ${c.id===selId?"selected":""} ${ap.ok?"":"disabled"}>${esc(nom(c.id))} · ${c.tipo==="POOL"?"Pool":"Habilitado"}${ap.ok?"":" — bloqueado: "+esc(ap.motivos[0])}</option>`}).join("");
+  const regionSol = "Oficina Central";
+  const habil = COND.filter(c=>(c.region||"Oficina Central")===regionSol && condApto(c.id,{...b,id:"tmp",pas:[],req:{},salida:b.salida||iso(HOY),regreso:b.regreso||iso(HOY)},null).ok);
+  const condOpts=(selId)=>`<option value="">— Seleccionar —</option>`+habil.map(c=>`<option value="${c.id}" ${c.id===selId?"selected":""}>${esc(nom(c.id))} · licencia ${c.clases.join("/")}</option>`).join("");
   return cab("Nueva solicitud de vehículo","Reemplaza el formulario Word «Solicitud de vehículo para salida a terreno» y el correo de aprobación. Tus datos se cargan desde la nómina institucional y la imputación presupuestaria la define tu jefatura al aprobar.","ERS §4.3-A · Formulario vigente")+
   (b.ejemplo?`<p class="nota" style="margin-bottom:var(--e-4)">Formulario precargado con un ejemplo para la demostración. <button class="btn sec chico" type="button" id="btn-limpiar">Limpiar formulario</button></p>`:"")+
   `<div class="grid g-form"><form id="form-sol" class="grid" novalidate>
@@ -677,11 +679,8 @@ function vNueva(){
    </div></fieldset>
    <fieldset><legend><span class="seccion-num">4</span>Conductores y pasajeros</legend><div class="campos">
      <div class="campo ancho"><span class="lbl">¿Requiere conductor del pool?</span><div class="opciones" role="radiogroup"><label><input type="radio" name="f-rc" value="si" ${b.reqCond?"checked":""}> Sí</label><label><input type="radio" name="f-rc" value="no" ${!b.reqCond?"checked":""}> No</label></div></div>
-     <div class="campo ancho" ${b.reqCond?"hidden":""} id="w-cond"><label for="f-cond">Conductor principal</label><select id="f-cond">${condOpts(b.cond)}</select><span class="ayuda">Los conductores con caución o licencia vencida aparecen bloqueados (DL 799).</span></div>
-     <div class="campo ancho"><span class="lbl">Conductor de relevo (opcional)</span><div class="persona"><input type="text" id="f-rel-rut" class="rut" inputmode="text" placeholder="12.345.678-9" aria-label="RUT del conductor de relevo" value="${esc(b.rel.rut)}" maxlength="12"><input type="text" id="f-rel-nom" placeholder="Nombre completo" aria-label="Nombre completo del conductor de relevo" value="${esc(b.rel.nom)}"></div><span class="ayuda" id="f-rel-ayuda"></span></div>
+     <div class="campo ancho" ${b.reqCond?"hidden":""} id="w-cond"><label for="f-cond">Conductor</label><select id="f-cond">${condOpts(b.cond)}</select><span class="ayuda">Conductores habilitados de ${regionSol}: caución y licencia vigentes para las fechas del viaje (DL 799).</span></div>
      <div class="campo ancho"><span class="lbl">Acompañantes (nómina CONAF)</span><div id="f-pas" class="grid" style="gap:var(--e-2)"></div><div><button class="btn sec chico" type="button" id="btn-pas">Agregar acompañante</button></div><span class="ayuda">Ingresa el RUT; si el funcionario está en la nómina, el nombre se completa solo.</span></div>
-     <div class="campo"><label for="f-ext">Pasajeros externos (convenios)</label><input type="number" id="f-ext" min="0" max="6" value="${b.externos}"></div>
-     <div class="campo"><label for="f-extj">Justificación de externos</label><input type="text" id="f-extj" value="${esc(b.extJust)}" placeholder="Institución y motivo"></div>
      <div class="campo ancho"><span class="lbl">Total de personas en el vehículo</span><span id="f-tot" class="num" style="font-size:var(--f-xl);font-weight:600"></span></div>
    </div></fieldset>
    <div class="acciones"><button class="btn" type="submit" id="btn-enviar">Enviar a jefatura</button><button class="btn sec" type="button" id="btn-borr">Guardar sin enviar</button></div>
@@ -700,14 +699,14 @@ post.nueva = ()=>{
     ${b.destinos.length>1?`<button class="btn peligro chico" type="button" data-quitar="${i}" aria-label="Quitar destino ${i+1}">Quitar</button>`:"<span></span>"}</div>`}).join("")};
   const pintarPas=()=>{$("#f-pas").innerHTML=b.pasList.map((x,i)=>`<div class="persona"><input type="text" class="rut" data-p="${i}" data-k="rut" value="${esc(x.rut)}" placeholder="12.345.678-9" maxlength="12" aria-label="RUT acompañante ${i+1}"><input type="text" data-p="${i}" data-k="nom" value="${esc(x.nom)}" placeholder="Nombre completo" aria-label="Nombre acompañante ${i+1}"><button class="btn peligro chico" type="button" data-qpas="${i}" aria-label="Quitar acompañante ${i+1}">Quitar</button></div>`).join("")||`<p class="tenue peq">Sin acompañantes.</p>`};
   const pasValidos=()=>b.pasList.filter(x=>x.rut||x.nom);
-  const leer=()=>{b.jefe=$("#f-jefe").value;b.salida=$("#f-sal").value;b.regreso=$("#f-reg").value;b.cometido=$("#f-com").value;b.tipo=$("#f-tipo").value;b.t4=$("#f-4x4").checked;b.carga=$("#f-carga").checked;b.reqCond=document.querySelector('input[name="f-rc"]:checked').value==="si";b.cond=b.reqCond?"":$("#f-cond").value;b.rel={rut:$("#f-rel-rut").value,nom:$("#f-rel-nom").value};b.externos=+$("#f-ext").value||0;b.extJust=$("#f-extj").value;};
+  const leer=()=>{b.jefe=$("#f-jefe").value;b.salida=$("#f-sal").value;b.regreso=$("#f-reg").value;b.cometido=$("#f-com").value;b.tipo=$("#f-tipo").value;b.t4=$("#f-4x4").checked;b.carga=$("#f-carga").checked;b.reqCond=document.querySelector('input[name="f-rc"]:checked').value==="si";b.cond=b.reqCond?"":$("#f-cond").value;b.externos=0;b.extJust="";};
   const revisar=()=>{
     leer(); $("#w-cond").hidden=b.reqCond;
-    const pv=pasValidos(), relOk=b.rel.rut||b.rel.nom;
+    const pv=pasValidos(), relOk=false;
     const r={...b,id:"tmp",pas:pv,relevo:relOk?"x":null,req:{t4:b.t4,carga:b.carga}}; const tot=pasajeros(r);
     const dur=(F(b.regreso)-F(b.salida))/36e5;
     $("#f-dur").textContent = dur>0?`${Math.floor(dur/24)} ${Math.floor(dur/24)===1?"día":"días"} y ${Math.round(dur%24)} horas de ocupación del vehículo`:"—";
-    $("#f-tot").textContent = tot+" (conductores + acompañantes"+(b.externos?" + externos":"")+")";
+    $("#f-tot").textContent = tot+" (conductores + acompañantes)";
     const out=[]; const reg=(c,t,d)=>out.push(`<div class="regla ${c}"><span class="ico" aria-hidden="true">${{ok:"✓",av:"!",bl:"✕",inf:"i"}[c]}</span><div><b>${t}</b><span>${d}</span></div></div>`);
     if(!(dur>0)) reg("bl","Fechas incoherentes","El regreso debe ser posterior a la salida."); else if(F(b.salida)<HOY) reg("bl","Salida en el pasado","La fecha de salida es anterior a hoy."); else reg("ok","Fechas válidas",`Salida ${fCorta(b.salida)} · regreso ${fCorta(b.regreso)}.`);
     const inh=inhabiles(b.salida,b.regreso);
@@ -716,21 +715,16 @@ post.nueva = ()=>{
     destOk? reg("ok","Destinos",b.destinos.map(d=>d.com).join(" · ")) : reg("bl","Destino incompleto","Completa región, provincia, comuna y localidad de cada destino.");
     const maxCap=Math.max(...VEH.filter(v=>v.estado==="DISP").map(v=>v.cap));
     tot>maxCap? reg("bl","Capacidad excedida",`${tot} personas superan la capacidad máxima del pool (${maxCap}).`) : reg("ok","Capacidad",`${tot} personas.`);
-    if(!b.reqCond){ if(!b.cond) reg("bl","Falta conductor","Selecciona un conductor con caución vigente o solicita uno del pool."); else { const a=condApto(b.cond,{...r,relevo:null}); a.ok?reg("ok","Conductor habilitado",`${nom(b.cond)}: caución y licencia vigentes al regreso.`):reg("bl","Conductor no habilitado",a.motivos.join(" · ")); } }
+    if(!b.reqCond){ if(!b.cond) reg("bl","Falta conductor","Selecciona un conductor habilitado de tu región o solicita uno del pool."); else { const a=condApto(b.cond,{...r,relevo:null}); a.ok?reg("ok","Conductor habilitado",`${nom(b.cond)}: caución y licencia vigentes al regreso.`):reg("bl","Conductor no habilitado",a.motivos.join(" · ")); } }
     else reg("inf","Conductor del pool","Logística asignará un conductor institucional disponible.");
-    if(relOk){ if(!rutValido(b.rel.rut)) reg("bl","RUT del relevo inválido","Revisa el RUT y su dígito verificador."); else if(!b.rel.nom.trim()) reg("bl","Falta el nombre del relevo","Ingresa el nombre completo.");
-      else { const p=personaPorRut(b.rel.rut), c=p&&CX[p.id]; if(c){ const a=condApto(c.id,{...r,relevo:null}); a.ok?reg("ok","Relevo habilitado",`${p.nom}: caución y licencia vigentes.`):reg("bl","Relevo no habilitado",a.motivos.join(" · ")); } else reg("av","Relevo fuera del padrón",`${b.rel.nom} no figura en el padrón de conductores. El encargado verificará su caución y licencia.`); } }
     const malos=pv.filter(x=>!rutValido(x.rut)||!x.nom.trim());
     if(malos.length) reg("bl","Acompañantes incompletos",`${malos.length} acompañante(s) con RUT inválido o sin nombre.`); else if(pv.length) reg("ok","Acompañantes",`${pv.length} registrado(s).`);
     reg("inf","Imputación presupuestaria","La define tu jefatura directa al aprobar la solicitud.");
-    if(b.externos && !b.extJust.trim()) reg("bl","Justifica los externos","Indica institución y motivo de los pasajeros externos.");
     if(b.cometido.trim().length<15) reg("bl","Cometido incompleto","Describe la labor institucional a realizar (mín. 15 caracteres).");
     $("#revision").innerHTML=out.join("");
     $("#btn-enviar").disabled = out.some(x=>x.includes('regla bl'));
     $("#f-sal").setAttribute("aria-invalid",!(dur>0)); $("#f-com").setAttribute("aria-invalid",b.cometido.trim().length<15);
-    $("#f-rel-rut").setAttribute("aria-invalid",!!(b.rel.rut&&!rutValido(b.rel.rut)));
     document.querySelectorAll('#f-pas input[data-k="rut"]').forEach(i=>i.setAttribute("aria-invalid",!!(i.value&&!rutValido(i.value))));
-    const ra=$("#f-rel-ayuda"); const pr=b.rel.rut&&rutValido(b.rel.rut)&&personaPorRut(b.rel.rut); ra.textContent=pr?`Encontrado en la nómina: ${pr.nom}`:"Formato 12.345.678-9. Debe tener caución vigente.";
   };
   const rutEnVivo=(inp)=>{ const f=rutFormato(inp.value); if(f!==inp.value){ inp.value=f; } };
   pintarDest(); pintarPas(); revisar();
@@ -740,7 +734,6 @@ post.nueva = ()=>{
     if(el.dataset.d!==undefined && el.dataset.k==="otro"){ b.destinos[+el.dataset.d].otro=el.value; }
     if(el.dataset.p!==undefined){ const x=b.pasList[+el.dataset.p]; x[el.dataset.k]=el.value;
       if(el.dataset.k==="rut"&&rutValido(el.value)){ const p=personaPorRut(el.value); if(p&&!x.nom){ x.nom=p.nom; const n=document.querySelector(`#f-pas input[data-p="${el.dataset.p}"][data-k="nom"]`); if(n) n.value=p.nom; } } }
-    if(el.id==="f-rel-rut"&&rutValido(el.value)){ const p=personaPorRut(el.value); if(p&&!$("#f-rel-nom").value) $("#f-rel-nom").value=p.nom; }
     b.ejemplo=false; revisar(); });
   f.addEventListener("change",e=>{ const el=e.target;
     if(el.dataset.d!==undefined && el.tagName==="SELECT"){ const d=b.destinos[+el.dataset.d], k=el.dataset.k; d[k]=el.value;
@@ -754,7 +747,7 @@ post.nueva = ()=>{
   $("#btn-borr").onclick=()=>{leer();tostada("Solicitud guardada sin enviar. Puedes retomarla desde esta pantalla.")};
   f.addEventListener("submit",e=>{e.preventDefault();leer();
     const destinos=b.destinos.map(d=>({reg:d.reg,prov:d.prov,com:d.com,lug:d.lug===OTRA?d.otro.trim():d.lug}));
-    const relevo=(b.rel.rut||b.rel.nom)?personaDe(b.rel):null;
+    const relevo=null;
     const pas=pasValidos().map(personaDe);
     const r=R({id:nuevoId(),est:"PEND_JEFE",fSol:iso(HOY),sol:ROLES[rol].quien,jefe:b.jefe,salida:b.salida,regreso:b.regreso,destinos,cometido:b.cometido,km:0,cc:null,reqCond:b.reqCond,cond:b.cond||null,relevo,pas,externos:b.externos,req:{t4:b.t4,carga:b.carga},tipoReq:b.tipo});
     const inh=inhabiles(r.salida,r.regreso); if(inh.length) r.dl799={req:true,adj:null};
