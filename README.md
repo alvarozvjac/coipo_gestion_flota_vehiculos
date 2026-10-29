@@ -27,20 +27,20 @@ Desde la versión 0.4 la maqueta sigue la línea gráfica de www.conaf.cl (letra
 | Encargado de vehículos | Inicio · Salidas · Flota · Conductores · Combustible y gastos · Reportes | Ver detalle abajo |
 | Administrador nacional | Lo mismo que el encargado, más Configuración | **Agregar vehículos** (Flota) y **agregar conductores** (Conductores), sólo en este perfil; catálogos, usuarios y accesos, cierre mensual, calidad de datos, traspasos y auditoría |
 
-El conductor no tiene perfil: no accede a la plataforma. La entrega y la recepción del vehículo (odómetro, combustible e inventario) las registra el encargado de vehículos.
+El conductor no tiene perfil: no accede a la plataforma. La entrega y la recepción del vehículo (odómetro, combustible y documentación entregada) las registra el encargado de vehículos.
 
 Lo que ve el encargado de vehículos, y qué función de GESAD reemplaza cada parte:
 
 | Menú | Contenido | Reemplaza en GESAD |
 |---|---|---|
-| Inicio | Tarjetas de acceso a cada tarea, sin información repetida; las de novedades mecánicas, próximos vencimientos y libro de guardia abren su propia pantalla. Pendientes del día (asignar, entregar, recibir, novedades mecánicas), próximos vencimientos y **cierre de jornada del libro de guardia** | Salidas del día, Guarde de vehículos, Movimiento diario |
-| Salidas | Lista única con filtros (por asignar, próximas, en terreno, finalizadas) o vista de calendario. Desde el detalle se asigna, se entrega y se recibe el vehículo, con **inventario de accesorios** al entregar y al recibir | Ingreso de solicitudes, Consulta de salidas, Consulta por conductor y por pasajeros |
-| Flota | **Hoja de vida** de cada vehículo: documentos, mantención (órdenes de trabajo y cierre con factura), combustible, gastos, inventario, libro de guardia y salidas | Ficha de vehículos, Seguros, Ubicación, Mantenciones, Ficha de taller, Orden de trabajo |
+| Inicio | Tarjetas de acceso a cada tarea, sin información repetida; las de novedades mecánicas y próximos vencimientos abren su propia pantalla | Salidas del día, Movimiento diario |
+| Salidas | Lista única con filtros (por asignar, próximas, en terreno, finalizadas) o vista de calendario. Desde el detalle se asigna, se entrega y se recibe el vehículo, con la **documentación entregada** (padrón, revisión técnica, SOAP, permiso de circulación y tarjeta de combustible) | Ingreso de solicitudes, Consulta de salidas, Consulta por conductor y por pasajeros |
+| Flota | **Hoja de vida** de cada vehículo: documentos, mantención (órdenes de trabajo y cierre con factura), combustible, gastos, **recinto de guarda** y salidas. El encargado **actualiza los documentos** (revisión técnica, gases, SOAP, permiso de circulación y póliza) con su nueva fecha | Ficha de vehículos, Seguros, Ubicación, Mantenciones, Ficha de taller, Orden de trabajo |
 | Conductores | Padrón con caución y licencia; los bloqueados no aparecen en las asignaciones | Conductores, Ficha de conductores |
 | Combustible y gastos | Cargas, **importación validada del archivo COPEC**, compras a granel y gastos por documento (factura o boleta) | Carga archivo Copec, Ingreso combustible en efectivo, Compra a granel, Ingreso de gastos |
 | Reportes | Kilómetros y costos, **Tesorería** (Excel mensual o anual), operatividad mensual, rendimiento de combustible y gastos por vehículo | Reportes de consumo, rendimiento, gastos y operatividad mensual |
 
-Para ver el flujo completo: en **Inicio**, asigne la solicitud **OC-2026-000410** (el camión FXHB-90 queda descartado por su revisión técnica vencida). Luego entregue **OC-2026-000408** en «Salidas → Próximas» desmarcando un accesorio y recíbala registrando el odómetro y el combustible.
+Para ver el flujo completo: en **Inicio**, asigne la solicitud **OC-2026-000410** (el camión FXHB-90 queda descartado por su revisión técnica vencida). Luego entregue **OC-2026-000408** en «Salidas → Próximas» desmarcando un documento y recíbala registrando el odómetro y el combustible.
 
 ## Análisis de GESAD
 

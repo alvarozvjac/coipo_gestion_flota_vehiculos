@@ -457,6 +457,8 @@ body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{d
 .l-usuario .ico{color:var(--verde-acento)}
 .l-usuario .ico.fin{margin-left:auto;color:var(--tinta-3)}
 .rol-chip{display:inline-flex;align-items:center;gap:6px;background:var(--verde-tinte);color:var(--verde-tinta);border:1px solid var(--verde-claro);border-radius:var(--r-pill);padding:4px 12px;font-weight:600;font-size:var(--f-s)}
+.doc-edit{display:flex;gap:var(--e-2);flex-wrap:wrap;align-items:center}
+.doc-edit input{width:auto;min-width:160px}
 </style>
 
 </head><body>
@@ -557,7 +559,8 @@ const VEH = VEH_RAW.map((v,i)=>{
   if(v.pat==="JFTS-53"||v.pat==="KBDB-91"){estado="EXCL"; modalidad="Asignación exclusiva (Dirección Ejecutiva)";}
   if(v.pat==="VGXF-75") tenencia="Arriendo operativo (MITTA)";
   const tarj = 4000+((i*733)%5000);
-  return {...v, cap:r[0], trac:r[1], comb:r[2], cargaKg:r[3], estado, modalidad, tenencia, unidad, region:"Oficina Central",
+  const guarda = unidad.includes("Vivero Buin")?"Vivero Buin, Camino Padre Hurtado s/n, Buin":"Estacionamiento Eleuterio Ramírez, Oficina Central, Santiago";
+  return {...v, cap:r[0], trac:r[1], comb:r[2], cargaKg:r[3], estado, modalidad, tenencia, unidad, guarda, region:"Oficina Central",
     programa:"P01 Gestión Institucional / Finanzas y Administración", proxMant:(v.ultMant||v.km)+10000,
     poliza:"BCI-"+(1058000+i*37)+"-"+((i*7)%9), polizaVence:"2027-01-31", tarjeta:"COPEC TCT ···· "+tarj, tarjetaEstado: v.pat==="WX-6622"?"En custodia":"Activa", pin:String(1000+((i*389)%9000)).slice(-4), tag:"TAG "+(70500+i*13), cupo:"$ 350.000 / mes"};
 });
@@ -1024,7 +1027,7 @@ function abrirOrden(id){
    <tr><td>Salida / regreso</td><td>${fFH(r.salida)} → ${fFH(r.regreso)} · ${Math.max(1,Math.ceil((F(r.regreso)-F(r.salida))/DIA))} día(s) · ${pasajeros(r)} personas</td></tr>
    <tr><td>Acompañantes</td><td>${r.pas.map(nom).map(esc).join(", ")||"—"}</td></tr>
    ${r.km?`<tr><td>Km aproximados</td><td>${km(r.km)}</td></tr>`:""}
-   <tr><td>Lugar de guarda</td><td>${esc(v.unidad)}${r.destinos.length&&r.km>500?" · pernoctación autorizada en destino":""}</td></tr>
+   <tr><td>Lugar de guarda</td><td>${esc(v.guarda||v.unidad)}${r.destinos.length&&r.km>500?" · pernoctación autorizada en destino":""}</td></tr>
 
    <tr><td>Tarjeta combustible</td><td>${esc(r.tarjeta||v.tarjeta)}</td></tr>
   </tbody></table>
@@ -1071,42 +1074,14 @@ post.admin = ()=>{
    ===================================================================== */
 
 /* ---------- Catálogos tomados de GESAD ---------- */
-const ACC = [
- {g:"Seguridad", i:["Extintor","Botiquín","Triángulos"]},
- {g:"Herramientas", i:["Gata","Llave de rueda","Rueda de repuesto","Piola de arrastre","Cadenas para nieve"]},
- {g:"Comunicaciones", i:["Equipo móvil VHF"]},
- {g:"Documentos", i:["Padrón (inscripción RVM)","Permiso de circulación","Certificado de revisión técnica","Certificado de gases","Seguro obligatorio (SOAP)","Tarjeta de combustible"]},
-];
-const ACC_ITEMS = ACC.flatMap(g=>g.i);
+const DOCS_ENTREGA = ["Padrón (inscripción RVM)","Permiso de circulación","Certificado de revisión técnica","Certificado de gases","Seguro obligatorio (SOAP)","Tarjeta de combustible"];
 const TIPO_GASTO = [["MR","Mantención y reparación"],["CB","Combustible"],["PS","Prima de seguro"],["SO","Seguro obligatorio"],["PC","Permiso de circulación"],["RV","Revisión técnica"],["CG","Control de gases"],["GV","Gastos varios"]];
 const TGX = Object.fromEntries(TIPO_GASTO);
 const TRABAJOS = {
  "Preventiva (cada 10.000 km)":["Cambio aceite motor con filtro","Cambio aceite caja de cambios","Revisión general de niveles y fugas","Engrase de chasis","Afinamiento de motor","Aseo e inspección de frenos","Alineación de tren delantero","Control y análisis de gases","Chequeo del sistema eléctrico","Rotación de neumáticos","Revisión de amortiguadores","Cambio de correas"],
  "Reparación":["Cambio de correa y tensor de distribución","Cambio de pastillas de freno","Reparación de embrague","Cambio de amortiguadores por eje","Cambio de bomba de agua","Reparación de tren delantero","Reparación de alternador","Cambio de focos","Reparación de aire acondicionado"]};
-const UBICACIONES = ["Estacionamiento Oficina Central","Taller","Vivero Buin","Asignado a Dirección Ejecutiva","Terreno"];
 const TALLERES = ["Taller multimarca (convenio)","Concesionario de la marca","Servicio de lubricentro"];
 const ESTACIONES = ["Copec Av. Matta","Copec Ruta 5 Sur km 150","Shell Rancagua","Copec Talca Norte","Petrobras Chillán","Copec Temuco Centro"];
-
-/* ---------- Inventario de accesorios por vehículo (ejemplo) ---------- */
-const INV = {};
-VEH.forEach((v,i)=>{
-  const it={}; ACC_ITEMS.forEach(n=>it[n]="OK");
-  if(!["CAMIONETA","CAMIÓN","TODOTERRENO"].includes(v.tipo)) it["Equipo móvil VHF"]="No aplica";
-  if(!["CAMIONETA","TODOTERRENO","SUV"].includes(v.tipo)) it["Cadenas para nieve"]="No aplica";
-  if(v.pat==="KBSW-97") it["Cadenas para nieve"]="Falta";
-  if(v.pat==="CRBJ-40") it["Botiquín"]="Falta";
-  INV[v.pat]={items:it, extintor: v.pat==="CRBJ-40"?"2026-09-30":v.pat==="JXZS-29"?"2026-11-10":"2027-0"+(1+i%8)+"-28", revisado:"2026-10-01"};
-});
-
-/* ---------- Libro de guardia (ejemplo de los últimos 5 días) ---------- */
-let GUARDE = [];
-["2026-10-16","2026-10-19","2026-10-20","2026-10-21"].forEach((d,k)=>{
-  VEH.forEach(v=>{
-    const r=RES.find(x=>x.pat===v.pat&&x.bit?.sal&&x.bit.sal.slice(0,10)<=d&&(!x.bit.reg||x.bit.reg.slice(0,10)>d));
-    const ub = r?"Terreno":["TALL_P","TALL_C"].includes(v.estado)?"Taller":v.pat==="WX-6622"?"Vivero Buin":v.estado==="EXCL"?"Asignado a Dirección Ejecutiva":"Estacionamiento Oficina Central";
-    GUARDE.push({fecha:d,pat:v.pat,hora:"18:"+String(5+k*7).padStart(2,"0"),ub,km:v.km-(3-k)*35,comb:["Lleno","3/4","1/2"][(k+v.anio)%3],est:v.estado==="MALO"?"Malo":"Bueno",quien:"Guardia de turno"});
-  });
-});
 
 /* ---------- Combustible (ejemplo) ---------- */
 let CARGAS = []; let nCarga=1;
@@ -1157,7 +1132,7 @@ ROLES.encargado.nav=[["hoy","Inicio"],["salidas","Salidas"],["flota","Flota"],["
 delete ROLES.conductor; // el conductor no usa la plataforma: la salida y el regreso los registra el encargado
 ROLES.super.nav=[...ROLES.encargado.nav,["config","Configuración"]];
 const puedeGestionar = ()=>["encargado","super"].includes(rol);
-const VISTAS_INICIO=["novedades","vencimientos","guardia"];
+const VISTAS_INICIO=["novedades","vencimientos"];
 const NAV_ICO={inicio:"home",hoy:"home",nueva:"plus",mis:"lista",bandeja:"aprobar",equipo:"equipo",salidas:"ruta",flota:"car",conductores:"licencia",combustible:"combustible",reportes:"grafico",config:"config"};
 const ico=(n,c="ico")=>`<svg class="${c}" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 const iniciales=n=>String(n||"").split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase();
@@ -1184,7 +1159,7 @@ function render(){
   if(!ROLES[rol].nav.some(n=>n[0]===vista) && !(puedeGestionar()&&VISTAS_INICIO.includes(vista))) vista=ROLES[rol].nav[0][0];
   pintarBarra();
   const viejo=$("#vista"), nuevo=viejo.cloneNode(false); viejo.replaceWith(nuevo);
-  const fn={novedades:vNovedades,vencimientos:vVencimientos,guardia:vGuardia,inicio:vInicio,mis:vMis,nueva:vNueva,visor:vVisor,bandeja:vBandeja,equipo:vEquipo,hoy:vHoy,salidas:vSalidas,flota:vFlota,conductores:vConductores,combustible:vCombustible,reportes:vReportes,config:vConfig}[vista];
+  const fn={novedades:vNovedades,vencimientos:vVencimientos,inicio:vInicio,mis:vMis,nueva:vNueva,visor:vVisor,bandeja:vBandeja,equipo:vEquipo,hoy:vHoy,salidas:vSalidas,flota:vFlota,conductores:vConductores,combustible:vCombustible,reportes:vReportes,config:vConfig}[vista];
   $("#vista").innerHTML=fn();
   (post[vista]||(()=>{}))();
 }
@@ -1203,7 +1178,6 @@ function vencimientos(){
   const out=[];
   VEH.forEach(v=>{
     [["rt","Revisión técnica"],["soap","SOAP"],["perm","Permiso de circulación"],["gases","Revisión de gases"]].forEach(([k,n])=>{const e=docEstado(v[k]); if(e==="VENC"||e==="POR") out.push({g:e==="VENC"?2:1,pat:v.pat,t:n,f:v[k],e})});
-    const ex=docEstado(INV[v.pat].extintor); if(ex!=="OK") out.push({g:ex==="VENC"?2:1,pat:v.pat,t:"Extintor",f:INV[v.pat].extintor,e:ex});
   });
   return out.sort((a,b)=>b.g-a.g||(a.f||"").localeCompare(b.f||""));
 }
@@ -1213,7 +1187,6 @@ function tareasHoy(){
   RES.filter(r=>r.est==="CONFIRMADA"&&r.salida.slice(0,10)<=man).forEach(r=>t.push({k:"despachar",r,txt:"Entregar vehículo "+r.pat,sub:`${r.id} · ${fCorta(r.salida)} · ${nom(r.cond)}`,btn:"Despachar"}));
   RES.filter(r=>r.est==="EN_TERRENO"&&r.regreso.slice(0,10)<=man).forEach(r=>t.push({k:"recibir",r,txt:"Recibir vehículo "+r.pat,sub:`${r.id} · regreso ${fCorta(r.regreso)} · ${nom(r.cond)}`,btn:"Recibir"}));
   RES.filter(r=>r.bit?.nov&&r.bit.nov!=="Sin novedades"&&!r.bit.ot).forEach(r=>t.push({k:"novedad",r,txt:"Novedad mecánica en "+r.pat,sub:r.bit.nov,btn:"Crear orden"}));
-  if(!GUARDE.some(g=>g.fecha===h)) t.push({k:"guardia",txt:"Cierre de jornada en el libro de guardia",sub:"Ubicación, kilometraje y combustible de cada vehículo al término del día",btn:"Registrar"});
   return t;
 }
 const ICO_T=()=>({asignar:chip("Asignar","c-pend","◑"),despachar:chip("Salida","c-res","■"),recibir:chip("Regreso","c-terr","▶"),novedad:chip("Taller","c-tall","⚙"),guardia:chip("Guardia","c-neu","◷")});
@@ -1235,25 +1208,6 @@ function vVencimientos(){
   `<div class="contadores"><div class="contador ${nv?"alerta":""}"><b>${nv}</b><span>vencidos</span></div><div class="contador"><b>${ven.length-nv}</b><span>vencen en<br>30 días</span></div></div>
   <section class="panel"><div class="tabla-env"><table><thead><tr><th>Patente</th><th>Documento</th><th>Vencimiento</th><th>Estado</th></tr></thead><tbody>${ven.map(a=>`<tr class="clic" data-veh="${a.pat}" tabindex="0"><td>${placa(a.pat)}</td><td>${a.t}</td><td class="num">${a.f?fF(a.f):"Sin fecha registrada"}</td><td>${a.e==="VENC"?chip("Vencido","c-malo","✕"):a.e==="SIN"?chip("Sin dato","c-malo","?"):chip("Por vencer","c-pend","!")}</td></tr>`).join("")||`<tr><td colspan="4" class="tenue">Sin vencimientos en los próximos 30 días.</td></tr>`}</tbody></table></div></section>`;
 }
-function vGuardia(){
-  return volverHTML()+cab("Libro de guardia","Ubicación, kilometraje, combustible y estado de cada vehículo al término de la jornada.","")+`<section class="panel" id="sec-guardia">${guardiaHTML()}</section>`;
-}
-function guardiaHTML(){
-  const h=iso(HOY).slice(0,10), hecho=GUARDE.filter(g=>g.fecha===h);
-  const enOC=VEH.filter(v=>estadoHoy(v)!=="TERR");
-  if(hecho.length) return `<header><h2>Libro de guardia · ${fF(HOY)}</h2>${chip("Jornada cerrada","c-disp","✓")}</header><div class="cuerpo"><p>Registrado a las ${hecho[0].hora} por ${esc(hecho[0].quien)}: ${hecho.length} vehículos.</p></div>`;
-  return `<header><div><h2>Libro de guardia · cierre de jornada</h2><span class="sub">Vehículos en recinto al término del día. Los que están en terreno se registran solos con su salida.</span></div></header>
-  <div class="tabla-env"><table class="guarde"><thead><tr><th>Patente</th><th>Ubicación</th><th>Kilometraje</th><th>Combustible</th><th>Estado</th></tr></thead><tbody>${enOC.map(v=>{const u=["TALL_P","TALL_C"].includes(v.estado)?"Taller":v.pat==="WX-6622"?"Vivero Buin":v.estado==="EXCL"?"Asignado a Dirección Ejecutiva":"Estacionamiento Oficina Central";
-    return `<tr data-g="${v.pat}"><td>${placa(v.pat)}</td><td><select aria-label="Ubicación ${v.pat}" data-k="ub">${UBICACIONES.filter(x=>x!=="Terreno").map(x=>`<option ${x===u?"selected":""}>${x}</option>`).join("")}</select></td><td><input type="number" aria-label="Kilometraje ${v.pat}" data-k="km" value="${v.km}" min="${v.km}" style="max-width:130px"></td><td><select aria-label="Combustible ${v.pat}" data-k="comb">${["1/4","1/2","3/4","Lleno"].map(x=>`<option ${x==="3/4"?"selected":""}>${x}</option>`).join("")}</select></td><td><select aria-label="Estado ${v.pat}" data-k="est">${["Bueno","Regular","Malo"].map(x=>`<option ${x===(v.estado==="MALO"?"Malo":"Bueno")?"selected":""}>${x}</option>`).join("")}</select></td></tr>`}).join("")}</tbody></table></div>
-  <div class="pie-tabla"><span class="tenue">${enOC.length} vehículos en recinto · ${VEH.length-enOC.length} en terreno</span><button class="btn" type="button" id="btn-guardia">Registrar cierre de jornada</button></div>`;
-}
-post.hoy = ()=>postAccesos();
-post.guardia = ()=>{
-  const bg=$("#btn-guardia"); if(bg) bg.onclick=()=>{ const h=iso(HOY).slice(0,10);
-    document.querySelectorAll("tr[data-g]").forEach(tr=>{const g={fecha:h,pat:tr.dataset.g,hora:"18:05",quien:nom(ROLES[rol].quien)}; tr.querySelectorAll("[data-k]").forEach(c=>g[c.dataset.k]=c.dataset.k==="km"?+c.value:c.value); GUARDE.push(g)});
-    RES.filter(r=>r.est==="EN_TERRENO").forEach(r=>GUARDE.push({fecha:h,pat:r.pat,hora:"18:05",ub:"Terreno",km:r.bit.odoS,comb:r.bit.combS,est:"Bueno",quien:"Automático (en terreno)"}));
-    audit("Cierre de jornada en libro de guardia",fF(HOY),"—",VEH.length+" vehículos"); tostada("Cierre de jornada registrado."); render(); };
-};
 
 /* ======================= INICIO POR PERFIL ======================= */
 function heroHTML(txt){
@@ -1268,15 +1222,14 @@ function postAccesos(){ $("#vista").querySelectorAll("[data-acc]").forEach(b=>b.
 function accesosGestion(){
   const n=e=>RES.filter(r=>r.est===e).length, alertas=VEH.filter(v=>alertasVeh(v)>0).length;
   const cond=COND.map(c=>estCond(c).est), porVencer=cond.filter(e=>e==="POR"||e==="BLOQ").length;
-  const est=VEH.map(estadoHoy), ne=k=>est.filter(e=>e===k).length, ven=vencimientos(), nov=novedadesPend().length, venc=ven.filter(a=>a.e==="VENC").length, guardHecha=GUARDE.some(g=>g.fecha===iso(HOY).slice(0,10));
+  const est=VEH.map(estadoHoy), ne=k=>est.filter(e=>e===k).length, ven=vencimientos(), nov=novedadesPend().length, venc=ven.filter(a=>a.e==="VENC").length;
   ACCESOS=[
    {v:"salidas",ico:"aprobar",t:"Asignar vehículos",d:"Solicitudes aprobadas por la jefatura que esperan vehículo y conductor.",cta:"Ir a asignar",n:n("APROBADA"),nl:"por asignar",principal:true,pre:()=>{sel.salFiltro="asignar";sel.salModo="lista"}},
-   {v:"salidas",ico:"llave",t:"Entregar y recibir",d:"Vehículos que salen o regresan: odómetro, combustible e inventario de accesorios.",cta:"Ver salidas",n:n("CONFIRMADA")+n("EN_TERRENO"),nl:"en curso",pre:()=>{sel.salFiltro="proximas";sel.salModo="lista"}},
+   {v:"salidas",ico:"llave",t:"Entregar y recibir",d:"Vehículos que salen o regresan: odómetro, combustible y documentación del vehículo.",cta:"Ver salidas",n:n("CONFIRMADA")+n("EN_TERRENO"),nl:"en curso",pre:()=>{sel.salFiltro="proximas";sel.salModo="lista"}},
    {v:"salidas",ico:"calendario",t:"Calendario de la flota",d:"Ocupación de cada vehículo día a día, con reservas y mantenciones.",cta:"Abrir calendario",pre:()=>{sel.salModo="calendario"}},
    {v:"flota",ico:"car",t:"Flota",d:`Hoy: ${ne("DISP")} disponibles de ${VEH.length}, ${ne("TERR")} en terreno, ${ne("TALL_P")+ne("TALL_C")} en taller y ${ne("MALO")+ne("EXCL")+ne("BAJA")} fuera de servicio o exclusivos.`,cta:"Ver vehículos",n:alertas,nl:"con alertas",aviso:alertas>0},
    {v:"novedades",ico:"taller",t:"Novedades mecánicas",d:"Desperfectos reportados al recibir los vehículos, para crear la orden de trabajo.",cta:"Ver novedades",n:nov,nl:"novedades por atender",aviso:nov>0},
    {v:"vencimientos",ico:"alerta",t:"Próximos vencimientos",d:`Revisión técnica, gases, SOAP, permiso de circulación y extintores. ${venc} vencidos y ${ven.length-venc} por vencer en 30 días.`,cta:"Ver vencimientos",n:ven.length,nl:"vencimientos",aviso:venc>0},
-   {v:"guardia",ico:"check",t:"Libro de guardia",d:guardHecha?"La jornada de hoy ya está cerrada.":"Cierre de jornada: ubicación, kilometraje y combustible de cada vehículo en recinto.",cta:guardHecha?"Ver registro":"Registrar cierre",n:guardHecha?0:1,nl:"cierre pendiente"},
    {v:"conductores",ico:"licencia",t:"Conductores",d:"Caución y licencia de cada conductor. Los bloqueados no se pueden asignar.",cta:"Ver padrón",n:porVencer,nl:"por vencer o bloqueados",aviso:porVencer>0},
    {v:"combustible",ico:"combustible",t:"Combustible y gastos",d:"Cargas, archivo COPEC, compras a granel y gastos por factura o boleta.",cta:"Registrar"},
    {v:"reportes",ico:"grafico",t:"Reportes",d:"Kilómetros, rendimiento, operatividad y el Excel mensual o anual para Tesorería.",cta:"Ver reportes"}];
@@ -1307,6 +1260,7 @@ function vInicio(){
   return "";
 }
 post.inicio = ()=>postAccesos();
+post.hoy = ()=>postAccesos();
 
 /* ======================= SALIDAS ======================= */
 function grupoSalida(r){ return r.est==="APROBADA"?"asignar":r.est==="CONFIRMADA"?"proximas":r.est==="EN_TERRENO"?"terreno":r.est==="FINALIZADA"?"finalizadas":r.est==="PEND_JEFE"||r.est==="OBSERVADA"?"jefatura":"otras"; }
@@ -1367,31 +1321,28 @@ function asignacionHTML(r){
   <div class="campo"><label for="a-obs">Observaciones para la entrega</label><input type="text" id="a-obs" placeholder="Opcional"></div>
   <div class="acciones"><button class="btn" type="button" id="a-ok" ${asig.pat&&asig.tarj&&(!r.reqCond||asig.cond)?"":"disabled"}>Confirmar asignación</button><button class="btn peligro" type="button" id="a-sd">Sin disponibilidad</button></div>`;
 }
-function checklistHTML(pat, pref){
-  const inv=INV[pat].items;
-  return ACC.map(g=>`<p class="grupo-acc">${g.g}</p><div class="check-grid">${g.i.filter(n=>inv[n]!=="No aplica").map(n=>`<label class="${inv[n]==="Falta"?"falta":""}"><input type="checkbox" class="${pref}-acc" value="${esc(n)}" ${inv[n]==="OK"?"checked":""}> ${esc(n)}${inv[n]==="Falta"?" (falta)":""}</label>`).join("")}</div>`).join("");
+function checklistHTML(r){
+  return `<div class="check-grid">${DOCS_ENTREGA.map(n=>`<label><input type="checkbox" class="s-doc" value="${esc(n)}" checked> ${esc(n)}${n==="Tarjeta de combustible"&&r.tarjeta?` <span class="tenue peq mono">${esc(r.tarjeta)}</span>`:""}</label>`).join("")}</div>`;
 }
 function despachoHTML(r){
   const v=VX[r.pat], docAl=["rt","soap","perm"].filter(k=>docEstado(v[k],F(r.regreso))==="VENC");
   return `<h3>Entregar vehículo</h3>${docAl.length?`<div class="regla bl"><span class="ico">✕</span><div><b>No entregar: documento vencido</b><span>${docAl.map(k=>({rt:"Revisión técnica",soap:"SOAP",perm:"Permiso de circulación"})[k]).join(", ")}</span></div></div>`:""}
   <div class="campos"><div class="campo"><label for="s-hora">Hora de salida</label><input type="datetime-local" id="s-hora" value="${r.salida}"></div><div class="campo"><label for="s-odo">Odómetro (km)</label><input type="number" id="s-odo" value="${v.km}" min="${v.km}"><span class="ayuda">Último registro: ${km(v.km)} km</span></div>
   <div class="campo"><label for="s-comb">Estanque</label><select id="s-comb">${["1/4","1/2","3/4","Lleno"].map(x=>`<option ${x==="Lleno"?"selected":""}>${x}</option>`).join("")}</select></div><div class="campo"><span class="lbl">Retira</span><span>${esc(nom(r.cond))}</span></div></div>
-  <fieldset><legend>Inventario entregado</legend><span class="ayuda">Desmarca lo que no se entrega. Queda registrado en el acta.</span>${checklistHTML(r.pat,"s")}</fieldset>
+  <fieldset><legend>Documentación entregada</legend><span class="ayuda">Desmarca lo que no se entrega. Queda registrado en la bitácora.</span>${checklistHTML(r)}</fieldset>
   <div class="acciones"><button class="btn" type="button" id="s-ok">Registrar salida</button></div>`;
 }
 function recepcionHTML(r){
-  const ent=r.bit.acc||ACC_ITEMS.filter(n=>INV[r.pat].items[n]==="OK");
   return `<h3>Recibir vehículo</h3><p class="tenue peq">Salió ${fFH(r.bit.sal)} con ${km(r.bit.odoS)} km y estanque ${esc(r.bit.combS)}.</p>
   <div class="campos"><div class="campo"><label for="g-hora">Hora de llegada</label><input type="datetime-local" id="g-hora" value="${r.regreso}"></div><div class="campo"><label for="g-odo">Odómetro (km)</label><input type="number" id="g-odo" value="${r.bit.odoS+r.km}" min="${r.bit.odoS+1}"><span class="ayuda" id="g-rec"></span></div>
   <div class="campo"><label for="g-comb">Estanque</label><select id="g-comb">${["1/4","1/2","3/4","Lleno"].map(x=>`<option ${x==="1/2"?"selected":""}>${x}</option>`).join("")}</select></div>
   <div class="campo"><span class="lbl">Carga de combustible en ruta</span><div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--e-2)"><input type="number" id="g-lt" placeholder="Litros" aria-label="Litros"><input type="number" id="g-monto" placeholder="Monto $" aria-label="Monto"></div></div></div>
-  <fieldset><legend>Inventario recibido</legend><span class="ayuda">Desmarca lo que no vuelve. Se compara con lo entregado.</span><p class="grupo-acc">Entregado: ${ent.length} ítems</p><div class="check-grid">${ent.map(n=>`<label><input type="checkbox" class="g-acc" value="${esc(n)}" checked> ${esc(n)}</label>`).join("")}</div></fieldset>
   <div class="campo"><label for="g-nov">Novedades mecánicas</label><textarea id="g-nov" placeholder="Ej.: luz quemada, ruido de suspensión, testigo encendido"></textarea><div class="opciones"><label><input type="checkbox" id="g-sin"> Sin novedades</label></div></div>
   <div class="acciones"><button class="btn" type="button" id="g-ok">Registrar regreso y cerrar</button></div>`;
 }
 function cierreHTML(r){
-  const b=r.bit||{}; const falt=b.faltantes||[];
-  return `<h3>Bitácora</h3><dl class="ficha"><dt>Salida real</dt><dd class="num">${b.sal?fFH(b.sal):"—"} · ${km(b.odoS)} km · ${esc(b.combS||"")}</dd><dt>Regreso real</dt><dd class="num">${b.reg?fFH(b.reg):"—"} · ${km(b.odoR)} km · ${esc(b.combR||"")}</dd><dt>Recorrido</dt><dd class="num"><b>${b.odoR?km(b.odoR-b.odoS):"—"} km</b>${b.lt?` · ${b.lt} L cargados · ${((b.odoR-b.odoS)/b.lt).toFixed(1).replace(".",",")} km/L`:""}</dd><dt>Novedades</dt><dd>${esc(b.nov||"—")}</dd><dt>Inventario</dt><dd>${falt.length?chip("Faltó: "+falt.join(", "),"c-malo","✕"):"Completo"}</dd></dl>`;
+  const b=r.bit||{}; const sinDoc=b.docsEnt?DOCS_ENTREGA.filter(n=>!b.docsEnt.includes(n)):[];
+  return `<h3>Bitácora</h3><dl class="ficha"><dt>Salida real</dt><dd class="num">${b.sal?fFH(b.sal):"—"} · ${km(b.odoS)} km · ${esc(b.combS||"")}</dd><dt>Regreso real</dt><dd class="num">${b.reg?fFH(b.reg):"—"} · ${km(b.odoR)} km · ${esc(b.combR||"")}</dd><dt>Recorrido</dt><dd class="num"><b>${b.odoR?km(b.odoR-b.odoS):"—"} km</b>${b.lt?` · ${b.lt} L cargados · ${((b.odoR-b.odoS)/b.lt).toFixed(1).replace(".",",")} km/L`:""}</dd><dt>Novedades</dt><dd>${esc(b.nov||"—")}</dd><dt>Documentación</dt><dd>${!b.sal?"—":sinDoc.length?chip("No se entregó: "+sinDoc.join(", "),"c-pend","!"):"Entregada completa"}</dd></dl>`;
 }
 function postSalida(r){
   const C=$("#capa");
@@ -1404,32 +1355,30 @@ function postSalida(r){
   const sd=$("#a-sd"); if(sd) sd.onclick=()=>{ r.est="SIN_DISP"; r.obsLog="Logística: sin vehículos del pool que cumplan requisitos."; audit("Marca sin disponibilidad",r.id,"Aprobada","Sin disponibilidad"); tostada(`${r.id}: se avisó al solicitante.`); abrirSalida(r.id); };
   const so=$("#s-ok"); if(so) so.onclick=()=>{ const v=VX[r.pat], odo=+$("#s-odo").value;
     if(odo<v.km){$("#s-odo").setAttribute("aria-invalid","true");tostada(`El odómetro no puede ser menor a ${km(v.km)} km.`);return}
-    const acc=[...C.querySelectorAll(".s-acc:checked")].map(i=>i.value);
-    r.bit={sal:$("#s-hora").value,odoS:odo,combS:$("#s-comb").value,docs:true,acc}; r.est="EN_TERRENO"; r.hist.push({t:r.bit.sal,quien:ROLES[rol].quien,acc:"Salida"});
+    const docsEnt=[...C.querySelectorAll(".s-doc:checked")].map(i=>i.value);
+    r.bit={sal:$("#s-hora").value,odoS:odo,combS:$("#s-comb").value,docs:docsEnt.length===DOCS_ENTREGA.length,docsEnt}; r.est="EN_TERRENO"; r.hist.push({t:r.bit.sal,quien:ROLES[rol].quien,acc:"Salida"});
     audit("Registra salida",r.id+" · "+r.pat,"Confirmada","En terreno · "+km(odo)+" km"); tostada(`${r.pat} en terreno.`); abrirSalida(r.id); };
   const go=$("#g-ok"); if(go){ const rec=()=>{const d=(+$("#g-odo").value)-r.bit.odoS; $("#g-rec").textContent=d>0?`Recorridos: ${km(d)} km`:`Debe superar ${km(r.bit.odoS)} km`}; rec(); $("#g-odo").oninput=rec; $("#g-sin").onchange=e=>{$("#g-nov").disabled=e.target.checked};
     go.onclick=()=>{ const odo=+$("#g-odo").value, sin=$("#g-sin").checked, nov=$("#g-nov").value.trim();
       if(!(odo>r.bit.odoS)){$("#g-odo").setAttribute("aria-invalid","true");$("#g-odo").focus();return}
       if(!sin&&!nov){$("#g-nov").setAttribute("aria-invalid","true");$("#g-nov").focus();tostada("Describe las novedades o marca «Sin novedades».");return}
-      const vuelve=[...C.querySelectorAll(".g-acc:checked")].map(i=>i.value), ent=r.bit.acc||ACC_ITEMS.filter(n=>INV[r.pat].items[n]==="OK"), falt=ent.filter(n=>!vuelve.includes(n));
       const lt=+$("#g-lt").value||0, monto=+$("#g-monto").value||0;
-      Object.assign(r.bit,{reg:$("#g-hora").value,odoR:odo,combR:$("#g-comb").value,nov:sin?"Sin novedades":nov,lt,monto,faltantes:falt});
+      Object.assign(r.bit,{reg:$("#g-hora").value,odoR:odo,combR:$("#g-comb").value,nov:sin?"Sin novedades":nov,lt,monto});
       const v=VX[r.pat], ant=v.km; v.km=odo; r.est="FINALIZADA"; r.hist.push({t:r.bit.reg,quien:ROLES[rol].quien,acc:"Regreso"});
-      falt.forEach(n=>INV[r.pat].items[n]="Falta");
       if(lt) CARGAS.push({id:nCarga++,fecha:r.bit.reg.slice(0,10),pat:r.pat,origen:"Efectivo",est:"Informada en el regreso",lt,monto,km:odo,cond:r.cond});
       audit("Registra regreso",r.id+" · "+r.pat,"En terreno","Finalizada · "+km(ant)+" → "+km(odo)+" km");
-      tostada(`${r.id} cerrada: ${km(odo-r.bit.odoS)} km.${falt.length?" Faltantes: "+falt.join(", ")+".":""}`);
+      tostada(`${r.id} cerrada: ${km(odo-r.bit.odoS)} km.`);
       abrirSalida(r.id);
     }; }
 }
 
 /* ======================= FLOTA ======================= */
-function alertasVeh(v){ return ["rt","soap","perm","gases"].filter(k=>docEstado(v[k])!=="OK").length+(docEstado(INV[v.pat].extintor)!=="OK"?1:0)+(mant(v).est!=="OK"?1:0)+ACC_ITEMS.filter(n=>INV[v.pat].items[n]==="Falta").length; }
+function alertasVeh(v){ return ["rt","soap","perm","gases"].filter(k=>docEstado(v[k])!=="OK").length+(mant(v).est!=="OK"?1:0); }
 function vFlota(){
   const f=sel.flotaFiltro, q=sel.flotaQ.toLowerCase();
   const cnt=k=>VEH.filter(v=>filtroFlota(v,k)).length;
   const lista=VEH.filter(v=>filtroFlota(v,f)&&(!q||(v.pat+" "+v.marca+" "+v.modelo+" "+v.tipo).toLowerCase().includes(q)));
-  return cab("Flota","Una hoja de vida por vehículo: documentos, mantenciones, combustible, gastos, inventario y libro de guardia.","ERS §4.1 · GESAD «Vehículos»")+(rol==="super"?`<div class="acciones" style="margin-bottom:var(--e-4)"><button class="btn" type="button" id="btn-alta-veh">${ico("plus")}Agregar vehículo</button></div>`:"")+
+  return cab("Flota","Una hoja de vida por vehículo: documentos, mantenciones, combustible, gastos, recinto de guarda y salidas.","ERS §4.1 · GESAD «Vehículos»")+(rol==="super"?`<div class="acciones" style="margin-bottom:var(--e-4)"><button class="btn" type="button" id="btn-alta-veh">${ico("plus")}Agregar vehículo</button></div>`:"")+
   `<div class="barra-herr">${filtrosHTML([["todos","Todos",VEH.length],["DISP","Disponibles",cnt("DISP")],["TERR","En terreno",cnt("TERR")],["TALLER","Taller o fuera de servicio",cnt("TALLER")],["alerta","Con alertas",cnt("alerta")]],f,"data-ff")}<div><label class="sr" for="f-q">Buscar</label><input type="search" id="f-q" placeholder="Patente, marca o modelo" value="${esc(sel.flotaQ)}"></div></div>
   <section class="panel"><div class="tabla-env"><table><thead><tr><th>Patente</th><th>Vehículo</th><th>Estado</th><th>Kilometraje</th><th>Próxima mantención</th><th>Alertas</th></tr></thead><tbody>${lista.map(v=>{const m=mant(v), a=alertasVeh(v), p=Math.max(3,Math.min(100,(v.km-(v.proxMant-10000))/10000*100));
     return `<tr class="clic" data-veh="${v.pat}" tabindex="0"><td>${placa(v.pat)}</td><td><b>${esc(v.marca)} ${esc(v.modelo)}</b><br><span class="tenue peq">${esc(v.tipo)} · ${v.anio} · ${v.trac} · ${v.cap} plazas</span></td><td>${chipV(v)}</td><td class="d">${km(v.km)}</td><td><div class="mini-barra"><span class="medidor"><span style="width:${p}%;background:var(${m.est==="VENC"?"--st-malo":m.est==="PROX"?"--st-pend":"--st-disp"})"></span></span><span class="num">${m.resta<0?"vencida":km(m.resta)+" km"}</span></div></td><td>${a?chip(a+(a===1?" alerta":" alertas"),"c-pend","!"):`<span class="tenue">—</span>`}</td></tr>`}).join("")}</tbody></table></div></section>`;
@@ -1442,22 +1391,21 @@ post.flota = ()=>{ const V=$("#vista"); const ba=$("#btn-alta-veh"); if(ba) ba.o
 let fichaTab="resumen";
 function abrirFicha(pat, tab, op={}){
   if(tab) fichaTab=tab; const v=VX[pat], g=puedeGestionar();
-  const tabs=[["resumen","Resumen"],["docs","Documentos"],["mant","Mantención"],["comb","Combustible"],["gastos","Gastos"],["inv","Inventario"],["guardia","Libro de guardia"],["salidas","Salidas"]];
-  const ots=OT.filter(o=>o.pat===pat), gs=GASTOS.filter(x=>x.pat===pat).sort((a,b)=>b.fecha.localeCompare(a.fecha)), cs=CARGAS.filter(c=>c.pat===pat).sort((a,b)=>a.km-b.km), gu=GUARDE.filter(x=>x.pat===pat).sort((a,b)=>b.fecha.localeCompare(a.fecha)), sal=RES.filter(r=>r.pat===pat).sort((a,b)=>b.salida.localeCompare(a.salida));
+  const tabs=[["resumen","Resumen"],["docs","Documentos"],["mant","Mantención"],["comb","Combustible"],["gastos","Gastos"],["salidas","Salidas"]];
+  const ots=OT.filter(o=>o.pat===pat), gs=GASTOS.filter(x=>x.pat===pat).sort((a,b)=>b.fecha.localeCompare(a.fecha)), cs=CARGAS.filter(c=>c.pat===pat).sort((a,b)=>a.km-b.km), sal=RES.filter(r=>r.pat===pat).sort((a,b)=>b.salida.localeCompare(a.salida));
   const m=mant(v);
   let c="";
-  if(fichaTab==="resumen") c=`<div class="grid g-2b"><dl class="ficha"><dt>Patente</dt><dd>${placa(v.pat)}</dd><dt>Vehículo</dt><dd>${esc(v.tipo)} ${esc(v.marca)} ${esc(v.modelo)} ${v.anio}</dd><dt>Motor / chasis</dt><dd class="mono peq">${esc(v.motor||"—")} / ${esc(v.chasis||"—")}</dd>${v.color?`<dt>Color</dt><dd>${esc(v.color)}</dd>`:""}<dt>Capacidad</dt><dd>${v.cap} plazas · ${km(v.cargaKg)} kg${v.cargaM3?` · ${String(v.cargaM3).replace(".",",")} m³`:""} · ${v.trac} · ${v.comb}</dd><dt>Modalidad</dt><dd>${esc(v.modalidad)}</dd><dt>Tenencia</dt><dd>${esc(v.tenencia)}</dd><dt>Destinación</dt><dd>${esc(v.unidad)}</dd><dt>Programa</dt><dd>${esc(v.programa)}</dd></dl>
+  if(fichaTab==="resumen") c=`<div class="grid g-2b"><dl class="ficha"><dt>Patente</dt><dd>${placa(v.pat)}</dd><dt>Vehículo</dt><dd>${esc(v.tipo)} ${esc(v.marca)} ${esc(v.modelo)} ${v.anio}</dd><dt>Motor / chasis</dt><dd class="mono peq">${esc(v.motor||"—")} / ${esc(v.chasis||"—")}</dd>${v.color?`<dt>Color</dt><dd>${esc(v.color)}</dd>`:""}<dt>Capacidad</dt><dd>${v.cap} plazas · ${km(v.cargaKg)} kg${v.cargaM3?` · ${String(v.cargaM3).replace(".",",")} m³`:""} · ${v.trac} · ${v.comb}</dd><dt>Modalidad</dt><dd>${esc(v.modalidad)}</dd><dt>Tenencia</dt><dd>${esc(v.tenencia)}</dd><dt>Destinación</dt><dd>${esc(v.unidad)}</dd><dt>Recinto de guarda</dt><dd>${esc(v.guarda||"—")}<br><span class="tenue peq">Guarda nocturna y de fines de semana</span></dd><dt>Programa</dt><dd>${esc(v.programa)}</dd></dl>
     <dl class="ficha"><dt>Estado hoy</dt><dd>${chipV(v)}</dd><dt>Kilometraje</dt><dd class="num">${km(v.km)} km</dd><dt>Mantención</dt><dd>${chipMant(v)}</dd><dt>Seguro</dt><dd><span class="mono">${esc(v.poliza)}</span>${v.aseguradora?` · ${esc(v.aseguradora)}`:""}${v.deducibleUF?` · deducible ${esc(v.deducibleUF)} UF`:""} · vence ${fF(v.polizaVence)}${v.asistencia?`<br><span class="tenue peq">Asistencia en ruta: ${esc(v.asistencia)}</span>`:""}</dd><dt>Tarjeta</dt><dd class="mono">${esc(v.tarjeta)} · ${esc(v.tarjetaEstado)}</dd><dt>Alertas</dt><dd>${alertasVeh(v)||"Sin alertas"}</dd></dl></div>
     ${g?`<div class="acciones"><button class="btn sec chico" type="button" data-ftab="mant" data-op="ot">Nueva orden de trabajo</button><button class="btn sec chico" type="button" data-ftab="gastos" data-op="gasto">Registrar gasto</button></div>`:""}`;
-  if(fichaTab==="docs") c=`<div class="tabla-env"><table><thead><tr><th>Documento</th><th>Vencimiento</th><th>Estado</th></tr></thead><tbody>${[["rt","Revisión técnica"],["gases","Revisión de gases"],["soap","SOAP"],["perm","Permiso de circulación"]].map(([k,n])=>`<tr><td>${n}</td><td class="num">${v[k]?fF(v[k]):"—"}</td><td>${chipDoc(v[k])}</td></tr>`).join("")}<tr><td>Póliza de seguro (ejemplo)</td><td class="num">${fF(v.polizaVence)}</td><td>${chipDoc(v.polizaVence)}</td></tr><tr><td>Extintor</td><td class="num">${fF(INV[pat].extintor)}</td><td>${chipDoc(INV[pat].extintor)}</td></tr></tbody></table></div>`;
+  if(fichaTab==="docs"){ const DOCS=[["rt","Revisión técnica"],["gases","Revisión de gases"],["soap","SOAP"],["perm","Permiso de circulación"],["polizaVence","Póliza de seguro"]];
+    c=`<p class="tenue peq">Al renovar un documento, registre su nueva fecha de vencimiento.${g?"":" Sólo el encargado de vehículos y el administrador pueden actualizarlos."}</p><div class="tabla-env"><table><thead><tr><th>Documento</th><th>Vencimiento</th><th>Estado</th>${g?"<th></th>":""}</tr></thead><tbody>${DOCS.map(([k,n])=>op.docEdit===k?`<tr><td>${n}</td><td colspan="${g?3:2}"><form class="doc-edit" id="f-doc" data-k="${k}"><label class="sr" for="d-fecha">Nuevo vencimiento</label><input type="date" id="d-fecha" value="${v[k]||""}" min="${iso(HOY).slice(0,10)}">${k==="polizaVence"?`<label class="sr" for="d-num">N° de póliza</label><input type="text" id="d-num" class="mono" value="${esc(v.poliza||"")}" placeholder="N° de póliza">`:`<label class="sr" for="d-num">N° de documento</label><input type="text" id="d-num" class="mono" placeholder="N° o folio (opcional)">`}<button class="btn chico" type="submit">Guardar</button><button class="btn sec chico" type="button" data-doc-cancel>Cancelar</button></form></td></tr>`:`<tr><td>${n}${k==="polizaVence"&&v.poliza?` <span class="tenue peq mono">${esc(v.poliza)}</span>`:""}</td><td class="num">${v[k]?fF(v[k]):"—"}</td><td>${chipDoc(v[k])}</td>${g?`<td class="d"><button class="btn sec chico" type="button" data-doc="${k}">Actualizar</button></td>`:""}</tr>`).join("")}</tbody></table></div>`; }
   if(fichaTab==="mant") c=`<div class="estado-linea">${chipMant(v)}<span class="tenue peq">Última: ${km(v.ultMant)} km · próxima: ${km(v.proxMant)} km</span></div>
     ${v.diag?`<div class="regla ${/CATASTR|CRÍTICO|URGENTE/.test(v.diag)?"bl":"av"}"><span class="ico">!</span><div><b>Diagnóstico de la planilla de mantenciones</b><span>${esc(v.diag)}</span></div></div>`:""}
     ${g?(op.nuevaOT?otFormHTML(v,op):`<div><button class="btn chico" type="button" data-op2="ot">Nueva orden de trabajo</button></div>`):""}
     <div class="tabla-env"><table><thead><tr><th>Orden</th><th>Fecha</th><th>Tipo</th><th>Trabajos</th><th>Taller</th><th>Estado</th><th></th></tr></thead><tbody>${ots.length?ots.map(o=>`<tr><td class="mono">${o.id}</td><td class="num">${fF(o.fecha)}</td><td class="peq">${o.tipo}</td><td class="peq">${esc(o.trabajos.join(", "))}</td><td class="peq">${esc(o.taller)}</td><td>${o.estado==="Cerrada"?chip("Cerrada","c-neu","✓"):chip(o.estado,"c-tall","⚙")}${o.factura?`<br><span class="peq tenue">${o.factura.n} · ${clp(o.factura.monto)}</span>`:""}</td><td>${g&&o.estado!=="Cerrada"?`<button class="btn sec chico" type="button" data-cerrar-ot="${o.id}">Cerrar</button>`:""}</td></tr>`).join(""):`<tr><td colspan="7" class="tenue">Sin órdenes de trabajo.</td></tr>`}</tbody></table></div><div id="cierre-ot"></div>`;
   if(fichaTab==="comb"){ let tot=0, lts=0; c=`<div class="tabla-env"><table><thead><tr><th>Fecha</th><th>Origen</th><th>Estación</th><th>Litros</th><th>Monto</th><th>Odómetro</th><th>km/L</th></tr></thead><tbody>${cs.map((x,i)=>{const prev=cs[i-1]; const r=prev?(x.km-prev.km)/x.lt:null; tot+=x.monto; lts+=x.lt; return `<tr><td class="num">${fF(x.fecha)}</td><td class="peq">${x.origen}</td><td class="peq">${esc(x.est)}</td><td class="d">${x.lt}</td><td class="d">${clp(x.monto)}</td><td class="d">${km(x.km)}</td><td class="d">${r?(r<6?chip(r.toFixed(1).replace(".",",")+" bajo","c-pend","!"):r.toFixed(1).replace(".",",")):"—"}</td></tr>`}).join("")||`<tr><td colspan="7" class="tenue">Sin cargas registradas.</td></tr>`}</tbody></table></div><div class="pie-tabla"><span>${cs.length} cargas · ${lts} litros</span><span class="total">${clp(tot)}</span></div>`; }
   if(fichaTab==="gastos"){ const t=gs.reduce((s,x)=>s+x.monto,0); c=`${g?(op.nuevoGasto?gastoFormHTML(pat):`<div><button class="btn chico" type="button" data-op2="gasto">Registrar gasto</button></div>`):""}<div class="tabla-env"><table><thead><tr><th>Fecha</th><th>Documento</th><th>Proveedor</th><th>Tipo</th><th>Folio</th><th>Monto</th></tr></thead><tbody>${gs.map(x=>`<tr><td class="num">${fF(x.fecha)}</td><td class="peq">${x.doc} ${esc(x.n)}</td><td class="peq">${esc(x.prov)}</td><td class="peq">${TGX[x.tipo]}</td><td class="mono">${x.folio}</td><td class="d">${clp(x.monto)}</td></tr>`).join("")||`<tr><td colspan="6" class="tenue">Sin gastos registrados.</td></tr>`}</tbody></table></div><div class="pie-tabla"><span>${gs.length} documentos</span><span class="total">${clp(t)}</span></div>`; }
-  if(fichaTab==="inv") c=`<p class="tenue peq">Revisado el ${fF(INV[pat].revisado)}. Se actualiza al entregar y recibir el vehículo.</p>${ACC.map(gr=>`<p class="grupo-acc">${gr.g}</p><div class="tabla-env"><table><tbody>${gr.i.map(n=>`<tr><td>${esc(n)}</td><td style="width:180px">${g?`<select data-inv="${esc(n)}" aria-label="${esc(n)}">${["OK","Falta","No aplica"].map(x=>`<option ${INV[pat].items[n]===x?"selected":""}>${x}</option>`).join("")}</select>`:INV[pat].items[n]}</td>${n==="Extintor"?`<td>vence ${chipDoc(INV[pat].extintor)}</td>`:"<td></td>"}</tr>`).join("")}</tbody></table></div>`).join("")}${g?`<div class="acciones"><button class="btn" type="button" id="inv-ok">Guardar inventario</button></div>`:""}`;
-  if(fichaTab==="guardia") c=`<div class="tabla-env"><table><thead><tr><th>Fecha</th><th>Hora</th><th>Ubicación</th><th>Kilometraje</th><th>Combustible</th><th>Estado</th><th>Registró</th></tr></thead><tbody>${gu.map(x=>`<tr><td class="num">${fF(x.fecha)}</td><td class="num">${x.hora}</td><td>${esc(x.ub)}</td><td class="d">${km(x.km)}</td><td>${x.comb}</td><td>${x.est}</td><td class="peq">${esc(x.quien)}</td></tr>`).join("")}</tbody></table></div>`;
   if(fichaTab==="salidas") c=sal.length?`<div class="tabla-env"><table><thead><tr><th>ID</th><th>Salida</th><th>Destino</th><th>Conductor</th><th>Km</th><th>Estado</th></tr></thead><tbody>${sal.map(r=>`<tr class="clic" data-sal="${r.id}"><td class="mono">${r.id}</td><td class="num">${fFH(r.salida)}</td><td>${esc(r.destinos.map(d=>d.com).join(", "))}</td><td>${esc(nom(r.cond))}</td><td class="d">${r.bit?.odoR?km(r.bit.odoR-r.bit.odoS):"—"}</td><td>${chipR(r.est)}</td></tr>`).join("")}</tbody></table></div>`:vacio("Sin salidas","");
   cajon(`${placa(v.pat)}<h2 id="t-cajon" style="font-size:var(--f-xl)">${esc(v.marca)} ${esc(v.modelo)}</h2>`, chipV(v), tabsHTML(tabs,fichaTab,"data-ftab")+`<div id="ficha-c" class="grid" style="gap:var(--e-4)">${c}</div>`);
   postFicha(pat, op);
@@ -1476,6 +1424,13 @@ function gastoFormHTML(pat){ const v=VX[pat];
   <div class="acciones"><button class="btn" type="submit">Guardar gasto</button><button class="btn sec" type="button" data-op2="">Cancelar</button></div></form>`; }
 function postFicha(pat, op){
   const C=$("#capa"), v=VX[pat];
+  C.querySelectorAll("[data-doc]").forEach(b=>b.onclick=()=>abrirFicha(pat,"docs",{docEdit:b.dataset.doc}));
+  C.querySelectorAll("[data-doc-cancel]").forEach(b=>b.onclick=()=>abrirFicha(pat,"docs"));
+  const fd=$("#f-doc"); if(fd) fd.onsubmit=e=>{ e.preventDefault(); const k=fd.dataset.k, f=$("#d-fecha").value, n=$("#d-num").value.trim();
+    if(!f||f<iso(HOY).slice(0,10)){ $("#d-fecha").setAttribute("aria-invalid","true"); tostada("Ingrese una fecha de vencimiento futura."); return; }
+    const ant=VX[pat][k]; VX[pat][k]=f; if(k==="polizaVence"&&n) VX[pat].poliza=n;
+    const nomDoc={rt:"Revisión técnica",gases:"Revisión de gases",soap:"SOAP",perm:"Permiso de circulación",polizaVence:"Póliza de seguro"}[k];
+    audit("Actualiza documento: "+nomDoc+(n?" · "+n:""),pat,ant?fF(ant):"—",fF(f)); tostada(`${nomDoc} de ${pat} actualizado: vence ${fF(f)}.`); abrirFicha(pat,"docs"); };
   C.querySelectorAll("[data-ftab]").forEach(b=>b.onclick=()=>{ const o={}; if(b.dataset.op==="ot") o.nuevaOT=true; if(b.dataset.op==="gasto") o.nuevoGasto=true; abrirFicha(pat,b.dataset.ftab,o); });
   C.querySelectorAll("[data-op2]").forEach(b=>b.onclick=()=>{ const k=b.dataset.op2; abrirFicha(pat,fichaTab,k==="ot"?{nuevaOT:true}:k==="gasto"?{nuevoGasto:true}:{}); });
   const ft=$("#ot-tipo"); if(ft) ft.onchange=()=>abrirFicha(pat,"mant",{...op,nuevaOT:true,tipoOT:ft.value});
@@ -1493,7 +1448,6 @@ function postFicha(pat, op){
     if(mesCerrado(iso(HOY))){tostada("El período está cerrado.");return}
     GASTOS.unshift({id:nGasto++,fecha:iso(HOY).slice(0,10),pat,doc:$("#ga-doc").value,n,prov:$("#ga-prov").value||"—",tipo:$("#ga-tipo").value,monto:mo,km:+$("#ga-km").value,folio:$("#ga-folio").value});
     audit("Registra gasto",pat+" · "+n,"—",clp(mo)); tostada("Gasto registrado."); abrirFicha(pat,"gastos"); };
-  const io=$("#inv-ok"); if(io) io.onclick=()=>{ C.querySelectorAll("[data-inv]").forEach(s=>INV[pat].items[s.dataset.inv]=s.value); INV[pat].revisado=iso(HOY).slice(0,10); audit("Actualiza inventario",pat,"—","Revisado"); tostada("Inventario guardado."); abrirFicha(pat,"inv"); };
 }
 
 /* ======================= CONDUCTORES ======================= */
@@ -1557,7 +1511,7 @@ function vOperatividad(){
   const filas=VEH.map(v=>{ let terr=0,taller=0,fuera=0;
     dias.forEach(d=>{ if(RES.some(r=>r.pat===v.pat&&r.bit?.sal&&r.bit.sal.slice(0,10)<=d&&(!r.bit.reg||r.bit.reg.slice(0,10)>=d))) terr++; else if(["TALL_P","TALL_C"].includes(v.estado)&&d>=(OT.find(o=>o.pat===v.pat&&o.estado!=="Cerrada")?.fecha||"9")) taller++; else if(v.estado==="MALO") fuera++; });
     const disp=dias.length-taller-fuera; return {v,terr,taller,fuera,disp,pct:Math.round(disp/dias.length*100),uso:Math.round(terr/dias.length*100)}; });
-  return `<section class="panel"><header><div><h2>Operatividad mensual · octubre 2026</h2><span class="sub">Del 01 al 21 de octubre, según salidas, órdenes de trabajo y libro de guardia</span></div></header><div class="tabla-env"><table><thead><tr><th>Patente</th><th>Vehículo</th><th>Días operativo</th><th>En terreno</th><th>En taller</th><th>Fuera de servicio</th><th>Operatividad</th><th>Uso</th></tr></thead><tbody>${filas.map(f=>`<tr><td>${placa(f.v.pat)}</td><td class="peq">${esc(f.v.marca+" "+f.v.modelo)}</td><td class="d">${f.disp}</td><td class="d">${f.terr}</td><td class="d">${f.taller}</td><td class="d">${f.fuera}</td><td><div class="mini-barra"><span class="medidor"><span style="width:${f.pct}%;background:var(${f.pct<60?"--st-malo":f.pct<90?"--st-pend":"--st-disp"})"></span></span><span class="num">${f.pct}%</span></div></td><td class="d">${f.uso}%</td></tr>`).join("")}</tbody></table></div></section>`;
+  return `<section class="panel"><header><div><h2>Operatividad mensual · octubre 2026</h2><span class="sub">Del 01 al 21 de octubre, según salidas y órdenes de trabajo</span></div></header><div class="tabla-env"><table><thead><tr><th>Patente</th><th>Vehículo</th><th>Días operativo</th><th>En terreno</th><th>En taller</th><th>Fuera de servicio</th><th>Operatividad</th><th>Uso</th></tr></thead><tbody>${filas.map(f=>`<tr><td>${placa(f.v.pat)}</td><td class="peq">${esc(f.v.marca+" "+f.v.modelo)}</td><td class="d">${f.disp}</td><td class="d">${f.terr}</td><td class="d">${f.taller}</td><td class="d">${f.fuera}</td><td><div class="mini-barra"><span class="medidor"><span style="width:${f.pct}%;background:var(${f.pct<60?"--st-malo":f.pct<90?"--st-pend":"--st-disp"})"></span></span><span class="num">${f.pct}%</span></div></td><td class="d">${f.uso}%</td></tr>`).join("")}</tbody></table></div></section>`;
 }
 function vRendimiento(){
   const rs=rendimientos(), porV={}; rs.forEach(r=>{(porV[r.pat]=porV[r.pat]||[]).push(r.rend)});
@@ -1608,7 +1562,7 @@ function vEquipo(){
 function vConfig(){
   const t=sel.cfgTab, tabs=[["catalogos","Catálogos"],["usuarios","Usuarios y accesos"],["cierre","Cierre mensual"],["datos","Datos y auditoría"]];
   let c="";
-  if(t==="catalogos"){ const cats=[["Tipos de vehículo",["Camioneta","SUV","Station wagon","Furgón","Automóvil","Camión","Minibús","Todoterreno","Motocicleta","Maquinaria"]],["Ubicaciones",UBICACIONES],["Tipos de gasto",TIPO_GASTO.map(x=>x[1])],["Inventario del vehículo",ACC_ITEMS],["Trabajos de taller",Object.entries(TRABAJOS).flatMap(([k,a])=>a.map(x=>x))],["Talleres",TALLERES],["Estaciones de servicio",ESTACIONES],["Centros de costo",CC.map(c=>c.folio+" · "+c.t)]];
+  if(t==="catalogos"){ const cats=[["Tipos de vehículo",["Camioneta","SUV","Station wagon","Furgón","Automóvil","Camión","Minibús","Todoterreno","Motocicleta","Maquinaria"]],["Tipos de gasto",TIPO_GASTO.map(x=>x[1])],["Trabajos de taller",Object.entries(TRABAJOS).flatMap(([k,a])=>a.map(x=>x))],["Talleres",TALLERES],["Estaciones de servicio",ESTACIONES],["Centros de costo",CC.map(c=>c.folio+" · "+c.t)]];
     c=`<p class="tenue peq" style="margin-bottom:var(--e-3)">Catálogos heredados de GESAD y depurados. Cada región usa los mismos catálogos nacionales.</p><div class="grid g-2b">${cats.map(([n,a])=>`<section class="panel"><header><h2>${n}</h2><span class="sub">${a.length}</span></header><div class="cuerpo"><p class="peq">${a.map(esc).join(" · ")}</p></div></section>`).join("")}</div>`; }
   if(t==="usuarios") c=`<section class="panel"><div class="tabla-env"><table><thead><tr><th>Usuario</th><th>Perfil</th><th>Jurisdicción</th><th>Estado</th></tr></thead><tbody>${[["p1","Administrador nacional","Nacional"],["p2","Encargado de vehículos","Oficina Central"],["p3","Jefatura directa","Depto. Abastecimiento"],["p5","Jefatura directa","GEPRIF · Análisis y Diagnóstico"],["p8","Jefatura directa","GEF · Fiscalización"],["p10","Jefatura directa","GEBCC · Viveros"]].map(([id,pf,j])=>`<tr><td>${esc(nom(id))}<br><span class="tenue peq">${PX[id].correo}</span></td><td>${pf}</td><td>${j}</td><td>${chip("Activo","c-disp","●")}</td></tr>`).join("")}</tbody></table></div><div class="leyenda"><span class="tenue peq">Todo funcionario de la nómina puede ingresar como solicitante con su correo institucional. Los encargados regionales sólo ven su región.</span></div></section>`;
   if(t==="cierre") c=`<section class="panel"><header><div><h2>Cierre mensual</h2><span class="sub">Al cerrar un mes ya no se pueden modificar cargas ni gastos de ese período. Reemplaza «Cerrar período» de GESAD.</span></div></header><div class="tabla-env"><table><thead><tr><th>Período</th><th>Estado</th><th>Cerrado por</th><th></th></tr></thead><tbody>${CIERRES.map(x=>`<tr><td>${MESES[+x.mes.slice(5)-1]} ${x.mes.slice(0,4)}</td><td>${x.estado==="Cerrado"?chip("Cerrado","c-neu","✓"):chip("Abierto","c-pend","◔")}</td><td class="peq">${x.por?esc(nom(x.por))+" · "+fF(x.fecha):"—"}</td><td>${x.estado==="Abierto"&&x.mes<iso(HOY).slice(0,7)?`<button class="btn sec chico" type="button" data-cerrar-mes="${x.mes}">Cerrar mes</button>`:""}</td></tr>`).join("")}</tbody></table></div></section>`;
@@ -1672,6 +1626,7 @@ function abrirAltaVehiculo(){
     ${campoA("av-mod","Modalidad de uso",`<select id="av-mod">${opts(MODALIDADES,MODALIDADES[0])}</select>`)}
     ${campoA("av-reg","Región",`<select id="av-reg">${opts(REGIONES_ALTA,"Oficina Central")}</select>`)}
     ${campoA("av-uni","Unidad de destinación",`<select id="av-uni">${opts(unidadesDe("Oficina Central"),"")}</select>`)}
+    ${campoA("av-guarda","Recinto de guarda nocturna y de fines de semana",`<input type="text" id="av-guarda" placeholder="Dirección del estacionamiento fiscal">`,"",true)}
     ${campoA("av-prog","Programa presupuestario",`<select id="av-prog">${opts(Object.values(PROGRAMAS),"","— Seleccionar —")}</select>`,"",true)}
    </div></fieldset>
    <fieldset><legend><span class="seccion-num">4</span>Seguro, combustible y telepeaje</legend><div class="campos">
@@ -1718,6 +1673,7 @@ function abrirAltaVehiculo(){
     const cap=+val("av-cap"); if(!(Number.isInteger(cap)&&cap>=1&&cap<=60)) err.push(["av-cap","Capacidad de pasajeros obligatoria (1 a 60)"]);
     if(!val("av-uni")) err.push(["av-uni","Falta la unidad de destinación"]);
     if(!val("av-prog")) err.push(["av-prog","Falta el programa presupuestario"]);
+    if(!val("av-guarda")) err.push(["av-guarda","Falta el recinto de guarda"]);
     if(val("av-pin")&&!/^\d{4}$/.test(val("av-pin"))) err.push(["av-pin","El PIN tiene 4 dígitos"]);
     if(val("av-pold")&&val("av-polh")&&val("av-polh")<=val("av-pold")) err.push(["av-polh","El vencimiento del seguro debe ser posterior al inicio"]);
     const kmA=+val("av-km")||0, ult=val("av-ult")===""?kmA:+val("av-ult"); if(ult>kmA) err.push(["av-ult","La última mantención no puede superar el kilometraje actual"]);
@@ -1726,16 +1682,12 @@ function abrirAltaVehiculo(){
     if(err.length){ F_(err[0][0]).focus(); F_("av-err").scrollIntoView({block:"nearest"}); return; }
     const tarj=val("av-tarj").replace(/\D/g,"");
     const v={raw:pat,pat,anio,marca:val("av-marca"),modelo:val("av-modelo"),mm:val("av-marca")+" "+val("av-modelo"),tipo:val("av-tipo"),color:val("av-color"),motor:val("av-motor"),chasis:vin,
-      trac:val("av-trac"),comb:val("av-comb"),cap,cargaKg:+val("av-kg")||0,cargaM3:+val("av-m3")||0,tenencia:val("av-ten"),modalidad:val("av-mod"),region:val("av-reg"),unidad:val("av-uni"),programa:val("av-prog"),
+      trac:val("av-trac"),comb:val("av-comb"),cap,cargaKg:+val("av-kg")||0,cargaM3:+val("av-m3")||0,tenencia:val("av-ten"),modalidad:val("av-mod"),region:val("av-reg"),unidad:val("av-uni"),guarda:val("av-guarda"),programa:val("av-prog"),
       poliza:val("av-pol")||"—",aseguradora:val("av-aseg"),deducibleUF:val("av-ded"),asistencia:val("av-asis"),polizaDesde:val("av-pold")||null,polizaVence:val("av-polh")||null,
       tarjeta:tarj?val("av-temi")+" ···· "+tarj.slice(-4):"Sin tarjeta",tarjetaEstado:val("av-test"),pin:val("av-pin"),cupo:val("av-cupo"),tag:val("av-tag")?"TAG "+val("av-tag"):"",
       rt:val("av-rt")||null,gases:val("av-gases")||null,perm:val("av-perm")||null,soap:val("av-soap")||null,km:kmA,ultMant:ult,proxMant:ult+10000,estado:val("av-est"),
       asig:val("av-mod").startsWith("Pool")?"Pool":"Asignación",enInv:true,estadoInv:"BUENO",diag:null,obs:null};
     VEH.push(v); VX[pat]=v;
-    const it={}; ACC_ITEMS.forEach(n=>it[n]="OK");
-    if(!/CAMIONETA|CAMIÓN|TODOTERRENO/.test(v.tipo)) it["Equipo móvil VHF"]="No aplica";
-    if(!/CAMIONETA|TODOTERRENO|SUV/.test(v.tipo)) it["Cadenas para nieve"]="No aplica";
-    INV[pat]={items:it,extintor:null,revisado:iso(HOY).slice(0,10)};
     audit("Alta de vehículo en el catastro",pat,"—",v.tipo+" "+v.mm+" · "+v.region);
     tostada(`Vehículo ${pat} agregado al catastro.`); cerrarCapa(); sel.flotaFiltro="todos"; render(); abrirFicha(pat,"resumen");
   });
