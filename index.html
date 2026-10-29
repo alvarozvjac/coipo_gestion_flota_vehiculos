@@ -459,6 +459,8 @@ body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{d
 .rol-chip{display:inline-flex;align-items:center;gap:6px;background:var(--verde-tinte);color:var(--verde-tinta);border:1px solid var(--verde-claro);border-radius:var(--r-pill);padding:4px 12px;font-weight:600;font-size:var(--f-s)}
 .doc-edit{display:flex;gap:var(--e-2);flex-wrap:wrap;align-items:center}
 .doc-edit input{width:auto;min-width:160px}
+.faltan{border:2px solid var(--st-malo);background:var(--st-malo-bg);color:var(--tinta);border-radius:var(--r-m);padding:var(--e-3) var(--e-4)}
+.faltan ul{margin:var(--e-1) 0 0;padding-left:1.2em}
 </style>
 
 </head><body>
@@ -648,7 +650,7 @@ let RES = [
  R({id:"OC-2026-000411",est:"CONFIRMADA",fSol:"2026-10-19T14:02",sol:"p4",jefe:"p3",salida:"2026-10-28T08:00",regreso:"2026-10-30T18:00",destinos:[{reg:"La Araucanía",com:"Temuco",lug:"Dirección Regional La Araucanía"}],cometido:"Supervisión de inventario de bodega regional y cierre de procesos de compra.",km:1450,cc:"P01-601",reqCond:true,cond:"c2",pas:["p15"],pat:"KBSW-97"}),
  R({id:"OC-2026-000412",est:"PEND_JEFE",fSol:"2026-10-21T16:20",sol:"p4",jefe:"p3",salida:"2026-10-26T08:00",regreso:"2026-10-27T20:00",destinos:[{reg:"Ñuble",com:"Bulnes",lug:"Oficina Provincial Diguillín"}],cometido:"Capacitación en compras públicas al equipo regional de abastecimiento.",km:900,cc:null,reqCond:true,pas:["p15","p16"]}),
  R({id:"OC-2026-000413",est:"PEND_JEFE",fSol:"2026-10-22T08:47",sol:"p7",jefe:"p8",salida:"2026-10-29T08:00",regreso:"2026-10-29T18:00",destinos:[{reg:"Metropolitana",com:"Melipilla",lug:"Oficina Provincial Melipilla"}],cometido:"Fiscalización de plan de manejo en predio rural.",km:160,cc:null,cond:"p7",req:{t4:true}}),
- R({id:"OC-2026-000414",est:"CONFIRMADA",fSol:"2026-10-20T11:11",sol:"p9",jefe:"p10",salida:"2026-11-02T08:00",regreso:"2026-11-04T18:00",destinos:[{reg:"Maule",com:"Talca",lug:"Centro de Semillas"}],cometido:"Revisión de lotes de semillas y coordinación de despacho.",km:540,cc:"48065",reqCond:true,cond:"c1",pas:["c4"],pat:"JYDC-46"}),
+ R({id:"OC-2026-000414",est:"CONFIRMADA",fSol:"2026-10-20T11:11",sol:"p9",jefe:"p10",salida:"2026-11-02T08:00",regreso:"2026-11-04T18:00",destinos:[{reg:"Maule",com:"Talca",lug:"Centro de Semillas"}],cometido:"Revisión de lotes de semillas y coordinación de despacho.",km:540,cc:"48065",reqCond:true,cond:"c1",pas:["c4"],pat:"SZWY-98"}),
 ];
 /* Histórico de ejemplo para reportería (sep-oct 2026) */
 const HIST = [["SHPY-15","P01-601",640],["SZCK-83","48006",1210],["JGZP-49","48046",380],["KBSW-97","48015",920],["SFHW-60","48007",1480],["FHWT-20","48046",310],["CRBJ-40","P01-601",120],["PLLH-22","48043",760],["JYDC-46","48065",530],["SZWZ-31","48032",870],["JXZS-29","48067",260],["SZWY-98","48011",1120],["PLLH-76","48053",410],["VGXF-75","P01-601",190],["FHWT-20","48037",660]];
@@ -656,7 +658,7 @@ RES.forEach(r=>r.hist.push({t:r.fSol,quien:r.sol,acc:"Solicitud ingresada"}));
 let AUD = [
  {t:"2026-10-22T08:47",u:"p7",acc:"Crea solicitud",obj:"OC-2026-000413",ant:"—",nue:"Pendiente jefatura",ip:"10.20.4.18"},
  {t:"2026-10-21T16:20",u:"p4",acc:"Crea solicitud",obj:"OC-2026-000412",ant:"—",nue:"Pendiente jefatura",ip:"10.20.4.33"},
- {t:"2026-10-21T07:38",u:"c2",acc:"Registra salida",obj:"OC-2026-000405 · PLLH-22",ant:"Confirmada",nue:"En terreno · odómetro 119.106",ip:"10.20.9.2"},
+ {t:"2026-10-21T07:38",u:"p2",acc:"Registra salida",obj:"OC-2026-000405 · PLLH-22",ant:"Confirmada",nue:"En terreno · odómetro 119.106",ip:"10.20.9.2"},
  {t:"2026-10-20T15:02",u:"p2",acc:"Asigna vehículo y conductor",obj:"OC-2026-000411",ant:"Aprobada",nue:"KBSW-97 · J.P. Henríquez",ip:"10.20.4.51"},
  {t:"2026-10-20T09:30",u:"p1",acc:"Actualiza estado operativo",obj:"GVYR-53",ant:"Disponible",nue:"En taller (preventiva)",ip:"10.20.4.10"},
 ];
@@ -741,7 +743,7 @@ function vehApto(v, r){
   const mt=mant(v); if(mt.est==="VENC") av.push("Mantención vencida hace "+km(-mt.resta)+" km"); else if(mt.resta < (r.km||0)) av.push("Mantención vence durante el viaje");
   return {ok:!m.length,motivos:m,avisos:av};
 }
-const pasajeros = r=>(r.cond||r.reqCond?1:0)+(r.relevo?1:0)+r.pas.length+(r.externos||0);
+const pasajeros = r=>(r.sol&&r.sol!==r.cond?1:0)+(r.cond||r.reqCond?1:0)+(r.relevo?1:0)+r.pas.filter(x=>x!==r.sol&&x!==r.cond).length;
 function tostada(t){const c=$("#tostadas"); while(c.children.length>=2) c.firstChild.remove(); const d=document.createElement("div");d.className="tostada";d.textContent=t;$("#tostadas").appendChild(d);setTimeout(()=>d.remove(),4200)}
 function audit(acc,obj,ant,nue){AUD.unshift({t:iso(new Date(HOY.getTime()+(AUD.length%50)*60000)),u:ROLES[rol].quien,acc,obj,ant,nue,ip:"10.20.4."+(10+AUD.length%40)})}
 let corr=415; const nuevoId=()=>"OC-2026-"+String(corr++).padStart(6,"0");
@@ -802,9 +804,14 @@ const distanciaTxt = r=>r.km?`<span class="num">${km(r.km)} km aprox. · ${km(r.
 function vMis(){
   const yo=ROLES[rol].quien, mias=RES.filter(r=>r.sol===yo).sort((a,b)=>b.fSol.localeCompare(a.fSol));
   return cab("Mis salidas","Estado en tiempo real de tus reservas. Cuando el encargado asigna el vehículo, puedes ver y compartir la orden de salida.","ERS §4.3 · Perfil 4")+exportHTML("mis")+
-  `<div class="lista">${mias.length?mias.map(r=>tarjetaSol(r,{boton:`<div class="acciones">${["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)?`<button class="btn sec chico" type="button" data-orden="${r.id}">Ver orden de salida</button>`:""}${["PEND_JEFE","APROBADA","OBSERVADA","CONFIRMADA"].includes(r.est)?`<button class="btn peligro chico" type="button" data-anular="${r.id}">Anular solicitud</button>`:""}</div>`})).join(""):vacio("Aún no tienes solicitudes","Ingresa tu primera solicitud de vehículo para una salida a terreno.")}</div>`;
+  `<div class="lista">${mias.length?mias.map(r=>tarjetaSol(r,{boton:`<div class="acciones">${["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)?`<button class="btn sec chico" type="button" data-orden="${r.id}">Ver orden de salida</button>`:""}${r.est==="OBSERVADA"?`<button class="btn chico" type="button" data-corregir="${r.id}">Corregir y reenviar</button>`:""}${["PEND_JEFE","APROBADA","OBSERVADA","CONFIRMADA"].includes(r.est)?`<button class="btn peligro chico" type="button" data-anular="${r.id}">Anular solicitud</button>`:""}</div>`})).join(""):vacio("Aún no tienes solicitudes","Ingresa tu primera solicitud de vehículo para una salida a terreno.")}</div>`;
 }
-post.mis = ()=>postExport("mis");
+post.mis = ()=>{ postExport("mis"); $("#vista").querySelectorAll("[data-corregir]").forEach(bt=>bt.onclick=()=>{ borrador=borradorDesde(RES.find(x=>x.id===bt.dataset.corregir)); ir("nueva"); }); };
+function borradorDesde(r){
+  const provDe=(reg,com)=>(provinciasDe(reg).find(p=>p[1].includes(com))||[""])[0];
+  const destinos=r.destinos.map(d=>{ const lista=(UNIDADES[d.reg]||[]); return {reg:d.reg,prov:d.prov||provDe(d.reg,d.com),com:d.com,lug:lista.includes(d.lug)?d.lug:OTRA,otro:lista.includes(d.lug)?"":(d.lug||"")}; });
+  return {jefe:r.jefe,salida:r.salida,regreso:r.regreso,cometido:r.cometido,destinos,km:r.km||0,tipo:r.tipoReq||"Indistinto",t4:!!r.req?.t4,carga:!!r.req?.carga,reqCond:r.reqCond,cond:r.reqCond?"":(r.cond||""),pasList:r.pas.length?r.pas.map(id=>({rut:PX[id].rut,nom:PX[id].nom})):[{rut:"",nom:""}],externos:0,extJust:"",ejemplo:false,editId:r.id,obs:(r.obsLog||"").replace(/^Observación de jefatura: /,"")};
+}
 post.equipo = ()=>postExport("equipo");
 function vacio(t,d){return `<div class="vacio"><h3>${t}</h3><p>${d}</p></div>`}
 
@@ -833,10 +840,11 @@ function vNueva(){
   const b=borrador, yo=PX[ROLES[rol].quien];
   const jefes=PERS.filter(p=>p.jefe);
   const regionSol = "Oficina Central";
-  const habil = COND.filter(c=>(c.region||"Oficina Central")===regionSol && condApto(c.id,{...b,id:"tmp",pas:[],req:{},salida:b.salida||iso(HOY),regreso:b.regreso||iso(HOY)},null).ok);
+  const habil = COND.filter(c=>c.tipo==="HABILITADO" && (c.region||"Oficina Central")===regionSol && condApto(c.id,{...b,id:"tmp",pas:[],req:{},salida:b.salida||iso(HOY),regreso:b.regreso||iso(HOY)},null).ok);
   const condOpts=(selId)=>`<option value="">— Seleccionar —</option>`+habil.map(c=>`<option value="${c.id}" ${c.id===selId?"selected":""}>${esc(nom(c.id))} · licencia ${c.clases.join("/")}</option>`).join("");
   return cab("Nueva solicitud de vehículo","Reemplaza el formulario Word «Solicitud de vehículo para salida a terreno» y el correo de aprobación. Tus datos se cargan desde la nómina institucional y la imputación presupuestaria la define tu jefatura al aprobar.","ERS §4.3-A · Formulario vigente")+
-  (b.ejemplo?`<p class="nota" style="margin-bottom:var(--e-4)">Formulario precargado con un ejemplo para la demostración. <button class="btn sec chico" type="button" id="btn-limpiar">Limpiar formulario</button></p>`:"")+
+  (b.editId?`<div class="regla av" style="margin-bottom:var(--e-4)"><span class="ico" aria-hidden="true">!</span><div><b>Corrigiendo la solicitud ${b.editId}</b><span>${esc(b.obs||"Tu jefatura pidió corregir la solicitud.")} Al enviar, vuelve a tu jefatura para su aprobación.</span></div></div>`:"")+
+  (b.ejemplo&&!b.editId?`<p class="nota" style="margin-bottom:var(--e-4)">Formulario precargado con un ejemplo para la demostración. <button class="btn sec chico" type="button" id="btn-limpiar">Limpiar formulario</button></p>`:"")+
   `<div class="grid g-form"><form id="form-sol" class="grid" novalidate>
    <fieldset><legend><span class="seccion-num">1</span>Identificación</legend><div class="campos">
      <div class="campo"><span class="lbl">Solicitante</span><input type="text" id="f-sol" readonly value="${esc(yo.nom)} · ${esc(yo.rut)}"><span class="ayuda">${esc(yo.cargo)} · ${esc(yo.ger)}</span></div>
@@ -860,7 +868,8 @@ function vNueva(){
      <div class="campo ancho"><span class="lbl">Acompañantes (nómina CONAF)</span><div id="f-pas" class="grid" style="gap:var(--e-2)"></div><div><button class="btn sec chico" type="button" id="btn-pas">Agregar acompañante</button></div><span class="ayuda">Ingresa el RUT; si el funcionario está en la nómina, el nombre se completa solo.</span></div>
      <div class="campo ancho"><span class="lbl">Total de personas en el vehículo</span><span id="f-tot" class="num" style="font-size:var(--f-xl);font-weight:600"></span></div>
    </div></fieldset>
-   <div class="acciones"><button class="btn" type="submit" id="btn-enviar">Enviar a jefatura</button><button class="btn sec" type="button" id="btn-borr">Guardar sin enviar</button></div>
+   <div class="faltan" id="f-faltan" role="alert" hidden></div>
+   <div class="acciones"><button class="btn" type="submit" id="btn-enviar">${b.editId?"Reenviar a jefatura":"Enviar a jefatura"}</button><button class="btn sec" type="button" id="btn-borr">Guardar sin enviar</button></div>
   </form>
   <aside class="panel" style="position:sticky;top:120px"><header><h2>Revisión automática</h2><span class="sub">Se actualiza al escribir</span></header><div class="cuerpo"><div class="revision" id="revision"></div></div></aside></div>`;
 }
@@ -880,10 +889,10 @@ post.nueva = ()=>{
   const revisar=()=>{
     leer(); $("#w-cond").hidden=b.reqCond;
     const pv=pasValidos(), relOk=false;
-    const r={...b,id:"tmp",pas:pv,relevo:relOk?"x":null,req:{t4:b.t4,carga:b.carga}}; const tot=pasajeros(r);
+    const r={...b,id:"tmp",sol:ROLES[rol].quien,pas:pv,relevo:relOk?"x":null,req:{t4:b.t4,carga:b.carga}}; const tot=pasajeros(r);
     const dur=(F(b.regreso)-F(b.salida))/36e5;
     $("#f-dur").textContent = dur>0?`${Math.floor(dur/24)} ${Math.floor(dur/24)===1?"día":"días"} y ${Math.round(dur%24)} horas de ocupación del vehículo`:"—";
-    $("#f-tot").textContent = tot+" (conductores + acompañantes)";
+    $("#f-tot").textContent = tot+" (tú, conductor y acompañantes)";
     const out=[]; const reg=(c,t,d)=>out.push(`<div class="regla ${c}"><span class="ico" aria-hidden="true">${{ok:"✓",av:"!",bl:"✕",inf:"i"}[c]}</span><div><b>${t}</b><span>${d}</span></div></div>`);
     if(!(dur>0)) reg("bl","Fechas incoherentes","El regreso debe ser posterior a la salida."); else if(F(b.salida)<HOY) reg("bl","Salida en el pasado","La fecha de salida es anterior a hoy."); else reg("ok","Fechas válidas",`Salida ${fCorta(b.salida)} · regreso ${fCorta(b.regreso)}.`);
     const destOk=b.destinos.every(d=>d.reg&&d.prov&&d.com&&d.lug&&(d.lug!==OTRA||d.otro.trim()));
@@ -893,14 +902,18 @@ post.nueva = ()=>{
     tot>maxCap? reg("bl","Capacidad excedida",`${tot} personas superan la capacidad máxima del pool (${maxCap}).`) : reg("ok","Capacidad",`${tot} personas.`);
     if(!b.reqCond){ if(!b.cond) reg("bl","Falta conductor","Selecciona un conductor habilitado de tu región o solicita uno del pool."); else { const a=condApto(b.cond,{...r,relevo:null}); a.ok?reg("ok","Conductor habilitado",`${nom(b.cond)}: caución y licencia vigentes al regreso.`):reg("bl","Conductor no habilitado",a.motivos.join(" · ")); } }
     else reg("inf","Conductor del pool","Logística asignará un conductor institucional disponible.");
-    const malos=pv.filter(x=>!rutValido(x.rut)||!x.nom.trim());
-    if(malos.length) reg("bl","Acompañantes incompletos",`${malos.length} acompañante(s) con RUT inválido o sin nombre.`); else if(pv.length) reg("ok","Acompañantes",`${pv.length} registrado(s).`);
+    const yoRut=rutLimpio(PX[ROLES[rol].quien].rut), condRut=b.cond&&PX[b.cond]?rutLimpio(PX[b.cond].rut):"", vistosR=new Set(), probPas=[];
+    pv.forEach((x,i)=>{ const k=rutLimpio(x.rut); let m="";
+      if(!rutValido(x.rut)) m="RUT inválido"; else if(!personaPorRut(x.rut)) m="no está en la nómina de CONAF"; else if(k===yoRut) m="eres tú: ya cuentas como ocupante"; else if(k===condRut) m="ya va como conductor"; else if(vistosR.has(k)) m="está repetido";
+      vistosR.add(k); if(m) probPas.push({i,m,rut:x.rut}); });
+    if(probPas.length) reg("bl","Revisa los acompañantes",probPas.map(x=>`${x.rut||"Sin RUT"}: ${x.m}`).join(" · ")+"."); else if(pv.length) reg("ok","Acompañantes",`${pv.length} ${pv.length===1?"acompañante":"acompañantes"}.`);
     reg("inf","Imputación presupuestaria","La define tu jefatura directa al aprobar la solicitud.");
     if(b.cometido.trim().length<15) reg("bl","Cometido incompleto","Describe la labor institucional a realizar (mín. 15 caracteres).");
     $("#revision").innerHTML=out.join("");
-    $("#btn-enviar").disabled = out.some(x=>x.includes('regla bl'));
+    b._bloqueos=out.filter(x=>x.includes('regla bl')).map(x=>(x.match(/<b>(.*?)<\/b>/)||[])[1]);
     $("#f-sal").setAttribute("aria-invalid",!(dur>0)); $("#f-com").setAttribute("aria-invalid",b.cometido.trim().length<15);
-    document.querySelectorAll('#f-pas input[data-k="rut"]').forEach(i=>i.setAttribute("aria-invalid",!!(i.value&&!rutValido(i.value))));
+    document.querySelectorAll('#f-pas input[data-k="rut"]').forEach(i=>{ const pr=probPas.find(x=>rutLimpio(x.rut)===rutLimpio(i.value)&&i.value); i.setAttribute("aria-invalid",!!pr); });
+    const fl=$("#f-faltan"); if(fl&&!fl.hidden) mostrarFaltan();
   };
   const rutEnVivo=(inp)=>{ const f=rutFormato(inp.value); if(f!==inp.value){ inp.value=f; } };
   pintarDest(); pintarPas(); revisar();
@@ -921,10 +934,16 @@ post.nueva = ()=>{
   $("#btn-pas").onclick=()=>{b.pasList.push({rut:"",nom:""});pintarPas();revisar(); const ins=document.querySelectorAll('#f-pas input[data-k="rut"]'); ins[ins.length-1]?.focus();};
   const limpiar=$("#btn-limpiar"); if(limpiar) limpiar.onclick=()=>{borrador=borradorVacio();render()};
   $("#btn-borr").onclick=()=>{leer();tostada("Solicitud guardada sin enviar. Puedes retomarla desde esta pantalla.")};
-  f.addEventListener("submit",e=>{e.preventDefault();leer();
+  function mostrarFaltan(){ const fl=$("#f-faltan"), L=b._bloqueos||[]; if(!L.length){ fl.hidden=true; fl.innerHTML=""; return; } fl.hidden=false; fl.innerHTML=`<b>Antes de enviar, corrige ${L.length===1?"esto":"estos "+L.length+" puntos"}:</b><ul>${L.map(x=>`<li>${x}</li>`).join("")}</ul>`; }
+  f.addEventListener("submit",e=>{e.preventDefault();leer();revisar();
+    if((b._bloqueos||[]).length){ mostrarFaltan(); $("#f-faltan").scrollIntoView({block:"center",behavior:"smooth"}); return; }
     const destinos=b.destinos.map(d=>({reg:d.reg,prov:d.prov,com:d.com,lug:d.lug===OTRA?d.otro.trim():d.lug}));
     const relevo=null;
-    const pas=pasValidos().map(personaDe);
+    const pas=pasValidos().map(x=>personaPorRut(x.rut).id);
+    if(b.editId){ const r=RES.find(x=>x.id===b.editId);
+      Object.assign(r,{est:"PEND_JEFE",jefe:b.jefe,salida:b.salida,regreso:b.regreso,destinos,cometido:b.cometido,km:b.km,reqCond:b.reqCond,cond:b.cond||null,pas,req:{t4:b.t4,carga:b.carga},tipoReq:b.tipo,obsLog:""});
+      r.hist.push({t:iso(HOY),quien:r.sol,acc:"Corregida y reenviada"}); audit("Corrige y reenvía solicitud",r.id,"Observada","Pendiente jefatura");
+      borrador=null; tostada(`Solicitud ${r.id} corregida y reenviada a ${nom(r.jefe)}.`); ir("mis"); return; }
     const r=R({id:nuevoId(),est:"PEND_JEFE",fSol:iso(HOY),sol:ROLES[rol].quien,jefe:b.jefe,salida:b.salida,regreso:b.regreso,destinos,cometido:b.cometido,km:b.km,cc:null,reqCond:b.reqCond,cond:b.cond||null,relevo,pas,externos:b.externos,req:{t4:b.t4,carga:b.carga},tipoReq:b.tipo});
     r.hist.push({t:r.fSol,quien:r.sol,acc:"Solicitud ingresada"}); RES.push(r); audit("Crea solicitud",r.id,"—","Pendiente jefatura");
     borrador=null; tostada(`Solicitud ${r.id} enviada a ${nom(r.jefe)}.`); ir("mis");
@@ -937,9 +956,9 @@ function vBandeja(){
   if(!sel.bandeja||!pend.some(r=>r.id===sel.bandeja)) sel.bandeja=pend[0]?.id||null;
   const r=RES.find(x=>x.id===sel.bandeja);
   return cab("Bandeja de aprobación","Solicitudes de tu equipo directo. Revisa cometido, destino y ocupantes, y define la imputación presupuestaria antes de que pasen al encargado de vehículos.","ERS §3.2 · Perfil 3")+
-  `<div class="grid g-2"><div class="grid"><section class="panel"><header><h2>Pendientes</h2><span class="sub num">${pend.length} por revisar</span></header><div class="cuerpo lista">${pend.length?pend.map(x=>tarjetaSol(x,{seleccion:x.id===sel.bandeja})).join(""):vacio("Bandeja al día","No hay solicitudes de tu equipo esperando visación.")}</div></section>
-  <section class="panel"><header><h2>Resueltas recientemente</h2></header><div class="tabla-env"><table><thead><tr><th>ID</th><th>Solicitante</th><th>Salida</th><th>Estado</th></tr></thead><tbody>${res.map(x=>`<tr><td class="mono">${x.id}</td><td>${esc(nom(x.sol))}</td><td class="num">${fFH(x.salida)}</td><td>${chipR(x.est)}</td></tr>`).join("")||`<tr><td colspan="4" class="tenue">Sin registros.</td></tr>`}</tbody></table></div></section></div>
-  <aside class="panel">${r?decisionHTML(r):`<div class="cuerpo">${vacio("Selecciona una solicitud","El detalle y la decisión aparecen aquí.")}</div>`}</aside></div>`;
+  `<div class="grid g-2"><div class="grid"><section class="panel"><header><h2>Pendientes</h2><span class="sub num">${pend.length} por revisar</span></header><div class="cuerpo lista">${pend.length?pend.map(x=>tarjetaSol(x,{seleccion:x.id===sel.bandeja})).join(""):vacio("Bandeja al día","No hay solicitudes de tu equipo esperando aprobación.")}</div></section>
+</div>
+  <aside class="panel" id="decision">${r?decisionHTML(r):`<div class="cuerpo">${vacio("Selecciona una solicitud","El detalle y la decisión aparecen aquí.")}</div>`}</aside></div>`;
 }
 function decisionHTML(r){
   const cc=CCX[r.cc];
@@ -947,17 +966,17 @@ function decisionHTML(r){
   <dl class="ficha"><dt>Solicitante</dt><dd>${esc(nom(r.sol))}<br><span class="tenue peq">${esc(PX[r.sol].cargo)}</span></dd>
   <dt>Cometido</dt><dd>${esc(r.cometido)}</dd><dt>Destinos</dt><dd>${r.destinos.map(d=>esc(`${d.lug}, ${d.com} (${d.reg})`)).join("<br>")}</dd>
   <dt>Periodo</dt><dd class="num">${fFH(r.salida)} → ${fFH(r.regreso)}</dd>${r.km?`<dt>Distancia</dt><dd class="num">${km(r.km)} km aprox.</dd>`:""}
-  <dt>Ocupantes</dt><dd>${[r.cond?nom(r.cond)+" (conductor)":(r.reqCond?"Conductor del pool (por asignar)":""),r.relevo?nom(r.relevo)+" (relevo)":"",...r.pas.map(nom)].filter(Boolean).map(esc).join("<br>")}</dd>
+  <dt>Ocupantes</dt><dd>${[r.sol!==r.cond?nom(r.sol)+" (solicitante)":"",r.cond?nom(r.cond)+" (conductor)":(r.reqCond?"Conductor del pool (por asignar)":""),r.relevo?nom(r.relevo)+" (relevo)":"",...r.pas.map(nom)].filter(Boolean).map(esc).join("<br>")}</dd>
   </dl>
   <div class="campo"><label for="j-cc">Imputación presupuestaria (folio)</label><select id="j-cc"><option value="">— Seleccionar folio —</option>${Object.entries(PROGRAMAS).map(([k,n])=>`<optgroup label="${esc(n)}">${CC.filter(c=>c.prog===k).map(c=>`<option value="${c.folio}" ${c.folio===r.cc?"selected":""}>${c.folio} · ${esc(c.t)}</option>`).join("")}</optgroup>`).join("")}</select><span class="ayuda">Obligatoria para aprobar. Define a qué programa y centro de costo se imputa el gasto del cometido.</span></div>
 
   <div class="campo"><label for="j-com">Comentario para el solicitante</label><textarea id="j-com" placeholder="Obligatorio al observar o rechazar"></textarea></div>
   <div class="acciones"><button class="btn" type="button" data-dec="APROBADA">Aprobar</button><button class="btn aviso" type="button" data-dec="OBSERVADA">Observar</button><button class="btn peligro" type="button" data-dec="RECHAZADA">Rechazar</button></div>
-  <p class="tenue peq">La aprobación queda firmada digitalmente con fecha, hora e IP en el registro de auditoría.</p></div>`;
+  <p class="tenue peq">La aprobación queda registrada con fecha y hora.</p></div>`;
 }
 post.bandeja = ()=>{
   $("#vista").addEventListener("click",e=>{
-    const s=e.target.closest("[data-sel]"); if(s){sel.bandeja=s.dataset.sel;render();return}
+    const s=e.target.closest("[data-sel]"); if(s){sel.bandeja=s.dataset.sel;render(); const dz=$("#decision"); if(dz&&dz.getBoundingClientRect().top>window.innerHeight*0.6) dz.scrollIntoView({behavior:"smooth",block:"start"}); return}
     const d=e.target.closest("[data-dec]"); if(!d) return;
     const r=RES.find(x=>x.id===sel.bandeja), com=$("#j-com").value.trim();
     if(d.dataset.dec!=="APROBADA"&&!com){$("#j-com").setAttribute("aria-invalid","true");$("#j-com").focus();tostada("Escribe un comentario para observar o rechazar.");return}
@@ -1036,7 +1055,7 @@ function filasTesoreria(){
   RES.filter(r=>r.est==="FINALIZADA"&&r.bit?.reg).forEach(r=>{
     const sal=F(r.bit.sal); if(sal.getFullYear()!==t.anio || (t.modo==="mes" && sal.getMonth()+1!==t.mes)) return;
     const dias=diasEntre(r.bit.sal.slice(0,10),r.bit.reg.slice(0,10))+1;
-    const personas=[[r.cond,"Conductor"],[r.relevo,"Conductor de relevo"],...r.pas.map(x=>[x,"Acompañante"])].filter(x=>x[0]);
+    const personas=[[r.sol,"Solicitante"],[r.cond,"Conductor"],[r.relevo,"Conductor de relevo"],...r.pas.map(x=>[x,"Acompañante"])].filter(x=>x[0]);
     const vistos=new Set();
     personas.forEach(([id,rolv])=>{ if(vistos.has(id)) return; vistos.add(id); const p=PX[id];
       out.push({id:r.id,rut:p.rut,nom:p.nom,rol:rolv,sal:r.bit.sal,reg:r.bit.reg,dias,destino:r.destinos.map(d=>`${d.lug}, ${d.com} (${d.reg})`).join(" · "),cometido:r.cometido,folio:r.cc,ger:gerenciaFolio(r.cc),jefe:nom(r.jefe)}); });
@@ -1052,7 +1071,7 @@ function vReportesTes(){
    <label class="sr" for="t-anio">Año</label><select id="t-anio" style="width:auto"><option ${t.anio===2026?"selected":""}>2026</option><option ${t.anio===2025?"selected":""}>2025</option></select>
    <button class="btn chico" type="button" id="btn-xlsx" ${filas.length?"":"disabled"}>Descargar Excel</button></div></header>
    <div class="cuerpo grid" style="gap:var(--e-2)"><div class="meta"><span>Emite: <b>Encargado de Vehículos · Oficina Central</b> (en regiones, cada encargado regional emite el de su jurisdicción)</span><span>Salidas: <b>${salidas}</b></span><span>Personas: <b>${personas}</b></span><span>Filas: <b>${filas.length}</b></span></div>
-   <p class="nota">Sin conexión con el sistema de pagos: el Excel se envía a Tesorería. La gerencia se deduce del folio de imputación registrado en la salida. Incluye conductores y acompañantes funcionarios; los pasajeros externos no se informan.</p></div>
+   <p class="nota">Sin conexión con el sistema de pagos: el Excel se envía a Tesorería. La gerencia se deduce del folio de imputación registrado en la salida. Incluye al solicitante, los conductores y los acompañantes.</p></div>
    <div class="tabla-env">${filas.length?`<table><thead><tr><th>ID salida</th><th>RUT</th><th>Funcionario</th><th>Rol</th><th>Salida</th><th>Regreso</th><th>Días</th><th>Destino</th><th>Cometido</th><th>Folio</th><th>Gerencia</th><th>Jefatura que autorizó</th></tr></thead><tbody>${filas.map(f=>`<tr><td class="mono">${f.id}</td><td class="mono peq">${f.rut}</td><td>${esc(f.nom)}</td><td class="peq">${f.rol}</td><td class="num">${fFH(f.sal)}</td><td class="num">${fFH(f.reg)}</td><td class="d">${f.dias}</td><td class="peq">${esc(f.destino)}</td><td class="peq">${esc(f.cometido)}</td><td class="mono">${esc(f.folio)}</td><td class="peq">${esc(f.ger.split(" · ")[0])}</td><td class="peq">${esc(f.jefe)}</td></tr>`).join("")}</tbody></table>`:vacio("Sin salidas finalizadas en el periodo","Elige otro mes o el reporte anual.")}</div>
    <div class="leyenda"><span class="tenue peq">Días: días calendario entre la salida y el regreso reales registrados en la bitácora. Si la descarga no se inicia en esta vista previa, ábrela desde GitHub Pages. RUT y nombres ficticios.</span></div></section>`;
 }
@@ -1072,7 +1091,7 @@ function abrirOrden(id){
    <tr><td>Salida / regreso</td><td>${fFH(r.salida)} → ${fFH(r.regreso)} · ${Math.max(1,Math.ceil((F(r.regreso)-F(r.salida))/DIA))} día(s) · ${pasajeros(r)} personas</td></tr>
    <tr><td>Acompañantes</td><td>${r.pas.map(nom).map(esc).join(", ")||"—"}</td></tr>
    ${r.km?`<tr><td>Km aproximados</td><td>${km(r.km)}</td></tr>`:""}
-   <tr><td>Lugar de guarda</td><td>${esc(v.guarda||v.unidad)}${r.destinos.length&&r.km>500?" · pernoctación autorizada en destino":""}</td></tr>
+   <tr><td>Lugar de guarda</td><td>${esc(v.guarda||v.unidad)}</td></tr>
 
    <tr><td>Tarjeta combustible</td><td>${esc(r.tarjeta||v.tarjeta)}</td></tr>
   </tbody></table>
@@ -1201,7 +1220,7 @@ function pintarBarra(){
   $("#quien").innerHTML=`<span class="avatar" aria-hidden="true">${iniciales(p.nom)}</span><span class="qtxt"><b>${esc(p.nom)}</b><span>${esc(p.cargo)}</span></span>`;
   $("#nav").innerHTML=(R0.menu||R0.nav).map(([k,t])=>`<button type="button" data-v="${k}" ${k===vista||(R0.menu&&k===HOME())?'aria-current="page"':""}>${ico(NAV_ICO[k]||"home")}${t}${c[k]?`<span class="cuenta num" aria-label="${c[k]} pendientes">${c[k]}</span>`:""}</button>`).join("");
 }
-function ir(v){ vista=v; try{history.replaceState(null,"","#"+v)}catch(e){} render(); $("#vista").focus({preventScroll:true}); }
+function ir(v){ vista=v; try{history.replaceState(null,"","#"+v)}catch(e){} render(); try{window.scrollTo(0,0)}catch(e){} $("#vista").focus({preventScroll:true}); }
 $("#nav").addEventListener("click",e=>{const b=e.target.closest("button[data-v]"); if(b) ir(b.dataset.v)});
 const irInicio=()=>{ if(document.body.classList.contains("sin-sesion")) return; cerrarCapa(); ir(ROLES[rol].nav[0][0]); };
 $("#app-home").addEventListener("click",irInicio); $("#app-home").addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); irInicio(); } });
@@ -1254,7 +1273,7 @@ function vNovedades(){
 post.novedades = ()=>{ $("#vista").querySelectorAll("[data-nov]").forEach(b=>b.onclick=()=>{const r=RES.find(x=>x.id===b.dataset.nov); abrirFicha(r.pat,"mant",{nuevaOT:true,desde:r.id});}); };
 function vVencimientos(){
   const ven=vencimientos(), nv=ven.filter(a=>a.e==="VENC").length;
-  return volverHTML()+cab("Próximos vencimientos","Documentos de los vehículos y extintores vencidos o que vencen en los próximos 30 días.","")+
+  return volverHTML()+cab("Próximos vencimientos","Documentos de los vehículos vencidos o que vencen en los próximos 30 días.","")+
   `<div class="contadores"><div class="contador ${nv?"alerta":""}"><b>${nv}</b><span>vencidos</span></div><div class="contador"><b>${ven.length-nv}</b><span>vencen en<br>30 días</span></div></div>
   <section class="panel"><div class="tabla-env"><table><thead><tr><th>Patente</th><th>Documento</th><th>Vencimiento</th><th>Estado</th></tr></thead><tbody>${ven.map(a=>`<tr class="clic" data-veh="${a.pat}" tabindex="0"><td>${placa(a.pat)}</td><td>${a.t}</td><td class="num">${a.f?fF(a.f):"Sin fecha registrada"}</td><td>${a.e==="VENC"?chip("Vencido","c-malo","✕"):a.e==="SIN"?chip("Sin dato","c-malo","?"):chip("Por vencer","c-pend","!")}</td></tr>`).join("")||`<tr><td colspan="4" class="tenue">Sin vencimientos en los próximos 30 días.</td></tr>`}</tbody></table></div></section>`;
 }
@@ -1275,13 +1294,13 @@ function accesosGestion(){
   const est=VEH.map(estadoHoy), ne=k=>est.filter(e=>e===k).length, ven=vencimientos(), nov=novedadesPend().length, venc=ven.filter(a=>a.e==="VENC").length;
   ACCESOS=[
    {v:"salidas",ico:"aprobar",t:"Asignar vehículos",d:"Solicitudes aprobadas por la jefatura que esperan vehículo y conductor.",cta:"Ir a asignar",n:n("APROBADA"),nl:"por asignar",principal:true,pre:()=>{sel.salFiltro="asignar";sel.salModo="lista"}},
-   {v:"salidas",ico:"llave",t:"Entregar y recibir",d:"Vehículos que salen o regresan: odómetro, combustible y documentación del vehículo.",cta:"Ver salidas",n:n("CONFIRMADA")+n("EN_TERRENO"),nl:"en curso",pre:()=>{sel.salFiltro="proximas";sel.salModo="lista"}},
+   {v:"salidas",ico:"llave",t:"Entregar y recibir",d:"Vehículos que salen o regresan: odómetro, combustible y documentación del vehículo.",cta:"Ver salidas",n:n("CONFIRMADA")+n("EN_TERRENO"),nl:"en curso",pre:()=>{sel.salFiltro="entregar";sel.salModo="lista"}},
    {v:"salidas",ico:"calendario",t:"Calendario de la flota",d:"Ocupación de cada vehículo día a día, con reservas y mantenciones.",cta:"Abrir calendario",pre:()=>{sel.salModo="calendario"}},
    {v:"flota",ico:"car",t:"Flota",d:`Hoy: ${ne("DISP")} disponibles de ${VEH.length}, ${ne("TERR")} en terreno, ${ne("TALL_P")+ne("TALL_C")} en taller y ${ne("MALO")+ne("EXCL")+ne("BAJA")} fuera de servicio o exclusivos.`,cta:"Ver vehículos",n:alertas,nl:"con alertas",aviso:alertas>0},
    {v:"novedades",ico:"taller",t:"Novedades mecánicas",d:"Desperfectos reportados al recibir los vehículos, para crear la orden de trabajo.",cta:"Ver novedades",n:nov,nl:"novedades por atender",aviso:nov>0},
-   {v:"vencimientos",ico:"alerta",t:"Próximos vencimientos",d:`Revisión técnica, gases, SOAP, permiso de circulación y extintores. ${venc} vencidos y ${ven.length-venc} por vencer en 30 días.`,cta:"Ver vencimientos",n:ven.length,nl:"vencimientos",aviso:venc>0},
+   {v:"vencimientos",ico:"alerta",t:"Próximos vencimientos",d:`Revisión técnica, gases, SOAP, permiso de circulación y póliza. ${venc} vencidos y ${ven.length-venc} por vencer en 30 días.`,cta:"Ver vencimientos",n:ven.length,nl:"vencimientos",aviso:venc>0},
    {v:"conductores",ico:"licencia",t:"Conductores",d:"Caución y licencia de cada conductor. Los bloqueados no se pueden asignar.",cta:"Ver padrón",n:porVencer,nl:"por vencer o bloqueados",aviso:porVencer>0},
-   {v:"combustible",ico:"combustible",t:"Combustible y gastos",d:"Cargas, archivo COPEC, compras a granel y gastos por factura o boleta.",cta:"Registrar"},
+   {v:"combustible",ico:"combustible",t:"Combustible y gastos",d:"Cargas, archivo COPEC, compras a granel y gastos por factura o boleta.",cta:"Ver combustible y gastos"},
    {v:"reportes",ico:"grafico",t:"Reportes",d:"Kilómetros, rendimiento, operatividad y el Excel mensual o anual para Tesorería.",cta:"Ver reportes"}];
   if(rol==="super") ACCESOS.push({v:"config",ico:"config",t:"Configuración",d:"Catálogos, usuarios y accesos, cierre mensual y auditoría.",cta:"Configurar"});
   return ACCESOS;
@@ -1313,7 +1332,7 @@ post.inicio = ()=>postAccesos();
 post.hoy = ()=>postAccesos();
 
 /* ======================= SALIDAS ======================= */
-function grupoSalida(r){ return r.est==="APROBADA"?"asignar":r.est==="CONFIRMADA"?"proximas":r.est==="EN_TERRENO"?"terreno":r.est==="FINALIZADA"?"finalizadas":r.est==="PEND_JEFE"||r.est==="OBSERVADA"?"jefatura":"otras"; }
+function grupoSalida(r){ return r.est==="APROBADA"?"asignar":r.est==="CONFIRMADA"||r.est==="EN_TERRENO"?"entregar":r.est==="FINALIZADA"?"finalizadas":r.est==="PEND_JEFE"||r.est==="OBSERVADA"?"jefatura":"otras"; }
 function vSalidas(){
   if(sel.salModo==="calendario") return vVisor().replace('<div class="cab-vista">',`<div class="barra-herr">${filtrosHTML([["lista","Lista"],["calendario","Calendario"]],"calendario","data-modo")}</div><div class="cab-vista">`);
   const g={}; RES.forEach(r=>{const k=grupoSalida(r); g[k]=(g[k]||0)+1});
@@ -1321,7 +1340,7 @@ function vSalidas(){
   const lista=RES.filter(r=>(sel.salFiltro==="todas"||grupoSalida(r)===sel.salFiltro)&&(!q||[r.id,r.pat,nom(r.sol),nom(r.cond),r.cometido,...r.destinos.map(d=>d.com)].join(" ").toLowerCase().includes(q)))
     .sort((a,b)=>sel.salFiltro==="finalizadas"||sel.salFiltro==="todas"?b.salida.localeCompare(a.salida):a.salida.localeCompare(b.salida));
   return cab("Salidas a terreno","Todas las solicitudes en un solo lugar. Ábrelas para asignar, entregar o recibir el vehículo.","ERS §4.3 · GESAD «Salidas de vehículos»")+
-  `<div class="barra-herr">${filtrosHTML([["asignar","Por asignar",g.asignar||0],["proximas","Próximas",g.proximas||0],["terreno","En terreno",g.terreno||0],["finalizadas","Finalizadas",g.finalizadas||0],["jefatura","En jefatura",g.jefatura||0],["todas","Todas",RES.length]],sel.salFiltro,"data-sf")}
+  `<div class="barra-herr">${filtrosHTML([["asignar","Por asignar",g.asignar||0],["entregar","Entregar o recibir",g.entregar||0],["finalizadas","Finalizadas",g.finalizadas||0],["jefatura","En jefatura",g.jefatura||0],["todas","Todas",RES.length]],sel.salFiltro,"data-sf")}
    <div class="filtros"><label class="sr" for="s-q">Buscar</label><input type="search" id="s-q" placeholder="Buscar ID, patente, persona o comuna" value="${esc(sel.salQ)}">${filtrosHTML([["lista","Lista"],["calendario","Calendario"]],"lista","data-modo")}</div></div>
   <section class="panel"><div class="tabla-env">${lista.length?`<table><thead><tr><th>ID</th><th>Estado</th><th>Salida</th><th>Regreso</th><th>Destino</th><th>Solicitante</th><th>Vehículo</th><th>Conductor</th></tr></thead><tbody>${lista.map(r=>`<tr class="clic" data-sal="${r.id}" tabindex="0"><td class="mono">${r.id}</td><td>${chipR(r.est)}</td><td class="num">${fCorta(r.salida)}</td><td class="num">${fCorta(r.regreso)}</td><td>${esc(r.destinos.map(d=>d.com).join(" · "))}</td><td>${esc(nom(r.sol))}</td><td>${r.pat?placa(r.pat):'<span class="tenue">Por asignar</span>'}</td><td>${r.cond?esc(nom(r.cond)):r.reqCond?'<span class="tenue">Del pool</span>':"—"}</td></tr>`).join("")}</tbody></table>`:vacio("Sin salidas en este grupo","Cambia el filtro o la búsqueda.")}</div></section>`;
 }
@@ -1338,6 +1357,7 @@ post.salidas = ()=>{
 let asig={pat:null,cond:null,rel:null,tarj:null};
 function abrirSalida(id){
   const r=RES.find(x=>x.id===id); if(!r) return;
+  if(asig.rid!==id) asig={pat:null,cond:null,rel:null,tarj:null,rid:id};
   const cc=CCX[r.cc], gestor=puedeGestionar(), cond=rol==="conductor"&&(r.cond==="c1"||r.relevo==="c1");
   let accion="";
   if(r.est==="APROBADA") accion = gestor?asignacionHTML(r):`<p class="nota">El encargado de vehículos está asignando vehículo y conductor.</p>`;
@@ -1347,7 +1367,7 @@ function abrirSalida(id){
   else if(r.est==="PEND_JEFE") accion = `<p class="nota">Esperando la visación de ${esc(nom(r.jefe))}.</p>`;
   else if(r.obsLog) accion = `<p class="nota">${esc(r.obsLog)}</p>`;
   const cuerpo=`<div class="estado-linea">${chipR(r.est)}</div>${flujoHTML(r.est)}
-   <div class="seccion"><h3>Solicitud</h3><dl class="ficha"><dt>Cometido</dt><dd>${esc(r.cometido)}</dd><dt>Destino</dt><dd>${r.destinos.map(d=>esc(`${d.lug}, ${d.com} (${d.reg})`)).join("<br>")}</dd><dt>Periodo</dt><dd class="num">${fFH(r.salida)} → ${fFH(r.regreso)}</dd><dt>Personas</dt><dd>${pasajeros(r)} · ${[r.cond?nom(r.cond)+" (conductor)":r.reqCond?"conductor del pool":"",r.relevo?nom(r.relevo)+" (relevo)":"",...r.pas.map(nom)].filter(Boolean).map(esc).join(", ")}</dd><dt>Requisitos</dt><dd>${[r.req.t4?"4x4":"",r.req.carga?"espacio de carga":""].filter(Boolean).join(" · ")||"—"}</dd><dt>Distancia</dt><dd>${distanciaTxt(r)}</dd><dt>Solicita</dt><dd>${esc(nom(r.sol))} · autoriza ${esc(nom(r.jefe))}</dd><dt>Imputación</dt><dd>${r.cc?`<span class="mono">${esc(r.cc)}</span> ${cc?esc(cc.t):""}`:"Por definir (jefatura)"}</dd>${r.pat?`<dt>Vehículo</dt><dd>${placa(r.pat)} ${esc(VX[r.pat].marca+" "+VX[r.pat].modelo)}</dd>`:""}</dl>
+   <div class="seccion"><h3>Solicitud</h3><dl class="ficha"><dt>Cometido</dt><dd>${esc(r.cometido)}</dd><dt>Destino</dt><dd>${r.destinos.map(d=>esc(`${d.lug}, ${d.com} (${d.reg})`)).join("<br>")}</dd><dt>Periodo</dt><dd class="num">${fFH(r.salida)} → ${fFH(r.regreso)}</dd><dt>Personas</dt><dd>${pasajeros(r)} · ${[r.sol!==r.cond?nom(r.sol)+" (solicitante)":"",r.cond?nom(r.cond)+" (conductor)":r.reqCond?"conductor del pool":"",r.relevo?nom(r.relevo)+" (relevo)":"",...r.pas.map(nom)].filter(Boolean).map(esc).join(", ")}</dd><dt>Requisitos</dt><dd>${[r.req.t4?"4x4":"",r.req.carga?"espacio de carga":""].filter(Boolean).join(" · ")||"—"}</dd><dt>Distancia</dt><dd>${distanciaTxt(r)}</dd><dt>Solicita</dt><dd>${esc(nom(r.sol))} · autoriza ${esc(nom(r.jefe))}</dd><dt>Imputación</dt><dd>${r.cc?`<span class="mono">${esc(r.cc)}</span> ${cc?esc(cc.t):""}`:"Por definir (jefatura)"}</dd>${r.pat?`<dt>Vehículo</dt><dd>${placa(r.pat)} ${esc(VX[r.pat].marca+" "+VX[r.pat].modelo)}</dd>`:""}</dl>
    ${["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)?`<div><button class="btn sec chico" type="button" data-orden="${r.id}">Ver orden de salida</button></div>`:""}</div>
    <div class="seccion" id="accion">${accion}</div>`;
   cajon(`<h2 id="t-cajon" style="font-size:var(--f-xl)" class="mono">${r.id}</h2>`, esc(r.destinos.map(d=>d.com).join(" · ")), cuerpo);
@@ -1357,7 +1377,8 @@ function asignacionHTML(r){
   const tmp={...r,pat:asig.pat};
   const cand=VEH.map(v=>({v,a:vehApto(v,r)})), aptos=cand.filter(x=>x.a.ok), vSel=cand.find(x=>x.v.pat===asig.pat);
   const regTarj=rol==="encargado"?(PX[ROLES[rol].quien].region||"Oficina Central"):(VX[asig.pat]?.region||"Oficina Central");
-  const tarjetas=VEH.filter(v=>v.tarjetaEstado==="Activa"&&v.tarjeta&&v.tarjeta!=="Sin tarjeta"&&(v.region||"Oficina Central")===regTarj).map(v=>({t:v.tarjeta,pat:v.pat,cupo:v.cupo})).sort((a,b)=>(b.pat===asig.pat)-(a.pat===asig.pat));
+  const tarjEnUso=new Set(RES.filter(o=>o.id!==r.id&&ACTIVAS.includes(o.est)&&solapa(o.salida,o.regreso,r.salida,r.regreso)).map(o=>o.tarjeta||(o.pat&&VX[o.pat]?.tarjeta)).filter(Boolean));
+  const tarjetas=VEH.filter(v=>v.tarjetaEstado==="Activa"&&v.tarjeta&&v.tarjeta!=="Sin tarjeta"&&(v.region||"Oficina Central")===regTarj&&!tarjEnUso.has(v.tarjeta)).map(v=>({t:v.tarjeta,pat:v.pat,cupo:v.cupo})).sort((a,b)=>(b.pat===asig.pat)-(a.pat===asig.pat));
   if(asig.pat&&!asig.tarj){ const p=tarjetas.find(x=>x.pat===asig.pat); if(p) asig.tarj=p.t; }
   const conds=COND.filter(c=>c.tipo==="POOL").map(c=>({c,a:condApto(c.id,tmp)}));
   const kmDia=r.km/Math.max(1,Math.ceil((F(r.regreso)-F(r.salida))/DIA));
@@ -1365,7 +1386,7 @@ function asignacionHTML(r){
   <p class="tenue peq">Sólo se listan vehículos disponibles: fuera de taller y de baja, con capacidad (${pasajeros(r)} personas)${r.req.t4?", 4x4":""}${r.req.carga?", carga":""}, documentos vigentes y horario libre.</p>
   <div class="campos">
    <div class="campo ancho"><label for="a-pat">Vehículo disponible</label>${aptos.length?`<select id="a-pat"><option value="">— Seleccionar vehículo (${aptos.length} disponibles) —</option>${aptos.map(({v,a})=>`<option value="${v.pat}" ${asig.pat===v.pat?"selected":""}>${v.pat} · ${esc(v.marca+" "+v.modelo)} · ${esc(v.tipo)} · ${v.trac} · ${v.cap} plazas · ${km(v.km)} km${a.avisos.length?" · ⚠ "+esc(a.avisos.join(", ")):""}</option>`).join("")}</select>`:`<p class="nota">No hay vehículos disponibles que cumplan los requisitos. Use «Sin disponibilidad».</p>`}${asig.pat&&vSel?.a.avisos.length?`<span class="ayuda">${vSel.a.avisos.map(m=>chip(m,"c-pend","!")).join(" ")}</span>`:""}</div>
-   <div class="campo ancho"><label for="a-tarj">Tarjeta de combustible</label><select id="a-tarj" ${asig.pat?"":"disabled"}><option value="">${asig.pat?"— Seleccionar tarjeta —":"— Elija primero el vehículo —"}</option>${tarjetas.map(x=>`<option value="${esc(x.t)}" ${asig.tarj===x.t?"selected":""}>${esc(x.t)} · ${x.pat===asig.pat?"tarjeta del vehículo":"tarjeta de "+x.pat}</option>`).join("")}</select><span class="ayuda">Sólo tarjetas activas a cargo del encargado de vehículos de ${esc(regTarj)}. Por defecto, la del vehículo asignado.</span></div>
+   <div class="campo ancho"><label for="a-tarj">Tarjeta de combustible</label><select id="a-tarj" ${asig.pat?"":"disabled"}><option value="">${asig.pat?"— Seleccionar tarjeta —":"— Elija primero el vehículo —"}</option>${tarjetas.map(x=>`<option value="${esc(x.t)}" ${asig.tarj===x.t?"selected":""}>${esc(x.t)} · ${x.pat===asig.pat?"tarjeta del vehículo":"tarjeta de "+x.pat}</option>`).join("")}</select><span class="ayuda">Sólo tarjetas activas de ${esc(regTarj)} que no estén entregadas en otra salida en esas fechas. Por defecto, la del vehículo asignado.</span></div>
   </div>
   ${r.reqCond?`<fieldset><legend>Conductor del pool</legend>${!r.km?`<div class="regla inf"><span class="ico" aria-hidden="true">i</span><div><b>Sin estimación de kilómetros</b><span>El solicitante no indicó la distancia; evalúe el relevo según los destinos y las fechas.</span></div></div>`:kmDia>400?`<div class="regla av"><span class="ico" aria-hidden="true">!</span><div><b>Viaje de ${km(kmDia)} km por día: se recomienda asignar conductor de relevo</b><span>${km(r.km)} km aprox. en ${diasViaje(r)} ${diasViaje(r)===1?"día":"días"}.</span></div></div>`:`<div class="regla ok"><span class="ico" aria-hidden="true">✓</span><div><b>No requiere relevo</b><span>${km(kmDia)} km por día (${km(r.km)} km aprox. en ${diasViaje(r)} ${diasViaje(r)===1?"día":"días"}).</span></div></div>`}<div class="campos" style="margin-top:var(--e-3)"><div class="campo"><label for="a-cond">Conductor disponible</label><select id="a-cond"><option value="">— Seleccionar —</option>${conds.filter(x=>x.a.ok).map(({c})=>`<option value="${c.id}" ${asig.cond===c.id?"selected":""}>${esc(nom(c.id))} · licencia ${c.clases.join("/")}</option>`).join("")}</select></div>
    <div class="campo"><label for="a-rel">Conductor de relevo${kmDia>400?" (recomendado)":" (opcional)"}</label><select id="a-rel"><option value="">Sin relevo</option>${conds.filter(x=>x.a.ok&&x.c.id!==asig.cond).map(({c})=>`<option value="${c.id}" ${asig.rel===c.id?"selected":""}>${esc(nom(c.id))}</option>`).join("")}</select></div></div></fieldset>`:`<p class="nota">Conduce ${esc(nom(r.cond))}.</p>`}
@@ -1375,18 +1396,22 @@ function asignacionHTML(r){
 function checklistHTML(r){
   return `<div class="check-grid">${DOCS_ENTREGA.map(n=>`<label><input type="checkbox" class="s-doc" value="${esc(n)}" checked> ${esc(n)}${n==="Tarjeta de combustible"&&r.tarjeta?` <span class="tenue peq mono">${esc(r.tarjeta)}</span>`:""}</label>`).join("")}</div>`;
 }
+function bloqueosEntrega(r){ const v=VX[r.pat], m=[];
+  [["rt","Revisión técnica"],["soap","SOAP"],["perm","Permiso de circulación"],["gases","Revisión de gases"]].forEach(([k,n])=>{ if(!v[k]) m.push(n+" sin registro"); else if(F(v[k])<F(r.regreso)) m.push(n+" vencida al "+fF(v[k])); });
+  if(["TALL_P","TALL_C"].includes(v.estado)) m.push("Vehículo en taller"); if(v.estado==="MALO") m.push("Vehículo fuera de servicio"); if(v.estado==="BAJA") m.push("Vehículo en proceso de baja");
+  return m; }
 function despachoHTML(r){
-  const v=VX[r.pat], docAl=["rt","soap","perm"].filter(k=>docEstado(v[k],F(r.regreso))==="VENC");
-  return `<h3>Entregar vehículo</h3>${docAl.length?`<div class="regla bl"><span class="ico">✕</span><div><b>No entregar: documento vencido</b><span>${docAl.map(k=>({rt:"Revisión técnica",soap:"SOAP",perm:"Permiso de circulación"})[k]).join(", ")}</span></div></div>`:""}
+  const v=VX[r.pat], bloq=bloqueosEntrega(r);
+  return `<h3>Entregar vehículo</h3>${bloq.length?`<div class="regla bl"><span class="ico">✕</span><div><b>No se puede entregar este vehículo</b><span>${bloq.join(" · ")}. Reasigne la salida o regularice el vehículo.</span></div></div>`:""}
   <div class="campos"><div class="campo"><label for="s-hora">Hora de salida</label><input type="datetime-local" id="s-hora" value="${r.salida}"></div><div class="campo"><label for="s-odo">Odómetro (km)</label><input type="number" id="s-odo" value="${v.km}" min="${v.km}"><span class="ayuda">Último registro: ${km(v.km)} km</span></div>
   <div class="campo"><label for="s-comb">Estanque</label><select id="s-comb">${["1/4","1/2","3/4","Lleno"].map(x=>`<option ${x==="Lleno"?"selected":""}>${x}</option>`).join("")}</select></div><div class="campo"><span class="lbl">Retira</span><span>${esc(nom(r.cond))}</span></div></div>
   <fieldset><legend>Documentación entregada</legend><span class="ayuda">Desmarca lo que no se entrega. Queda registrado en la bitácora.</span>${checklistHTML(r)}</fieldset>
-  <div class="acciones"><button class="btn" type="button" id="s-ok">Registrar salida</button></div>`;
+  <div class="acciones"><button class="btn" type="button" id="s-ok" ${bloq.length?"disabled":""}>Registrar salida</button></div>`;
 }
 function recepcionHTML(r){
   return `<h3>Recibir vehículo</h3><p class="tenue peq">Salió ${fFH(r.bit.sal)} con ${km(r.bit.odoS)} km y estanque ${esc(r.bit.combS)}.</p>
-  <div class="campos"><div class="campo"><label for="g-hora">Hora de llegada</label><input type="datetime-local" id="g-hora" value="${r.regreso}"></div><div class="campo"><label for="g-odo">Odómetro (km)</label><input type="number" id="g-odo" value="${r.bit.odoS+r.km}" min="${r.bit.odoS+1}"><span class="ayuda" id="g-rec"></span></div>
-  <div class="campo"><label for="g-comb">Estanque</label><select id="g-comb">${["1/4","1/2","3/4","Lleno"].map(x=>`<option ${x==="1/2"?"selected":""}>${x}</option>`).join("")}</select></div>
+  <div class="campos"><div class="campo"><label for="g-hora">Hora de llegada</label><input type="datetime-local" id="g-hora" value="${r.regreso}"></div><div class="campo"><label for="g-odo">Odómetro (km)</label><input type="number" id="g-odo" value="" min="${r.bit.odoS+1}" placeholder="Lea el tablero"><span class="ayuda">Salió con ${km(r.bit.odoS)} km${r.km?` · estimado al regreso: ${km(r.bit.odoS+r.km)} km`:""}</span><span class="ayuda" id="g-rec"></span></div>
+  <div class="campo"><label for="g-comb">Estanque</label><select id="g-comb"><option value="">— Seleccionar —</option>${["Reserva","1/4","1/2","3/4","Lleno"].map(x=>`<option>${x}</option>`).join("")}</select></div>
   <div class="campo"><span class="lbl">Carga de combustible en ruta</span><div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--e-2)"><input type="number" id="g-lt" placeholder="Litros" aria-label="Litros"><input type="number" id="g-monto" placeholder="Monto $" aria-label="Monto"></div></div></div>
   <div class="campo"><label for="g-nov">Novedades mecánicas</label><textarea id="g-nov" placeholder="Ej.: luz quemada, ruido de suspensión, testigo encendido"></textarea><div class="opciones"><label><input type="checkbox" id="g-sin"> Sin novedades</label></div></div>
   <div class="acciones"><button class="btn" type="button" id="g-ok">Registrar regreso y cerrar</button></div>`;
@@ -1401,17 +1426,20 @@ function postSalida(r){
   const at=$("#a-tarj"); if(at) at.onchange=()=>{asig.tarj=at.value||null;abrirSalida(r.id)};
   const ac=$("#a-cond"); if(ac) ac.onchange=()=>{asig.cond=ac.value||null;abrirSalida(r.id)};
   const ar=$("#a-rel"); if(ar) ar.onchange=()=>{asig.rel=ar.value||null};
-  const ok=$("#a-ok"); if(ok) ok.onclick=()=>{ r.pat=asig.pat; r.tarjeta=asig.tarj; if(r.reqCond){r.cond=asig.cond; r.relevo=asig.rel||null} r.est="CONFIRMADA"; const o=$("#a-obs").value.trim(); if(o) r.obsLog="Logística: "+o;
-    r.hist.push({t:iso(HOY),quien:ROLES[rol].quien,acc:"Asignada"}); audit("Asigna vehículo y conductor",r.id,"Aprobada",r.pat+" · "+nom(r.cond)); asig={pat:null,cond:null,rel:null,tarj:null}; tostada(`${r.id} confirmada con ${r.pat}.`); abrirSalida(r.id); };
+  const ok=$("#a-ok"); if(ok) ok.onclick=()=>{ const va=VX[asig.pat]?vehApto(VX[asig.pat],r):{ok:false,motivos:["Vehículo no válido"]}; if(!va.ok){ tostada("El vehículo ya no cumple: "+va.motivos.join(", ")+"."); asig.pat=null; asig.tarj=null; abrirSalida(r.id); return; }
+    if(r.reqCond&&asig.cond&&!condApto(asig.cond,{...r,pat:asig.pat}).ok){ tostada("El conductor ya no está disponible."); asig.cond=null; abrirSalida(r.id); return; }
+    r.pat=asig.pat; r.tarjeta=asig.tarj; if(r.reqCond){r.cond=asig.cond; r.relevo=asig.rel||null} r.est="CONFIRMADA"; const o=$("#a-obs").value.trim(); if(o) r.obsLog="Logística: "+o;
+    r.hist.push({t:iso(HOY),quien:ROLES[rol].quien,acc:"Asignada"}); audit("Asigna vehículo y conductor",r.id,"Aprobada",r.pat+" · "+nom(r.cond)); asig={pat:null,cond:null,rel:null,tarj:null,rid:null}; tostada(`${r.id} confirmada con ${r.pat}.`); abrirSalida(r.id); };
   const sd=$("#a-sd"); if(sd) sd.onclick=()=>{ r.est="SIN_DISP"; r.obsLog="Logística: sin vehículos del pool que cumplan requisitos."; audit("Marca sin disponibilidad",r.id,"Aprobada","Sin disponibilidad"); tostada(`${r.id}: se avisó al solicitante.`); abrirSalida(r.id); };
-  const so=$("#s-ok"); if(so) so.onclick=()=>{ const v=VX[r.pat], odo=+$("#s-odo").value;
+  const so=$("#s-ok"); if(so) so.onclick=()=>{ if(bloqueosEntrega(r).length) return; const v=VX[r.pat], odo=+$("#s-odo").value;
     if(odo<v.km){$("#s-odo").setAttribute("aria-invalid","true");tostada(`El odómetro no puede ser menor a ${km(v.km)} km.`);return}
     const docsEnt=[...C.querySelectorAll(".s-doc:checked")].map(i=>i.value);
     r.bit={sal:$("#s-hora").value,odoS:odo,combS:$("#s-comb").value,docs:docsEnt.length===DOCS_ENTREGA.length,docsEnt}; r.est="EN_TERRENO"; r.hist.push({t:r.bit.sal,quien:ROLES[rol].quien,acc:"Salida"});
     audit("Registra salida",r.id+" · "+r.pat,"Confirmada","En terreno · "+km(odo)+" km"); tostada(`${r.pat} en terreno.`); abrirSalida(r.id); };
-  const go=$("#g-ok"); if(go){ const rec=()=>{const d=(+$("#g-odo").value)-r.bit.odoS; $("#g-rec").textContent=d>0?`Recorridos: ${km(d)} km`:`Debe superar ${km(r.bit.odoS)} km`}; rec(); $("#g-odo").oninput=rec; $("#g-sin").onchange=e=>{$("#g-nov").disabled=e.target.checked};
+  const go=$("#g-ok"); if(go){ const rec=()=>{const val=$("#g-odo").value, d=(+val)-r.bit.odoS; $("#g-rec").textContent=!val?"":d>0?`Recorridos: ${km(d)} km`:`Debe superar ${km(r.bit.odoS)} km`}; rec(); $("#g-odo").oninput=rec; $("#g-sin").onchange=e=>{$("#g-nov").disabled=e.target.checked};
     go.onclick=()=>{ const odo=+$("#g-odo").value, sin=$("#g-sin").checked, nov=$("#g-nov").value.trim();
-      if(!(odo>r.bit.odoS)){$("#g-odo").setAttribute("aria-invalid","true");$("#g-odo").focus();return}
+      if(!(odo>r.bit.odoS)){$("#g-odo").setAttribute("aria-invalid","true");$("#g-odo").focus();tostada(`Ingresa el odómetro del tablero (mayor a ${km(r.bit.odoS)} km).`);return}
+      if(!$("#g-comb").value){$("#g-comb").setAttribute("aria-invalid","true");$("#g-comb").focus();tostada("Indica el nivel del estanque al regreso.");return}
       if(!sin&&!nov){$("#g-nov").setAttribute("aria-invalid","true");$("#g-nov").focus();tostada("Describe las novedades o marca «Sin novedades».");return}
       const lt=+$("#g-lt").value||0, monto=+$("#g-monto").value||0;
       Object.assign(r.bit,{reg:$("#g-hora").value,odoR:odo,combR:$("#g-comb").value,nov:sin?"Sin novedades":nov,lt,monto});
@@ -1502,7 +1530,7 @@ function postFicha(pat, op){
 }
 
 /* ======================= CONDUCTORES ======================= */
-function estCond(c){ const a=condApto(c.id,{id:"x",salida:iso(HOY),regreso:iso(HOY),pas:[],req:{}}); const dc=(F(c.cauHasta)-HOY)/DIA, dl=(F(c.licHasta)-HOY)/DIA; return {a,est:a.ok?(dc<=30||dl<=30?"POR":"OK"):"BLOQ"}; }
+function estCond(c){ const dc=(F(c.cauHasta)-HOY)/DIA, dl=(F(c.licHasta)-HOY)/DIA, m=[]; if(c.caucion!=="Vigente") m.push("Caución "+c.caucion.toLowerCase()); else if(dc<0) m.push("Caución vencida "+fF(c.cauHasta)); if(dl<0) m.push("Licencia vencida "+fF(c.licHasta)); const a={ok:!m.length,motivos:m}; return {a,est:a.ok?(dc<=30||dl<=30?"POR":"OK"):"BLOQ"}; }
 function vConductores(){
   const f=sel.condFiltro, filas=COND.map(c=>({c,...estCond(c)})), n=k=>filas.filter(x=>x.est===k||(k==="POOL"&&x.c.tipo==="POOL")).length;
   const lista=filas.filter(x=>f==="todos"||x.est===f||(f==="POOL"&&x.c.tipo==="POOL"));
@@ -1615,13 +1643,13 @@ function vConfig(){
   let c="";
   if(t==="catalogos"){ const cats=[["Tipos de vehículo",["Camioneta","SUV","Station wagon","Furgón","Automóvil","Camión","Minibús","Todoterreno","Motocicleta","Maquinaria"]],["Tipos de gasto",TIPO_GASTO.map(x=>x[1])],["Trabajos de taller",Object.entries(TRABAJOS).flatMap(([k,a])=>a.map(x=>x))],["Talleres",TALLERES],["Estaciones de servicio",ESTACIONES],["Centros de costo",CC.map(c=>c.folio+" · "+c.t)]];
     c=`<p class="tenue peq" style="margin-bottom:var(--e-3)">Catálogos heredados de GESAD y depurados. Cada región usa los mismos catálogos nacionales.</p><div class="grid g-2b">${cats.map(([n,a])=>`<section class="panel"><header><h2>${n}</h2><span class="sub">${a.length}</span></header><div class="cuerpo"><p class="peq">${a.map(esc).join(" · ")}</p></div></section>`).join("")}</div>`; }
-  if(t==="usuarios") c=`<section class="panel"><div class="tabla-env"><table><thead><tr><th>Usuario</th><th>Perfil</th><th>Jurisdicción</th><th>Estado</th></tr></thead><tbody>${[["p1","Administrador nacional","Nacional"],["p2","Encargado de vehículos","Oficina Central"],["p3","Jefatura directa","Depto. Abastecimiento"],["p5","Jefatura directa","GEPRIF · Análisis y Diagnóstico"],["p8","Jefatura directa","GEF · Fiscalización"],["p10","Jefatura directa","GEBCC · Viveros"]].map(([id,pf,j])=>`<tr><td>${esc(nom(id))}<br><span class="tenue peq">${PX[id].correo}</span></td><td>${pf}</td><td>${j}</td><td>${chip("Activo","c-disp","●")}</td></tr>`).join("")}</tbody></table></div><div class="leyenda"><span class="tenue peq">Todo funcionario de la nómina puede ingresar como solicitante con su correo institucional. Los encargados regionales sólo ven su región.</span></div></section>`;
+  if(t==="usuarios") c=`<section class="panel"><div class="tabla-env"><table><thead><tr><th>Usuario</th><th>Perfil</th><th>Jurisdicción</th><th>Estado</th></tr></thead><tbody>${[["p1","Administrador nacional","Nacional"],["p2","Encargado de vehículos","Oficina Central"],["p3","Jefatura directa","Depto. Abastecimiento"],["p5","Jefatura directa","GEPRIF · Análisis y Diagnóstico"],["p8","Jefatura directa","GEF · Fiscalización"],["p10","Jefatura directa","GEBCC · Viveros"]].map(([id,pf,j])=>`<tr><td>${esc(nom(id))}<br><span class="tenue peq">${PX[id].correo}</span></td><td>${pf}</td><td>${j}</td><td>${chip("Activo","c-disp","●")}</td></tr>`).join("")}</tbody></table></div><div class="leyenda"><span class="tenue peq">Todo funcionario de la nómina puede ingresar como solicitante con su RUT. Los encargados regionales sólo ven su región.</span></div></section>`;
   if(t==="cierre") c=`<section class="panel"><header><div><h2>Cierre mensual</h2><span class="sub">Al cerrar un mes ya no se pueden modificar cargas ni gastos de ese período. Reemplaza «Cerrar período» de GESAD.</span></div></header><div class="tabla-env"><table><thead><tr><th>Período</th><th>Estado</th><th>Cerrado por</th><th></th></tr></thead><tbody>${CIERRES.map(x=>`<tr><td>${MESES[+x.mes.slice(5)-1]} ${x.mes.slice(0,4)}</td><td>${x.estado==="Cerrado"?chip("Cerrado","c-neu","✓"):chip("Abierto","c-pend","◔")}</td><td class="peq">${x.por?esc(nom(x.por))+" · "+fF(x.fecha):"—"}</td><td>${x.estado==="Abierto"&&x.mes<iso(HOY).slice(0,7)?`<button class="btn sec chico" type="button" data-cerrar-mes="${x.mes}">Cerrar mes</button>`:""}</td></tr>`).join("")}</tbody></table></div></section>`;
   if(t==="datos") c=vAdmin().replace(/^<div class="cab-vista">[\s\S]*?<\/span><\/div>/,"");
   return cab("Configuración","Catálogos, usuarios, cierre mensual y control de datos.","ERS §3.2 Perfil 1 · §7")+tabsHTML(tabs,t,"data-cfg")+c;
 }
 post.config = ()=>{ const V=$("#vista"); V.querySelectorAll("[data-cfg]").forEach(b=>b.onclick=()=>{sel.cfgTab=b.dataset.cfg;render()});
-  V.querySelectorAll("[data-cerrar-mes]").forEach(b=>b.onclick=()=>{const x=CIERRES.find(c=>c.mes===b.dataset.cerrarMes); x.estado="Cerrado"; x.por=ROLES[rol].quien; x.fecha=iso(HOY).slice(0,10); audit("Cierra período",x.mes,"Abierto","Cerrado"); tostada("Período cerrado."); render();});
+  V.querySelectorAll("[data-cerrar-mes]").forEach(b=>b.onclick=()=>{const x=CIERRES.find(c=>c.mes===b.dataset.cerrarMes); if(!b.dataset.conf){ b.dataset.conf="1"; b.textContent="Confirmar cierre de "+MESES[+x.mes.slice(5)-1]+" (no se puede deshacer)"; b.classList.add("peligro"); return; } x.estado="Cerrado"; x.por=ROLES[rol].quien; x.fecha=iso(HOY).slice(0,10); audit("Cierra período",x.mes,"Abierto","Cerrado"); tostada("Período cerrado."); render();});
   if(sel.cfgTab==="datos") post.admin(); };
 
 /* ======================= Delegación global ======================= */
