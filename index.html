@@ -626,8 +626,7 @@ function tarjetaSol(r,{boton,seleccion}={}){
 function vMis(){
   const yo=ROLES[rol].quien, mias=RES.filter(r=>r.sol===yo).sort((a,b)=>b.fSol.localeCompare(a.fSol));
   return cab("Mis salidas","Estado en tiempo real de tus reservas. Cuando el encargado asigna el vehículo, puedes ver y compartir la orden de salida con código QR.","ERS §4.3 · Perfil 4")+
-  `<div class="acciones" style="margin-bottom:var(--e-4)"><button class="btn" type="button" data-ir="nueva">Nueva solicitud</button></div>
-   <div class="lista">${mias.length?mias.map(r=>tarjetaSol(r,{boton:`<div class="acciones">${["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)?`<button class="btn sec chico" type="button" data-orden="${r.id}">Ver orden de salida</button>`:""}${["PEND_JEFE","APROBADA","OBSERVADA","CONFIRMADA"].includes(r.est)?`<button class="btn peligro chico" type="button" data-anular="${r.id}">Anular solicitud</button>`:""}</div>`})).join(""):vacio("Aún no tienes solicitudes","Ingresa tu primera solicitud de vehículo para una salida a terreno.")}</div>`;
+  `<div class="lista">${mias.length?mias.map(r=>tarjetaSol(r,{boton:`<div class="acciones">${["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)?`<button class="btn sec chico" type="button" data-orden="${r.id}">Ver orden de salida</button>`:""}${["PEND_JEFE","APROBADA","OBSERVADA","CONFIRMADA"].includes(r.est)?`<button class="btn peligro chico" type="button" data-anular="${r.id}">Anular solicitud</button>`:""}</div>`})).join(""):vacio("Aún no tienes solicitudes","Ingresa tu primera solicitud de vehículo para una salida a terreno.")}</div>`;
 }
 post.mis = ()=>{};
 function vacio(t,d){return `<div class="vacio"><h3>${t}</h3><p>${d}</p></div>`}
