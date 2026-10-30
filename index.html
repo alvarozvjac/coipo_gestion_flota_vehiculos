@@ -155,6 +155,9 @@ td{padding:var(--e-2) var(--e-3);border-bottom:1px solid var(--linea);vertical-a
 tr.clic{cursor:pointer;transition:background var(--t-micro) var(--curva)}
 tr.clic:hover{background:var(--sup-2)}
 td.d{text-align:right;font-variant-numeric:tabular-nums}
+.t-centro th,.t-centro td{text-align:center;vertical-align:middle}
+.t-centro td .placa{margin-inline:auto}
+.t-centro tfoot th{border-top:1px solid var(--linea-fuerte);border-bottom:0;color:var(--tinta);font-variant-numeric:tabular-nums}
 td.mono,td.num{white-space:nowrap}
 .tenue{color:var(--tinta-3)}
 .peq{font-size:var(--f-xs)}
@@ -681,7 +684,7 @@ let RES = [
  R({id:"OC-2026-000414",est:"CONFIRMADA",fSol:"2026-10-20T11:11",sol:"p9",jefe:"p10",salida:"2026-11-02T08:00",regreso:"2026-11-04T18:00",destinos:[{reg:"Maule",com:"Talca",lug:"Centro de Semillas"}],cometido:"Revisión de lotes de semillas y coordinación de despacho.",km:540,cc:"48065",reqCond:true,cond:"c1",pas:["c4"],pat:"SZWY-98"}),
 ];
 /* Histórico de ejemplo para reportería (sep-oct 2026) */
-const HIST = [["SHPY-15","P01-601",640],["SZCK-83","48006",1210],["JGZP-49","48046",380],["KBSW-97","48015",920],["SFHW-60","48007",1480],["FHWT-20","48046",310],["CRBJ-40","P01-601",120],["PLLH-22","48043",760],["JYDC-46","48065",530],["SZWZ-31","48032",870],["JXZS-29","48067",260],["SZWY-98","48011",1120],["PLLH-76","48053",410],["VGXF-75","P01-601",190],["FHWT-20","48037",660]];
+const HIST = [["SHPY-15","P01-601",640,"2025-11-12"],["SZCK-83","48006",1210,"2025-12-03"],["JGZP-49","48046",380,"2026-01-15"],["KBSW-97","48015",920,"2026-02-10"],["SFHW-60","48007",1480,"2026-03-05"],["FHWT-20","48046",310,"2026-03-24"],["CRBJ-40","P01-601",120,"2026-04-14"],["PLLH-22","48043",760,"2026-05-07"],["JYDC-46","48065",530,"2026-06-02"],["SZWZ-31","48032",870,"2026-07-08"],["JXZS-29","48067",260,"2026-07-28"],["SZWY-98","48011",1120,"2026-08-11"],["PLLH-76","48053",410,"2026-09-17"],["VGXF-75","P01-601",190,"2026-10-08"],["FHWT-20","48037",660,"2026-10-22"]]; // patente, folio, km, fecha de salida (históricos de ejemplo)
 RES.forEach(r=>r.hist.push({t:r.fSol,quien:r.sol,acc:"Solicitud ingresada"}));
 let AUD = [
  {t:"2026-10-22T08:47",u:"p7",acc:"Crea solicitud",obj:"OC-2026-000413",ant:"—",nue:"Pendiente jefatura",ip:"10.20.4.18"},
@@ -1060,24 +1063,48 @@ post.visor = ()=>{
 };
 
 /* ======================= REPORTES ======================= */
+function viajesPer(){
+  return [...RES.filter(r=>r.est==="FINALIZADA"&&r.bit?.odoR&&enPer(r.bit.sal)).map(r=>({id:r.id,fecha:r.bit.sal.slice(0,10),pat:r.pat,cc:r.cc,km:r.bit.odoR-r.bit.odoS})),
+    ...HIST.filter(h=>enPer(h[3])).map(([pat,cc,k,f])=>({id:"Histórico",fecha:f,pat,cc,km:k}))].sort((a,b)=>a.fecha.localeCompare(b.fecha));
+}
+function resumenKm(){
+  const viajes=viajesPer(), tot=viajes.reduce((s,v)=>s+v.km,0), porCC={}, porProg={}, porVeh={};
+  viajes.forEach(v=>{porCC[v.cc]=(porCC[v.cc]||0)+v.km; const p=CCX[v.cc]?.prog||"—"; porProg[p]=(porProg[p]||0)+v.km; const o=porVeh[v.pat]=porVeh[v.pat]||{n:0,km:0}; o.n++; o.km+=v.km;});
+  return {viajes,tot,porCC:Object.entries(porCC).sort((a,b)=>b[1]-a[1]),porProg:Object.entries(porProg).sort((a,b)=>b[1]-a[1]),porVeh:Object.entries(porVeh).sort((a,b)=>b[1].n-a[1].n||b[1].km-a[1].km)};
+}
+const pct=(k,tot)=>tot?(k/tot*100).toFixed(1).replace(".",","):"0";
 function vReportesKm(){
-  const viajes=[...RES.filter(r=>r.est==="FINALIZADA"&&r.bit?.odoR).map(r=>({pat:r.pat,cc:r.cc,km:r.bit.odoR-r.bit.odoS})),...HIST.map(([pat,cc,k])=>({pat,cc,km:k}))];
-  const tot=viajes.reduce((s,v)=>s+v.km,0);
-  const porCC={}, porProg={}, porVeh={};
-  viajes.forEach(v=>{porCC[v.cc]=(porCC[v.cc]||0)+v.km; const p=CCX[v.cc]?.prog||"—"; porProg[p]=(porProg[p]||0)+v.km; porVeh[v.pat]=(porVeh[v.pat]||0)+1;});
-  const maxP=Math.max(...Object.values(porProg)), maxC=Math.max(...Object.values(porCC));
-  const pool=VEH.filter(v=>v.modalidad.startsWith("Pool")), diasPer=30;
-  const ocup=Math.round(viajes.length*1.9/(pool.length*diasPer)*100);
+  const {viajes,tot,porCC,porProg,porVeh}=resumenKm(), t=sel.tes;
+  const pool=VEH.filter(v=>v.modalidad.startsWith("Pool")), diasPer=t.modo==="mes"?new Date(t.anio,t.mes,0).getDate():365;
+  const ocup=Math.min(100,Math.round(viajes.length*1.9/(pool.length*diasPer)*100));
   const indisp=Math.round(VEH.filter(v=>["TALL_P","TALL_C","MALO"].includes(v.estado)).length/VEH.length*100);
-  const filasCC=Object.entries(porCC).sort((a,b)=>b[1]-a[1]);
-  window.__csv="folio;titulo;programa;km\n"+filasCC.map(([f,k])=>`${f};${CCX[f]?.t||""};${CCX[f]?.prog||""};${k}`).join("\n");
-  return `<div class="grid g-kpi" style="margin-bottom:var(--e-4)"><div class="kpi"><span class="k">Salidas finalizadas</span><span class="v">${viajes.length}</span></div><div class="kpi"><span class="k">Kilómetros recorridos</span><span class="v num">${km(tot)}</span></div><div class="kpi"><span class="k">Ocupación del pool</span><span class="v">${ocup}%</span><span class="d">días en uso / días disponibles</span></div><div class="kpi"><span class="k">Indisponibilidad por taller</span><span class="v">${indisp}%</span><span class="d">de la flota hoy</span></div></div>
-  <div class="grid g-2b"><section class="panel"><header><h2>Kilómetros por programa presupuestario</h2></header><div class="cuerpo barras">${Object.entries(porProg).sort((a,b)=>b[1]-a[1]).map(([p,k])=>`<div class="b"><span class="eti">${PROGRAMAS[p]||p}</span><span class="pista"><span style="width:${k/maxP*100}%"></span></span><span class="num" style="text-align:right">${km(k)} km</span></div>`).join("")}</div></section>
-  <section class="panel"><header><h2>Salidas por vehículo</h2></header><div class="cuerpo barras">${Object.entries(porVeh).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([p,n])=>`<div class="b"><span class="eti">${placa(p)}</span><span class="pista"><span style="width:${n/Math.max(...Object.values(porVeh))*100}%"></span></span><span class="num" style="text-align:right">${n} salida${n>1?"s":""}</span></div>`).join("")}</div></section></div>
-  <section class="panel" style="margin-top:var(--e-4)"><header><h2>Por centro de costo</h2><div class="acciones"><button class="btn sec chico" type="button" id="btn-csv">Copiar tabla (CSV)</button></div></header><div class="tabla-env"><table><thead><tr><th>Folio</th><th>Imputación</th><th>Programa</th><th>Km</th><th>% del total</th></tr></thead><tbody>${filasCC.map(([f,k])=>`<tr><td class="mono">${f}</td><td>${esc(CCX[f]?.t||"")}</td><td>${CCX[f]?.prog||""}</td><td class="d">${km(k)}</td><td class="d">${(k/tot*100).toFixed(1).replace(".",",")}%</td></tr>`).join("")}</tbody></table></div>
-  <div class="leyenda"><span class="tenue peq">En producción: exportación a .xlsx, .csv y .pdf con filtros por fecha, región, gerencia y centro de costo. Datos de este periodo: históricos de ejemplo más las salidas cerradas en la maqueta.</span></div></section>`;
+  const maxP=Math.max(1,...porProg.map(x=>x[1])), maxV=Math.max(1,...porVeh.map(x=>x[1].n));
+  const barra=`<section class="panel" style="margin-bottom:var(--e-4)"><header><div><h2>Kilómetros recorridos</h2><span class="sub">Salidas finalizadas · ${perTxt()}</span></div>${perCtl("km",viajes.length)}</header></section>`;
+  if(!viajes.length) return barra+`<section class="panel">${vacio("Sin salidas finalizadas en el periodo","Elige otro mes o el reporte anual.")}</section>`;
+  return barra+`<div class="grid g-kpi" style="margin-bottom:var(--e-4)"><div class="kpi"><span class="k">Salidas finalizadas</span><span class="v">${viajes.length}</span></div><div class="kpi"><span class="k">Kilómetros recorridos</span><span class="v num">${km(tot)}</span></div><div class="kpi"><span class="k">Ocupación del pool</span><span class="v">${ocup}%</span><span class="d">días en uso / días disponibles</span></div><div class="kpi"><span class="k">Indisponibilidad por taller</span><span class="v">${indisp}%</span><span class="d">de la flota hoy</span></div></div>
+  <div class="grid g-2b"><section class="panel"><header><h2>Kilómetros por programa presupuestario</h2></header><div class="cuerpo barras">${porProg.map(([p,k])=>`<div class="b"><span class="eti">${PROGRAMAS[p]||p}</span><span class="pista"><span style="width:${k/maxP*100}%"></span></span><span class="num" style="text-align:right">${km(k)} km</span></div>`).join("")}</div></section>
+  <section class="panel"><header><h2>Salidas por vehículo</h2></header><div class="cuerpo barras">${porVeh.slice(0,8).map(([p,o])=>`<div class="b"><span class="eti">${placa(p)}</span><span class="pista"><span style="width:${o.n/maxV*100}%"></span></span><span class="num" style="text-align:right">${o.n} salida${o.n>1?"s":""}</span></div>`).join("")}</div></section></div>
+  <section class="panel" style="margin-top:var(--e-4)"><header><h2>Por centro de costo</h2></header><div class="tabla-env"><table><thead><tr><th>Folio</th><th>Imputación</th><th>Programa</th><th>Km</th><th>% del total</th></tr></thead><tbody>${porCC.map(([f,k])=>`<tr><td class="mono">${f}</td><td>${esc(CCX[f]?.t||"")}</td><td>${CCX[f]?.prog||""}</td><td class="d">${km(k)}</td><td class="d">${pct(k,tot)}%</td></tr>`).join("")}</tbody></table></div>
+  <div class="leyenda"><span class="tenue peq">El Excel trae cuatro hojas: centro de costo, programa, vehículo y detalle de cada salida. Datos: históricos de ejemplo más las salidas cerradas en la maqueta.</span></div></section>`;
 }
 const MESES=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+/* Periodo común de los reportes (mensual o anual) */
+const enPer=f=>{const t=sel.tes, d=F(f.slice(0,10)); return d.getFullYear()===t.anio&&(t.modo!=="mes"||d.getMonth()+1===t.mes)};
+const perTxt=()=>{const t=sel.tes; return t.modo==="mes"?`${MESES[t.mes-1]} de ${t.anio}`:`año ${t.anio}`};
+const perSufijo=()=>{const t=sel.tes; return `${t.anio}${t.modo==="mes"?"_"+String(t.mes).padStart(2,"0"):""}`};
+function perCtl(xid,hay){const t=sel.tes;
+  return `<div class="gantt-ctl"><div class="seg" role="group" aria-label="Periodo"><button type="button" data-tm="mes" aria-pressed="${t.modo==="mes"}">Mensual</button><button type="button" data-tm="anio" aria-pressed="${t.modo==="anio"}">Anual</button></div>
+   ${t.modo==="mes"?`<label class="sr" for="t-mes">Mes</label><select id="t-mes" style="width:auto">${MESES.map((m,i)=>`<option value="${i+1}" ${i+1===t.mes?"selected":""}>${m[0].toUpperCase()+m.slice(1)}</option>`).join("")}</select>`:""}
+   <label class="sr" for="t-anio">Año</label><select id="t-anio" style="width:auto"><option ${t.anio===2026?"selected":""}>2026</option><option ${t.anio===2025?"selected":""}>2025</option></select>
+   <button class="btn chico" type="button" id="${xid==="tes"?"btn-xlsx":"btn-xlsx-"+xid}" data-xlsx="${xid}" ${hay?"":"disabled"}>Descargar Excel</button></div>`;
+}
+function bajarXlsx(base,titulo,hojas,n){
+  if(typeof XLSX==="undefined"){tostada("No se pudo cargar el generador de Excel. Revisa tu conexión.");return}
+  const wb=XLSX.utils.book_new();
+  hojas.forEach(([nom,enc,filas,anchos])=>{ const ws=XLSX.utils.aoa_to_sheet([[titulo+" · CONAF · Unidad de Vehículos"],[`Periodo: ${perTxt()}`,"","Emitido: "+fFH(HOY),"","Emisor: Encargado de Vehículos Oficina Central"],[],enc,...filas]); ws["!cols"]=anchos.map(w=>({wch:w})); XLSX.utils.book_append_sheet(wb,ws,nom); });
+  const nombre=`${base}_${perSufijo()}.xlsx`;
+  try{ XLSX.writeFile(wb,nombre); audit("Emite reporte "+titulo.toLowerCase(),nombre,"—",n+" filas"); tostada(`Excel generado: ${nombre} (${n} filas).`); }catch(e){ tostada("La descarga fue bloqueada en esta vista. Ábrela desde GitHub Pages."); }
+}
 function filasTesoreria(){
   const t=sel.tes, out=[];
   RES.filter(r=>r.est==="FINALIZADA"&&r.bit?.reg).forEach(r=>{
@@ -1092,12 +1119,9 @@ function filasTesoreria(){
 }
 function vReportesTes(){
   const t=sel.tes, filas=filasTesoreria(), salidas=new Set(filas.map(f=>f.id)).size, personas=new Set(filas.map(f=>f.rut)).size;
-  const per=t.modo==="mes"?`${MESES[t.mes-1]} de ${t.anio}`:`año ${t.anio}`;
+  const per=perTxt();
   return `<section class="panel"><header><div><h2>Reporte de cometidos para Tesorería</h2><span class="sub">Una fila por persona y salida finalizada · ${per}</span></div>
-   <div class="gantt-ctl"><div class="seg" role="group" aria-label="Periodo"><button type="button" data-tm="mes" aria-pressed="${t.modo==="mes"}">Mensual</button><button type="button" data-tm="anio" aria-pressed="${t.modo==="anio"}">Anual</button></div>
-   ${t.modo==="mes"?`<label class="sr" for="t-mes">Mes</label><select id="t-mes" style="width:auto">${MESES.map((m,i)=>`<option value="${i+1}" ${i+1===t.mes?"selected":""}>${m[0].toUpperCase()+m.slice(1)}</option>`).join("")}</select>`:""}
-   <label class="sr" for="t-anio">Año</label><select id="t-anio" style="width:auto"><option ${t.anio===2026?"selected":""}>2026</option><option ${t.anio===2025?"selected":""}>2025</option></select>
-   <button class="btn chico" type="button" id="btn-xlsx" ${filas.length?"":"disabled"}>Descargar Excel</button></div></header>
+   ${perCtl("tes",filas.length)}</header>
    <div class="cuerpo grid" style="gap:var(--e-2)"><div class="meta"><span>Emite: <b>Encargado de Vehículos · Oficina Central</b> (en regiones, cada encargado regional emite el de su jurisdicción)</span><span>Salidas: <b>${salidas}</b></span><span>Personas: <b>${personas}</b></span><span>Filas: <b>${filas.length}</b></span></div>
    <p class="nota">Sin conexión con el sistema de pagos: el Excel se envía a Tesorería. La gerencia se deduce del folio de imputación registrado en la salida. Incluye al solicitante, los conductores y los acompañantes.</p></div>
    <div class="tabla-env">${filas.length?`<table><thead><tr><th>ID salida</th><th>RUT</th><th>Funcionario</th><th>Rol</th><th>Salida</th><th>Regreso</th><th>Días</th><th>Destino</th><th>Cometido</th><th>Folio</th><th>Gerencia</th><th>Jefatura que autorizó</th></tr></thead><tbody>${filas.map(f=>`<tr><td class="mono">${f.id}</td><td class="mono peq">${f.rut}</td><td>${esc(f.nom)}</td><td class="peq">${f.rol}</td><td class="num">${fFH(f.sal)}</td><td class="num">${fFH(f.reg)}</td><td class="d">${f.dias}</td><td class="peq">${esc(f.destino)}</td><td class="peq">${esc(f.cometido)}</td><td class="mono">${esc(f.folio)}</td><td class="peq">${esc(f.ger.split(" · ")[0])}</td><td class="peq">${esc(f.jefe)}</td></tr>`).join("")}</tbody></table>`:vacio("Sin salidas finalizadas en el periodo","Elige otro mes o el reporte anual.")}</div>
@@ -1642,11 +1666,20 @@ function vRendimiento(){
   const max=Math.max(...filas.map(f=>f.prom));
   return `<section class="panel"><header><div><h2>Rendimiento de combustible</h2><span class="sub">km/L entre cargas consecutivas. Un tramo bajo 6 km/L se marca para revisar.</span></div></header><div class="cuerpo barras">${filas.map(f=>`<div class="b"><span class="eti">${placa(f.p)} ${f.min<6?chip("Revisar","c-pend","!"):""}</span><span class="pista"><span style="width:${f.prom/max*100}%"></span></span><span class="num" style="text-align:right">${f.prom.toFixed(1).replace(".",",")} km/L</span></div>`).join("")}</div></section>`;
 }
+function resumenGastos(){
+  const porV={}, suma=(pat,tipo,m)=>{const o=porV[pat]=porV[pat]||{t:0}; o[tipo]=(o[tipo]||0)+m; o.t+=m};
+  GASTOS.filter(g=>enPer(g.fecha)).forEach(g=>suma(g.pat,g.tipo,g.monto));
+  CARGAS.filter(c=>enPer(c.fecha)&&c.monto).forEach(c=>suma(c.pat,"CB",c.monto));
+  const filas=Object.entries(porV).sort((a,b)=>b[1].t-a[1].t);
+  const tipos=TIPO_GASTO.map(x=>x[0]).filter(k=>filas.some(([,o])=>o[k])).sort((a,b)=>(a==="CB"?-1:b==="CB"?1:0));
+  const tot={t:0}; filas.forEach(([,o])=>{tipos.forEach(k=>tot[k]=(tot[k]||0)+(o[k]||0)); tot.t+=o.t});
+  return {filas,tipos,tot};
+}
 function vGastosVeh(){
-  const porV={}; GASTOS.forEach(g=>{const o=porV[g.pat]=porV[g.pat]||{t:0}; o[g.tipo]=(o[g.tipo]||0)+g.monto; o.t+=g.monto});
-  CARGAS.forEach(c=>{const o=porV[c.pat]=porV[c.pat]||{t:0}; o.CB=(o.CB||0)+c.monto; o.t+=c.monto});
-  const filas=Object.entries(porV).sort((a,b)=>b[1].t-a[1].t), tipos=["CB","MR","RV","GV"];
-  return `<section class="panel"><header><h2>Gastos por vehículo</h2><span class="sub">Combustible más gastos por documento · ejemplo</span></header><div class="tabla-env"><table><thead><tr><th>Patente</th>${tipos.map(t=>`<th>${TGX[t]}</th>`).join("")}<th>Total</th></tr></thead><tbody>${filas.map(([p,o])=>`<tr class="clic" data-veh="${p}"><td>${placa(p)}</td>${tipos.map(t=>`<td class="d">${o[t]?clp(o[t]):"—"}</td>`).join("")}<td class="d"><b>${clp(o.t)}</b></td></tr>`).join("")}</tbody></table></div></section>`;
+  const {filas,tipos,tot}=resumenGastos();
+  return `<section class="panel"><header><div><h2>Gastos por vehículo</h2><span class="sub">Combustible más gastos por documento · ${perTxt()}</span></div>${perCtl("gastos",filas.length)}</header>
+  <div class="tabla-env">${filas.length?`<table class="t-centro"><thead><tr><th>Patente</th>${tipos.map(k=>`<th>${TGX[k]}</th>`).join("")}<th>Total</th></tr></thead><tbody>${filas.map(([p,o])=>`<tr class="clic" data-veh="${p}"><td>${placa(p)}</td>${tipos.map(k=>`<td class="num">${o[k]?clp(o[k]):"—"}</td>`).join("")}<td class="num"><b>${clp(o.t)}</b></td></tr>`).join("")}</tbody><tfoot><tr><th>Total</th>${tipos.map(k=>`<th class="num">${clp(tot[k])}</th>`).join("")}<th class="num">${clp(tot.t)}</th></tr></tfoot></table>`:vacio("Sin gastos en el periodo","Elige otro mes o el reporte anual.")}</div>
+  <div class="leyenda"><span class="tenue peq">Montos en pesos. Combustible: cargas con tarjeta, en efectivo e informadas al regreso; el granel se valoriza en la compra. Selecciona una patente para ver su hoja de vida.</span></div></section>`;
 }
 function vReportes(){
   const t=sel.repTab, tabs=[["km","Kilómetros y costos"],["tes","Tesorería"],["oper","Operatividad mensual"],["rend","Rendimiento"],["gastos","Gastos por vehículo"]];
@@ -1659,17 +1692,20 @@ post.reportes = ()=>{
   V.querySelectorAll("[data-tm]").forEach(b=>b.onclick=()=>{sel.tes.modo=b.dataset.tm;render()});
   const tm=$("#t-mes"); if(tm) tm.onchange=e=>{sel.tes.mes=+e.target.value;render()};
   const ta=$("#t-anio"); if(ta) ta.onchange=e=>{sel.tes.anio=+e.target.value;render()};
-  const bx=$("#btn-xlsx"); if(bx) bx.onclick=()=>{
-    const t=sel.tes, filas=filasTesoreria();
-    if(typeof XLSX==="undefined"){tostada("No se pudo cargar el generador de Excel. Revisa tu conexión.");return}
-    const aoa=[["Reporte de cometidos para Tesorería · CONAF · Unidad de Vehículos"],[`Periodo: ${t.modo==="mes"?MESES[t.mes-1]+" de "+t.anio:"año "+t.anio}`,"","Emitido: "+fFH(HOY),"","Emisor: Encargado de Vehículos Oficina Central"],[],
-      ["ID salida","RUT","Funcionario","Rol en el viaje","Fecha y hora de salida","Fecha y hora de regreso","Días","Destino","Cometido","Folio de imputación","Gerencia","Jefatura que autorizó"],
-      ...filas.map(f=>[f.id,f.rut,f.nom,f.rol,fFH(f.sal),fFH(f.reg),f.dias,f.destino,f.cometido,f.folio,f.ger,f.jefe])];
-    const ws=XLSX.utils.aoa_to_sheet(aoa); ws["!cols"]=[16,13,28,18,17,17,6,44,50,12,46,28].map(w=>({wch:w}));
-    const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,"Cometidos");
-    const nombre=`cometidos_tesoreria_${t.anio}${t.modo==="mes"?"_"+String(t.mes).padStart(2,"0"):""}.xlsx`;
-    try{ XLSX.writeFile(wb,nombre); audit("Emite reporte para Tesorería",nombre,"—",filas.length+" filas"); tostada(`Excel generado: ${nombre} (${filas.length} filas).`); }catch(e){ tostada("La descarga fue bloqueada en esta vista. Ábrela desde GitHub Pages."); }
-  };
+  V.querySelectorAll("[data-xlsx]").forEach(b=>b.onclick=()=>{
+    const x=b.dataset.xlsx;
+    if(x==="tes"){ const filas=filasTesoreria();
+      bajarXlsx("cometidos_tesoreria","Reporte de cometidos para Tesorería",[["Cometidos",["ID salida","RUT","Funcionario","Rol en el viaje","Fecha y hora de salida","Fecha y hora de regreso","Días","Destino","Cometido","Folio de imputación","Gerencia","Jefatura que autorizó"],filas.map(f=>[f.id,f.rut,f.nom,f.rol,fFH(f.sal),fFH(f.reg),f.dias,f.destino,f.cometido,f.folio,f.ger,f.jefe]),[16,13,28,18,17,17,6,44,50,12,46,28]]],filas.length); }
+    if(x==="km"){ const {viajes,tot,porCC,porProg,porVeh}=resumenKm(), pc=k=>tot?Math.round(k/tot*1000)/10:0;
+      bajarXlsx("kilometros_costos","Reporte de kilómetros y costos",[
+        ["Centro de costo",["Folio","Imputación","Programa","Km","% del total"],[...porCC.map(([f,k])=>[f,CCX[f]?.t||"",PROGRAMAS[CCX[f]?.prog]||CCX[f]?.prog||"",k,pc(k)]),["Total","","",tot,100]],[12,48,36,10,12]],
+        ["Programa",["Programa presupuestario","Km","% del total"],[...porProg.map(([p,k])=>[PROGRAMAS[p]||p,k,pc(k)]),["Total",tot,100]],[44,10,12]],
+        ["Vehículo",["Patente","Marca y modelo","Salidas","Km"],porVeh.map(([p,o])=>[p,VX[p]?`${VX[p].marca} ${VX[p].modelo}`:"",o.n,o.km]),[12,34,10,10]],
+        ["Detalle de salidas",["Fecha de salida","ID salida","Patente","Folio","Km"],viajes.map(v=>[fF(F(v.fecha)),v.id,v.pat,v.cc,v.km]),[16,18,12,12,10]]],viajes.length); }
+    if(x==="gastos"){ const {filas,tipos,tot}=resumenGastos();
+      bajarXlsx("gastos_por_vehiculo","Reporte de gastos por vehículo",[["Gastos por vehículo",["Patente","Marca y modelo",...tipos.map(k=>TGX[k]+" ($)"),"Total ($)"],[...filas.map(([p,o])=>[p,VX[p]?`${VX[p].marca} ${VX[p].modelo}`:"",...tipos.map(k=>o[k]||0),o.t]),["Total","",...tipos.map(k=>tot[k]),tot.t]],[12,34,...tipos.map(()=>22),14]],
+        ["Detalle",["Fecha","Patente","Tipo","Documento","Proveedor o estación","Monto ($)"],[...GASTOS.filter(g=>enPer(g.fecha)).map(g=>[g.fecha,g.pat,TGX[g.tipo],`${g.doc} ${g.n}`,g.prov,g.monto]),...CARGAS.filter(c=>enPer(c.fecha)&&c.monto).map(c=>[c.fecha,c.pat,"Combustible",c.origen,c.est,c.monto])].sort((a,b)=>a[0].localeCompare(b[0])).map(r=>[fF(r[0]),...r.slice(1)]),[12,12,24,18,32,12]]],filas.length); }
+  });
   const bc=$("#btn-csv"); if(bc) bc.onclick=()=>{ try{ navigator.clipboard.writeText(window.__csv).then(()=>tostada("Tabla copiada al portapapeles."),()=>tostada("No se pudo copiar automáticamente.")) }catch(e){tostada("No se pudo copiar automáticamente.")} };
 };
 
