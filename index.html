@@ -242,7 +242,7 @@ dl.ficha dd{margin:0;min-width:0}
 .seg button:last-child{border-right:0}
 .seg button[aria-pressed="true"]{background:var(--boton);color:var(--boton-texto)}
 .gantt-env{overflow-x:auto;border-top:1px solid var(--linea)}
-.gantt{min-width:960px;position:relative}
+.gantt{min-width:820px;position:relative}
 .g-fila{display:grid;grid-template-columns:230px minmax(0,1fr);border-bottom:1px solid var(--linea);min-height:46px}
 .g-fila.cab{position:sticky;top:0;background:var(--sup);z-index:3;min-height:40px}
 .g-et{position:sticky;left:0;background:var(--sup);z-index:2;border-right:1px solid var(--linea-fuerte);padding:var(--e-1) var(--e-3);display:flex;align-items:center;gap:var(--e-2);min-width:0}
@@ -263,6 +263,19 @@ dl.ficha dd{margin:0;min-width:0}
 .barra-g.pend{border-style:dashed}
 .barra-g.conflicto{outline:2px solid var(--st-malo);outline-offset:1px}
 .leyenda{display:flex;gap:var(--e-2);flex-wrap:wrap;padding:var(--e-3) var(--e-4);border-top:1px solid var(--linea)}
+.g-cuerpo{display:grid;grid-template-columns:minmax(0,1fr) 200px;border-top:1px solid var(--linea)}
+.g-cuerpo .gantt-env{border-top:0}
+.g-ley{border-left:1px solid var(--linea-fuerte);padding:var(--e-3);background:var(--sup)}
+.g-ley-in{position:sticky;top:calc(132px + env(safe-area-inset-top,0px));display:flex;flex-direction:column;gap:var(--e-2)}
+.g-ley h3{margin:0 0 var(--e-1);font-size:var(--f-xs);text-transform:uppercase;letter-spacing:.06em;color:var(--tinta-2)}
+.g-ley ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.g-ley li{display:flex;align-items:center;gap:var(--e-2);font-size:var(--f-xs);color:var(--tinta-2);line-height:1.3}
+.g-ley .chip{justify-content:flex-start}
+.g-ley .muestra{flex:none;width:28px;height:18px;border:1px solid var(--linea-fuerte);border-radius:var(--r-s);position:relative}
+.g-ley .muestra.ach{background:repeating-linear-gradient(135deg,transparent 0 6px,var(--sup-2) 6px 8px)}
+.g-ley .muestra.ahora::after{content:"";position:absolute;top:0;bottom:0;left:50%;width:2px;margin-left:-1px;background:var(--st-malo)}
+.g-ley hr{border:0;border-top:1px solid var(--linea);margin:var(--e-1) 0;width:100%}
+@media (max-width:899.98px){ .g-cuerpo{grid-template-columns:minmax(0,1fr)} .g-ley{border-left:0;border-top:1px solid var(--linea)} .g-ley ul{flex-direction:row;flex-wrap:wrap;gap:var(--e-2)} .g-ley hr{display:none} }
 
 /* Semáforo mantención */
 .medidor{height:8px;border-radius:var(--r-pill);background:var(--sup-3);overflow:hidden;min-width:80px}
@@ -1028,9 +1041,9 @@ function vVisor(){
   `<section class="panel"><header><div class="gantt-ctl"><div class="seg" role="group" aria-label="Escala">${[[7,"Semana"],[14,"2 semanas"],[30,"Mes"]].map(([d,t])=>`<button type="button" data-dias="${d}" aria-pressed="${g.dias===d}">${t}</button>`).join("")}</div>
    <div class="acciones"><button class="btn sec chico" type="button" data-mov="-1" aria-label="Periodo anterior">← Anterior</button><button class="btn sec chico" type="button" data-mov="0">Hoy</button><button class="btn sec chico" type="button" data-mov="1" aria-label="Periodo siguiente">Siguiente →</button></div>
    <label class="opciones peq"><span><input type="checkbox" id="g-pool" ${sel.gantt.f==="pool"?"checked":""}> Sólo pool</span></label></div><span class="sub num">${fF(ini)} al ${fF(new Date(fin.getTime()-DIA))}</span></header>
-  <div class="gantt-env"><div class="gantt"><div class="g-fila cab"><div class="g-et"><b class="peq">Vehículo</b></div><div class="g-dias" style="${cols}">${dias.map(d=>`<div class="g-dia ${esFin(d)?"fin":""} ${iso(d).slice(0,10)===iso(HOY).slice(0,10)?"hoy":""}">${DS[d.getDay()]}<b>${d.getDate()}</b>${g.dias<=14?MS[d.getMonth()]:""}</div>`).join("")}</div></div>
+  <div class="g-cuerpo"><div class="gantt-env"><div class="gantt"><div class="g-fila cab"><div class="g-et"><b class="peq">Vehículo</b></div><div class="g-dias" style="${cols}">${dias.map(d=>`<div class="g-dia ${esFin(d)?"fin":""} ${iso(d).slice(0,10)===iso(HOY).slice(0,10)?"hoy":""}">${DS[d.getDay()]}<b>${d.getDate()}</b>${g.dias<=14?MS[d.getMonth()]:""}</div>`).join("")}</div></div>
   ${lectura?"":filaPend}${filas}</div></div>
-  <div class="leyenda">${chip("Disponible (espacio libre)","c-disp","●")}${chip("Confirmada","c-res","■")}${chip("Pendiente","c-pend","◔")}${chip("En terreno","c-terr","▶")}${chip("Taller","c-tall","⚙")}${chip("Fuera de servicio","c-malo","✕")}${chip("Exclusiva Dirección","c-excl","◆")}${chip("Finalizada","c-neu","✓")}<span class="tenue peq">Achurado: sábado, domingo o festivo. Línea roja: ahora.</span></div></section>
+  <aside class="g-ley" aria-labelledby="t-ley"><div class="g-ley-in"><h3 id="t-ley">Leyenda</h3><ul>${[["Disponible (espacio libre)","c-disp","●"],["Confirmada","c-res","■"],["Pendiente","c-pend","◔"],["En terreno","c-terr","▶"],["Taller","c-tall","⚙"],["Fuera de servicio","c-malo","✕"],["Exclusiva Dirección","c-excl","◆"],["Finalizada","c-neu","✓"]].map(([t,c,i])=>`<li>${chip(t,c,i)}</li>`).join("")}</ul><hr><ul><li><span class="muestra ach" aria-hidden="true"></span>Sábado, domingo o festivo</li><li><span class="muestra ahora" aria-hidden="true"></span>Ahora</li></ul></div></aside></div></section>
   ${det?`<section class="panel" style="margin-top:var(--e-4)"><header><h2>Detalle <span class="mono">${det.id}</span></h2>${chipR(det.est)}</header><div class="cuerpo grid g-2b"><dl class="ficha">
    <dt>Destino</dt><dd>${lectura&&det.sol!==ROLES[rol].quien?"Reservado (detalle visible para la unidad responsable)":esc(det.destinos.map(d=>d.lug+", "+d.com).join(" · "))}</dd>
    <dt>Horario</dt><dd class="num">${fFH(det.salida)} → ${fFH(det.regreso)}</dd>
