@@ -155,6 +155,21 @@ td{padding:var(--e-2) var(--e-3);border-bottom:1px solid var(--linea);vertical-a
 tr.clic{cursor:pointer;transition:background var(--t-micro) var(--curva)}
 tr.clic:hover{background:var(--sup-2)}
 td.d{text-align:right;font-variant-numeric:tabular-nums}
+.cat-lay{display:grid;grid-template-columns:260px minmax(0,1fr);gap:var(--e-4);align-items:start}
+.cat-lista{background:var(--sup);border:1px solid var(--linea);border-radius:var(--r-l);padding:var(--e-3);box-shadow:var(--s-1)}
+.cat-lista h3{margin:var(--e-3) var(--e-2) var(--e-1);font-size:var(--f-xs);text-transform:uppercase;letter-spacing:.06em;color:var(--tinta-3)}
+.cat-lista h3:first-child{margin-top:0}
+.cat-lista ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.cat-lista button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:var(--e-2);border:0;background:transparent;border-radius:var(--r-m);padding:8px var(--e-2);min-height:40px;font:inherit;color:var(--tinta);text-align:left;cursor:pointer}
+.cat-lista button:hover{background:var(--sup-2)}
+.cat-lista button[aria-pressed="true"]{background:var(--st-disp-bg);color:var(--boton);font-weight:600}
+.cat-lista .n{font-family:var(--ff-dato);font-size:var(--f-xs);color:var(--tinta-2);background:var(--sup-2);border-radius:var(--r-pill);padding:1px 8px;min-width:28px;text-align:center}
+.cat-herr{display:flex;gap:var(--e-3);align-items:center;flex-wrap:wrap;padding:var(--e-3) var(--e-4);border-top:1px solid var(--linea)}
+.cat-herr input{max-width:340px}
+.cat-form{padding:var(--e-3) var(--e-4);border-top:1px solid var(--linea);background:var(--sup-2);display:grid;gap:var(--e-3)}
+.cat-tabla td.acc{text-align:right;width:1%;white-space:nowrap}
+.cat-tabla tr.inact td:not(.acc){color:var(--tinta-3)}
+@media (max-width:899.98px){ .cat-lay{grid-template-columns:minmax(0,1fr)} }
 .t-centro th,.t-centro td{text-align:center;vertical-align:middle}
 .t-centro td .placa{margin-inline:auto}
 .t-centro tfoot th{border-top:1px solid var(--linea-fuerte);border-bottom:0;color:var(--tinta);font-variant-numeric:tabular-nums}
@@ -1259,7 +1274,7 @@ const iniciales=n=>String(n||"").split(/\s+/).filter(Boolean).slice(0,2).map(x=>
 
 /* ---------- Estado de vista ---------- */
 let rol = "encargado", vista = "hoy";
-let sel = {repTab:"km", tes:{modo:"mes",mes:10,anio:2026}, bandeja:null, gantt:{ini:F("2026-10-19"),dias:14}, ganttSel:null,
+let sel = {cat:"tipos", catAdd:false, repTab:"km", tes:{modo:"mes",mes:10,anio:2026}, bandeja:null, gantt:{ini:F("2026-10-19"),dias:14}, ganttSel:null,
   salFiltro:"asignar", salModo:"lista", salQ:"", flotaFiltro:"todos", flotaQ:"", condFiltro:"todos", combTab:"cargas", cfgTab:"catalogos"};
 
 function cuentas(){
@@ -1560,7 +1575,7 @@ function abrirFicha(pat, tab, op={}){
 function otFormHTML(v,op){ const tipo=op.tipoOT||"Reparación";
   return `<form class="seccion" id="f-ot" style="border:1px solid var(--linea);border-radius:var(--r-m);padding:var(--e-4)"><h3>Nueva orden de trabajo${op.desde?` · desde ${op.desde}`:""}</h3><div class="campos"><div class="campo"><label for="ot-tipo">Tipo</label><select id="ot-tipo">${Object.keys(TRABAJOS).map(t=>`<option ${t===tipo?"selected":""}>${t}</option>`).join("")}</select></div><div class="campo"><label for="ot-taller">Taller</label><select id="ot-taller">${TALLERES.map(t=>`<option>${t}</option>`).join("")}</select></div>
   <div class="campo"><label for="ot-km">Kilometraje</label><input type="number" id="ot-km" value="${v.km}"></div><div class="campo"><label for="ot-fecha">Ingreso</label><input type="text" id="ot-fecha" value="${fF(HOY)}" readonly></div>
-  <div class="campo ancho"><span class="lbl">Trabajos</span><div class="check-grid">${TRABAJOS[tipo].map(t=>`<label><input type="checkbox" class="ot-tr" value="${esc(t)}"> ${esc(t)}</label>`).join("")}</div></div>
+  <div class="campo ancho"><span class="lbl">Trabajos</span><div class="check-grid">${TRABAJOS[tipo].filter(x=>catActivo("trabajos",x)).map(t=>`<label><input type="checkbox" class="ot-tr" value="${esc(t)}"> ${esc(t)}</label>`).join("")}</div></div>
   <div class="campo ancho"><label for="ot-obs">Observación</label><input type="text" id="ot-obs" value="${esc(op.desde?RES.find(r=>r.id===op.desde)?.bit?.nov||"":"")}"></div></div>
   <div class="acciones"><button class="btn" type="submit">Abrir orden y enviar a taller</button><button class="btn sec" type="button" data-op2="">Cancelar</button></div></form>`; }
 function gastoFormHTML(pat){ const v=VX[pat];
@@ -1721,15 +1736,61 @@ function vEquipo(){
 function vConfig(){
   const t=sel.cfgTab, tabs=[["catalogos","Catálogos"],["usuarios","Usuarios y accesos"],["cierre","Cierre mensual"],["datos","Datos y auditoría"]];
   let c="";
-  if(t==="catalogos"){ const cats=[["Tipos de vehículo",["Camioneta","SUV","Station wagon","Furgón","Automóvil","Camión","Minibús","Todoterreno","Motocicleta","Maquinaria"]],["Tipos de gasto",TIPO_GASTO.map(x=>x[1])],["Trabajos de taller",Object.entries(TRABAJOS).flatMap(([k,a])=>a.map(x=>x))],["Talleres",TALLERES],["Estaciones de servicio",ESTACIONES],["Centros de costo",CC.map(c=>c.folio+" · "+c.t)]];
-    c=`<p class="tenue peq" style="margin-bottom:var(--e-3)">Catálogos heredados de GESAD y depurados. Cada región usa los mismos catálogos nacionales.</p><div class="grid g-2b">${cats.map(([n,a])=>`<section class="panel"><header><h2>${n}</h2><span class="sub">${a.length}</span></header><div class="cuerpo"><p class="peq">${a.map(esc).join(" · ")}</p></div></section>`).join("")}</div>`; }
+  if(t==="catalogos") c=vCatalogos();
   if(t==="usuarios") c=`<section class="panel"><div class="tabla-env"><table><thead><tr><th>Usuario</th><th>Perfil</th><th>Jurisdicción</th><th>Estado</th></tr></thead><tbody>${[["p1","Administrador nacional","Nacional"],["p2","Encargado de vehículos","Oficina Central"],["p3","Jefatura directa","Depto. Abastecimiento"],["p5","Jefatura directa","GEPRIF · Análisis y Diagnóstico"],["p8","Jefatura directa","GEF · Fiscalización"],["p10","Jefatura directa","GEBCC · Viveros"]].map(([id,pf,j])=>`<tr><td>${esc(nom(id))}<br><span class="tenue peq">${PX[id].correo}</span></td><td>${pf}</td><td>${j}</td><td>${chip("Activo","c-disp","●")}</td></tr>`).join("")}</tbody></table></div><div class="leyenda"><span class="tenue peq">Todo funcionario de la nómina puede ingresar como solicitante con su RUT. Los encargados regionales sólo ven su región.</span></div></section>`;
   if(t==="cierre") c=`<section class="panel"><header><div><h2>Cierre mensual</h2><span class="sub">Al cerrar un mes ya no se pueden modificar cargas ni gastos de ese período. Reemplaza «Cerrar período» de GESAD.</span></div></header><div class="tabla-env"><table><thead><tr><th>Período</th><th>Estado</th><th>Cerrado por</th><th></th></tr></thead><tbody>${CIERRES.map(x=>`<tr><td>${MESES[+x.mes.slice(5)-1]} ${x.mes.slice(0,4)}</td><td>${x.estado==="Cerrado"?chip("Cerrado","c-neu","✓"):chip("Abierto","c-pend","◔")}</td><td class="peq">${x.por?esc(nom(x.por))+" · "+fF(x.fecha):"—"}</td><td>${x.estado==="Abierto"&&x.mes<iso(HOY).slice(0,7)?`<button class="btn sec chico" type="button" data-cerrar-mes="${x.mes}">Cerrar mes</button>`:""}</td></tr>`).join("")}</tbody></table></div></section>`;
   if(t==="datos") c=vAdmin().replace(/^<div class="cab-vista">[\s\S]*?<\/span><\/div>/,"");
   return cab("Configuración","Catálogos, usuarios, cierre mensual y control de datos.","ERS §3.2 Perfil 1 · §7")+tabsHTML(tabs,t,"data-cfg")+c;
 }
+/* ---------- Catálogos (administrador nacional) ---------- */
+const CAT_INACT=new Set(); // "catalogo|valor" desactivados: dejan de ofrecerse, se conservan en el historial
+const catActivo=(c,v)=>!CAT_INACT.has(c+"|"+v);
+const capT=s=>s.length<=3?s:s.charAt(0)+s.slice(1).toLowerCase();
+const CATALOGOS=[
+ {k:"tipos",g:"Flota",t:"Tipos de vehículo",d:"Lista del ERS (§2.3) que se ofrece al agregar un vehículo.",edit:true,
+  cols:["Tipo de vehículo"],filas:()=>TIPOS_VEH.map(x=>({v:x,c:[capT(x)]})),
+  campos:[["Tipo de vehículo","text"]],agregar:([a])=>{const v=a.toUpperCase(); if(TIPOS_VEH.includes(v)) return "Ese tipo ya existe."; TIPOS_VEH.push(v)}},
+ {k:"marcas",g:"Flota",t:"Marcas y modelos",d:"Catálogo normalizado para evitar duplicidades de escritura (ERS §2.3).",edit:true,
+  cols:["Marca","Modelos","Vehículos en la flota"],filas:()=>Object.keys(MARCAS).sort().map(m=>({v:m,c:[m,[...MARCAS[m]].sort().join(", "),VEH.filter(x=>x.marca===m).length||"—"]})),
+  campos:[["Marca","text"],["Modelo","text"]],agregar:([m,mo])=>{const ex=Object.keys(MARCAS).find(x=>x.toLowerCase()===m.toLowerCase())||m; MARCAS[ex]=MARCAS[ex]||new Set(); if(!mo) return "Indique el modelo."; if([...MARCAS[ex]].some(x=>x.toLowerCase()===mo.toLowerCase())) return "Ese modelo ya existe."; MARCAS[ex].add(mo)}},
+ {k:"trabajos",g:"Mantención y gastos",t:"Trabajos de taller",d:"Trabajos que se marcan al abrir una orden de trabajo.",edit:true,
+  cols:["Trabajo","Tipo de mantención"],filas:()=>Object.entries(TRABAJOS).flatMap(([ti,a])=>a.map(x=>({v:x,c:[x,ti.startsWith("Prev")?"Preventiva":"Correctiva"]}))),
+  campos:[["Trabajo","text"],["Tipo de mantención",["Preventiva","Correctiva"]]],agregar:([a,ti])=>{const k=Object.keys(TRABAJOS).find(x=>ti==="Preventiva"?x.startsWith("Prev"):!x.startsWith("Prev")); if(Object.values(TRABAJOS).flat().some(x=>x.toLowerCase()===a.toLowerCase())) return "Ese trabajo ya existe."; TRABAJOS[k].push(a)}},
+ {k:"talleres",g:"Mantención y gastos",t:"Talleres",d:"Proveedores de mantención y reparación.",edit:true,
+  cols:["Taller"],filas:()=>TALLERES.map(x=>({v:x,c:[x]})),
+  campos:[["Taller","text"]],agregar:([a])=>{if(TALLERES.some(x=>x.toLowerCase()===a.toLowerCase())) return "Ese taller ya existe."; TALLERES.push(a)}},
+ {k:"gastos",g:"Mantención y gastos",t:"Tipos de gasto",d:"Clasificación de cada factura o boleta del vehículo.",edit:true,
+  cols:["Código","Tipo de gasto"],filas:()=>TIPO_GASTO.map(([c,x])=>({v:c,c:[c,x]})),
+  campos:[["Código (2 letras)","text"],["Tipo de gasto","text"]],agregar:([c,x])=>{c=c.toUpperCase(); if(!/^[A-Z]{2}$/.test(c)) return "El código debe tener 2 letras."; if(TGX[c]) return "Ese código ya existe."; if(!x) return "Indique el tipo de gasto."; TIPO_GASTO.push([c,x]); TGX[c]=x}},
+ {k:"cc",g:"Sólo consulta",t:"Centros de costo",d:"Catálogo oficial de imputación (pilar 4 del ERS). Lo mantiene Finanzas y se actualiza con su carga.",edit:false,
+  cols:["Folio","Imputación","Programa"],filas:()=>CC.map(c=>({v:c.folio,c:[c.folio,c.t,PROGRAMAS[c.prog]||c.prog]}))},
+ {k:"estaciones",g:"Sólo consulta",t:"Estaciones de servicio",d:"Se registran solas con el archivo de cargas COPEC; no se ingresan a mano.",edit:false,
+  cols:["Estación","Cargas registradas"],filas:()=>[...new Set([...ESTACIONES,...CARGAS.map(c=>c.est)])].sort().map(x=>({v:x,c:[x,CARGAS.filter(c=>c.est===x).length]}))}
+];
+function vCatalogos(){
+  const cat=CATALOGOS.find(c=>c.k===sel.cat)||CATALOGOS[0], filas=cat.filas(), act=filas.filter(f=>catActivo(cat.k,f.v)).length;
+  const grupos=[...new Set(CATALOGOS.map(c=>c.g))];
+  const lista=`<nav class="cat-lista" aria-label="Catálogos">${grupos.map(g=>`<h3>${g}</h3><ul>${CATALOGOS.filter(c=>c.g===g).map(c=>`<li><button type="button" data-cat="${c.k}" aria-pressed="${c===cat}"><span>${c.t}</span><span class="n">${c.filas().length}</span></button></li>`).join("")}</ul>`).join("")}</nav>`;
+  const form=cat.edit&&sel.catAdd?`<form id="f-cat" class="cat-form" novalidate><div class="campos">${cat.campos.map(([l,tp],i)=>`<div class="campo"><label for="cat-${i}">${l}</label>${Array.isArray(tp)?`<select id="cat-${i}">${tp.map(o=>`<option>${o}</option>`).join("")}</select>`:`<input type="text" id="cat-${i}" autocomplete="off">`}</div>`).join("")}</div><div class="acciones"><button class="btn chico" type="submit">Guardar</button><button class="btn sec chico" type="button" id="cat-cancel">Cancelar</button></div></form>`:"";
+  const tabla=`<table class="cat-tabla"><thead><tr>${cat.cols.map(c=>`<th>${c}</th>`).join("")}${cat.edit?"<th>Estado</th><th><span class='sr'>Acción</span></th>":""}</tr></thead><tbody>${filas.map(f=>{const on=catActivo(cat.k,f.v); return `<tr class="${on?"":"inact"}" data-busca="${esc(f.c.join(" ").toLowerCase())}">${f.c.map((x,i)=>`<td class="${i===0&&cat.k==="cc"?"mono":""}">${esc(String(x))}</td>`).join("")}${cat.edit?`<td>${on?chip("Activo","c-disp","●"):chip("Desactivado","c-neu","–")}</td><td class="acc"><button class="btn sec chico" type="button" data-cat-tog="${esc(f.v)}">${on?"Desactivar":"Activar"}</button></td>`:""}</tr>`}).join("")}</tbody></table>`;
+  return `<div class="cat-lay">${lista}<section class="panel cat-panel"><header><div><h2>${cat.t}</h2><span class="sub">${cat.d}</span></div>${cat.edit&&!sel.catAdd?`<button class="btn chico" type="button" id="cat-add">${ico("plus")}Agregar</button>`:""}</header>
+   ${form}<div class="cat-herr"><label class="sr" for="cat-q">Buscar en ${cat.t.toLowerCase()}</label><input type="search" id="cat-q" placeholder="Buscar en ${cat.t.toLowerCase()}"><span class="tenue peq" id="cat-cuenta">${filas.length} registros${cat.edit?` · ${act} activos`:""}</span></div>
+   <div class="tabla-env">${tabla}</div>
+   <div class="leyenda"><span class="tenue peq">${cat.edit?"Lo desactivado deja de ofrecerse en los formularios, pero se conserva en los registros históricos. Los catálogos son nacionales: todas las regiones usan los mismos.":"Catálogo de sólo consulta: se actualiza desde su fuente oficial."}</span></div></section></div>`;
+}
+function postCatalogos(){
+  const V=$("#vista"), cat=CATALOGOS.find(c=>c.k===sel.cat)||CATALOGOS[0];
+  V.querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>{sel.cat=b.dataset.cat; sel.catAdd=false; render()});
+  const a=$("#cat-add"); if(a) a.onclick=()=>{sel.catAdd=true; render(); $("#cat-0")?.focus()};
+  const cc=$("#cat-cancel"); if(cc) cc.onclick=()=>{sel.catAdd=false; render()};
+  const f=$("#f-cat"); if(f) f.onsubmit=e=>{e.preventDefault(); const vals=cat.campos.map((_,i)=>$("#cat-"+i).value.trim()); if(!vals[0]){tostada("Complete el primer campo.");$("#cat-0").focus();return}
+    const err=cat.agregar(vals); if(err){tostada(err);return} audit("Agrega a catálogo",cat.t,"—",vals.filter(Boolean).join(" · ")); sel.catAdd=false; tostada("Agregado a "+cat.t.toLowerCase()+"."); render(); };
+  V.querySelectorAll("[data-cat-tog]").forEach(b=>b.onclick=()=>{const k=cat.k+"|"+b.dataset.catTog, on=!CAT_INACT.has(k); on?CAT_INACT.add(k):CAT_INACT.delete(k); audit(on?"Desactiva en catálogo":"Activa en catálogo",cat.t,on?"Activo":"Desactivado",b.dataset.catTog); render();});
+  const q=$("#cat-q"); if(q) q.oninput=()=>{const s=q.value.trim().toLowerCase(); let n=0; V.querySelectorAll(".cat-tabla tbody tr").forEach(tr=>{const ok=!s||tr.dataset.busca.includes(s); tr.hidden=!ok; if(ok)n++}); $("#cat-cuenta").textContent=n+" de "+cat.filas().length+" registros"; };
+}
 post.config = ()=>{ const V=$("#vista"); V.querySelectorAll("[data-cfg]").forEach(b=>b.onclick=()=>{sel.cfgTab=b.dataset.cfg;render()});
   V.querySelectorAll("[data-cerrar-mes]").forEach(b=>b.onclick=()=>{const x=CIERRES.find(c=>c.mes===b.dataset.cerrarMes); if(!b.dataset.conf){ b.dataset.conf="1"; b.textContent="Confirmar cierre de "+MESES[+x.mes.slice(5)-1]+" (no se puede deshacer)"; b.classList.add("peligro"); return; } x.estado="Cerrado"; x.por=ROLES[rol].quien; x.fecha=iso(HOY).slice(0,10); audit("Cierra período",x.mes,"Abierto","Cerrado"); tostada("Período cerrado."); render();});
+  if(sel.cfgTab==="catalogos") postCatalogos();
   if(sel.cfgTab==="datos") post.admin(); };
 
 /* ======================= Delegación global ======================= */
@@ -1759,13 +1820,13 @@ function erroresHTML(e){ return e.length?`<div class="regla bl" role="alert"><sp
 
 function abrirAltaVehiculo(){
   if(rol!=="super") return;
-  const marcas=Object.keys(MARCAS).sort();
+  const marcas=Object.keys(MARCAS).filter(x=>catActivo("marcas",x)).sort();
   cajon(`<h2 id="t-cajon" style="font-size:var(--f-xl)">Agregar vehículo</h2>`,"Catastro nacional · ERS §4.1",
   `<form id="f-alta-veh" class="grid" novalidate style="gap:var(--e-4)">
    <div id="av-err"></div>
    <fieldset><legend><span class="seccion-num">1</span>Identificación legal y mecánica</legend><div class="campos">
     ${campoA("av-pat","Patente",`<input type="text" id="av-pat" class="mono" maxlength="8" placeholder="BBBB-10 o BB-1000" autocomplete="off">`,"Formato chileno; se guarda en mayúsculas, con guion y sin espacios.")}
-    ${campoA("av-tipo","Tipo de vehículo",`<select id="av-tipo">${opts(TIPOS_VEH,"","— Seleccionar —")}</select>`)}
+    ${campoA("av-tipo","Tipo de vehículo",`<select id="av-tipo">${opts(TIPOS_VEH.filter(x=>catActivo("tipos",x)),"","— Seleccionar —")}</select>`)}
     ${campoA("av-marca","Marca",`<select id="av-marca">${opts(marcas,"","— Seleccionar —")}</select>`)}
     ${campoA("av-modelo","Modelo",`<select id="av-modelo" disabled><option value="">— Elija la marca —</option></select>`,"Marcas y modelos desde el catálogo nacional.")}
     ${campoA("av-anio","Año de fabricación",`<input type="number" id="av-anio" min="1990" max="2027" placeholder="2024">`)}
