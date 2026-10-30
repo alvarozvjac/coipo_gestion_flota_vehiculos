@@ -772,8 +772,14 @@ function condApto(cid, r, ignorar){
   if(choque) motivos.push("Ocupado en "+choque.id);
   return {ok:!motivos.length,motivos};
 }
+/* ---------- Traspasos entre regiones (sólo administrador nacional, ERS §3.2) ---------- */
+let TRASPASOS=[]; let nTrasp=1;
+const regionBase=v=>v.region||"Oficina Central";
+const traspActivo=(v,ref=HOY)=>{const d=iso(ref).slice(0,10); return TRASPASOS.find(x=>x.pat===v.pat&&!x.dev&&x.desde<=d&&(x.tipo==="Definitivo"||x.hasta>=d))};
+const regionVeh=v=>traspActivo(v)?.destino||regionBase(v);
 function vehApto(v, r){
   const m=[], av=[]; const fin=F(r.regreso);
+  {const tr=TRASPASOS.find(x=>x.pat===v.pat&&!x.dev&&x.desde<=r.regreso.slice(0,10)&&(x.tipo==="Definitivo"||x.hasta>=r.salida.slice(0,10))); if(tr) m.push(`Traspasado a ${tr.destino}${tr.tipo==="Temporal"?" hasta el "+fF(tr.hasta):""}`);}
   if(["TALL_P","TALL_C"].includes(v.estado)) m.push("En taller");
   if(v.estado==="MALO") m.push("Fuera de servicio");
   if(v.estado==="EXCL") m.push("Asignación exclusiva Dirección");
@@ -1050,6 +1056,7 @@ function vVisor(){
   const filas=VEH.filter(v=>sel.gantt.f!=="pool"||v.modalidad.startsWith("Pool")).map(v=>{
     let bloques="";
     if(["TALL_P","TALL_C","MALO","EXCL"].includes(v.estado)){const [t,c,i]=EST_V[v.estado]; bloques+=`<span class="barra-g ${c}" style="left:0;width:100%;cursor:default" aria-label="${t}"><i aria-hidden="true">${i}</i>${t}</span>`}
+    TRASPASOS.filter(x=>x.pat===v.pat&&!x.dev).forEach(x=>{const p=pos(x.desde,x.tipo==="Definitivo"?"2100-01-01":x.hasta+"T23:59"); if(p) bloques+=`<span class="barra-g c-excl" style="left:${p.l}%;width:${p.w}%;cursor:default" aria-label="Traspaso a ${esc(x.destino)}"><i aria-hidden="true">⇄</i>Traspaso a ${esc(x.destino)}</span>`});
     RES.filter(r=>r.pat===v.pat&&est2c[r.est]).forEach(r=>{const p=pos(r.salida,r.regreso); if(p) bloques+=barra(r,p)});
     return `<div class="g-fila"><div class="g-et">${placa(v.pat)}<div class="txt"><b class="peq">${esc(v.marca)} ${esc(v.modelo)}</b><span>${v.trac} · ${v.cap} pas. · ${v.programa.slice(0,3)}</span></div></div><div class="g-pista">${fondo}${bloques}</div></div>`;
   }).join("");
@@ -1061,7 +1068,7 @@ function vVisor(){
    <label class="opciones peq"><span><input type="checkbox" id="g-pool" ${sel.gantt.f==="pool"?"checked":""}> Sólo pool</span></label></div><span class="sub num">${fF(ini)} al ${fF(new Date(fin.getTime()-DIA))}</span></header>
   <div class="g-cuerpo"><div class="gantt-env"><div class="gantt"><div class="g-fila cab"><div class="g-et"><b class="peq">Vehículo</b></div><div class="g-dias" style="${cols}">${dias.map(d=>`<div class="g-dia ${esFin(d)?"fin":""} ${iso(d).slice(0,10)===iso(HOY).slice(0,10)?"hoy":""}">${DS[d.getDay()]}<b>${d.getDate()}</b>${g.dias<=14?MS[d.getMonth()]:""}</div>`).join("")}</div></div>
   ${lectura?"":filaPend}${filas}</div></div>
-  <aside class="g-ley" aria-labelledby="t-ley"><div class="g-ley-in"><h3 id="t-ley">Leyenda</h3><ul>${[["Disponible (espacio libre)","c-disp","●"],["Confirmada","c-res","■"],["Pendiente","c-pend","◔"],["En terreno","c-terr","▶"],["Taller","c-tall","⚙"],["Fuera de servicio","c-malo","✕"],["Exclusiva Dirección","c-excl","◆"],["Finalizada","c-neu","✓"]].map(([t,c,i])=>`<li>${chip(t,c,i)}</li>`).join("")}</ul><hr><ul><li><span class="muestra ach" aria-hidden="true"></span>Sábado, domingo o festivo</li><li><span class="muestra ahora" aria-hidden="true"></span>Ahora</li></ul></div></aside></div></section>
+  <aside class="g-ley" aria-labelledby="t-ley"><div class="g-ley-in"><h3 id="t-ley">Leyenda</h3><ul>${[["Disponible (espacio libre)","c-disp","●"],["Confirmada","c-res","■"],["Pendiente","c-pend","◔"],["En terreno","c-terr","▶"],["Taller","c-tall","⚙"],["Fuera de servicio","c-malo","✕"],["Exclusiva Dirección","c-excl","◆"],["Traspasado a otra región","c-excl","⇄"],["Finalizada","c-neu","✓"]].map(([t,c,i])=>`<li>${chip(t,c,i)}</li>`).join("")}</ul><hr><ul><li><span class="muestra ach" aria-hidden="true"></span>Sábado, domingo o festivo</li><li><span class="muestra ahora" aria-hidden="true"></span>Ahora</li></ul></div></aside></div></section>
   ${det?`<section class="panel" style="margin-top:var(--e-4)"><header><h2>Detalle <span class="mono">${det.id}</span></h2>${chipR(det.est)}</header><div class="cuerpo grid g-2b"><dl class="ficha">
    <dt>Destino</dt><dd>${lectura&&det.sol!==ROLES[rol].quien?"Reservado (detalle visible para la unidad responsable)":esc(det.destinos.map(d=>d.lug+", "+d.com).join(" · "))}</dd>
    <dt>Horario</dt><dd class="num">${fFH(det.salida)} → ${fFH(det.regreso)}</dd>
@@ -1184,19 +1191,18 @@ function vAdmin(){
   ];
   return cab("Administración nacional","Tablas maestras, carga masiva inicial, cuentas y registro de auditoría. Sólo para el administrador nacional.","ERS §3.2 Perfil 1 · §7")+
   `<section class="panel"><header><h2>Calidad de datos de la carga inicial</h2><span class="sub">Hallazgos reales en las planillas entregadas el 15-10-2026</span></header><div class="tabla-env"><table><thead><tr><th>Hallazgo</th><th>Evidencia</th><th>Tratamiento</th></tr></thead><tbody>${hallazgos.map(h=>`<tr><td><b>${h[0]}</b></td><td class="peq">${h[1]}</td><td>${chip(h[2],h[3],h[4])}</td></tr>`).join("")}</tbody></table></div></section>
-  <div class="grid g-2b" style="margin-top:var(--e-4)"><section class="panel"><header><h2>Tablas maestras</h2></header><div class="tabla-env"><table><tbody>
+  <div style="margin-top:var(--e-4)"><section class="panel"><header><h2>Tablas maestras</h2></header><div class="tabla-env"><table><tbody>
    <tr><td>Vehículos</td><td class="d">${VEH.length}</td><td class="peq tenue">Oficina Central; 16 regiones en fase 2</td></tr>
    <tr><td>Nómina base de funcionarios</td><td class="d">346</td><td class="peq tenue">NOMINA-GEFA, Oficina Central</td></tr>
    <tr><td>Pólizas de conducción (caución)</td><td class="d">1.651</td><td class="peq tenue">DESC.-POLIZA-CONDUCCION jul-2026</td></tr>
    <tr><td>Centros de costo e imputación</td><td class="d">${CC.length}</td><td class="peq tenue">Folios 48001 en adelante (muestra)</td></tr>
    <tr><td>Programas presupuestarios</td><td class="d">${Object.keys(PROGRAMAS).length}</td><td class="peq tenue">P01, P03, P04, P05, P06</td></tr></tbody></table></div>
    <div class="leyenda"><button class="btn sec chico" type="button" id="btn-carga">Simular carga masiva (.xlsx)</button></div></section>
-  <section class="panel"><header><h2>Traspaso entre regiones</h2></header><form class="cuerpo grid" id="f-trasp"><div class="campos"><div class="campo"><label for="t-pat">Vehículo</label><select id="t-pat">${VEH.map(v=>`<option>${v.pat}</option>`).join("")}</select></div><div class="campo"><label for="t-reg">Región de destino</label><select id="t-reg">${REGIONES.map(r=>`<option>${r}</option>`).join("")}</select></div><div class="campo ancho"><span class="lbl">Tipo</span><div class="opciones"><label><input type="radio" name="t-tipo" value="Temporal" checked> Temporal (comisión o emergencia)</label><label><input type="radio" name="t-tipo" value="Definitivo"> Definitivo</label></div></div></div><div class="acciones"><button class="btn" type="submit">Autorizar traspaso</button></div></form></section></div>
+  </div>
   <section class="panel" style="margin-top:var(--e-4)"><header><h2>Registro de auditoría</h2><span class="sub">Inalterable: usuario, fecha y hora, IP, valor anterior y nuevo</span></header><div class="tabla-env"><table><thead><tr><th>Fecha y hora</th><th>Usuario</th><th>Acción</th><th>Objeto</th><th>Valor anterior</th><th>Valor nuevo</th><th>IP</th></tr></thead><tbody>${AUD.map(a=>`<tr><td class="num">${fFH(a.t)}</td><td>${esc(nom(a.u))}</td><td>${esc(a.acc)}</td><td class="mono peq">${esc(a.obj)}</td><td class="peq">${esc(a.ant)}</td><td class="peq">${esc(a.nue)}</td><td class="mono peq">${a.ip}</td></tr>`).join("")}</tbody></table></div></section>`;
 }
 post.admin = ()=>{
   $("#btn-carga").onclick=()=>tostada("Validación de plantilla: 21 vehículos leídos · 21 patentes normalizadas · 1 duplicidad de motor/chasis bloqueante · 3 sin fechas de documentos.");
-  $("#f-trasp").onsubmit=e=>{e.preventDefault(); const p=$("#t-pat").value, rg=$("#t-reg").value, t=document.querySelector('input[name="t-tipo"]:checked').value; audit("Autoriza traspaso "+t.toLowerCase(),p,"Oficina Central",rg); tostada(`Traspaso ${t.toLowerCase()} de ${p} a ${rg} registrado.`); render();};
 };
 
 
@@ -1539,11 +1545,11 @@ function alertasVeh(v){ return ["rt","soap","perm","gases"].filter(k=>docEstado(
 function vFlota(){
   const f=sel.flotaFiltro, q=sel.flotaQ.toLowerCase();
   const cnt=k=>VEH.filter(v=>filtroFlota(v,k)).length;
-  const lista=VEH.filter(v=>filtroFlota(v,f)&&(!q||(v.pat+" "+v.marca+" "+v.modelo+" "+v.tipo).toLowerCase().includes(q)));
+  const lista=VEH.filter(v=>(rol==="super"||!traspActivo(v))&&filtroFlota(v,f)&&(!q||(v.pat+" "+v.marca+" "+v.modelo+" "+v.tipo).toLowerCase().includes(q)));
   return cab("Flota","Una hoja de vida por vehículo: documentos, mantenciones, combustible, gastos, recinto de guarda y salidas.","ERS §4.1 · GESAD «Vehículos»")+(rol==="super"?`<div class="acciones" style="margin-bottom:var(--e-4)"><button class="btn" type="button" id="btn-alta-veh">${ico("plus")}Agregar vehículo</button></div>`:"")+
   `<div class="barra-herr">${filtrosHTML([["todos","Todos",VEH.length],["DISP","Disponibles",cnt("DISP")],["TERR","En terreno",cnt("TERR")],["TALLER","Taller o fuera de servicio",cnt("TALLER")],["alerta","Con alertas",cnt("alerta")]],f,"data-ff")}<div><label class="sr" for="f-q">Buscar</label><input type="search" id="f-q" placeholder="Patente, marca o modelo" value="${esc(sel.flotaQ)}"></div></div>
   <section class="panel"><div class="tabla-env"><table><thead><tr><th>Patente</th><th>Vehículo</th><th>Estado</th><th>Kilometraje</th><th>Próxima mantención</th><th>Alertas</th></tr></thead><tbody>${lista.map(v=>{const m=mant(v), a=alertasVeh(v), p=Math.max(3,Math.min(100,(v.km-(v.proxMant-10000))/10000*100));
-    return `<tr class="clic" data-veh="${v.pat}" tabindex="0"><td>${placa(v.pat)}</td><td><b>${esc(v.marca)} ${esc(v.modelo)}</b><br><span class="tenue peq">${esc(v.tipo)} · ${v.anio} · ${v.trac} · ${v.cap} plazas</span></td><td>${chipV(v)}</td><td class="d">${km(v.km)}</td><td><div class="mini-barra"><span class="medidor"><span style="width:${p}%;background:var(${m.est==="VENC"?"--st-malo":m.est==="PROX"?"--st-pend":"--st-disp"})"></span></span><span class="num">${m.resta<0?"vencida":km(m.resta)+" km"}</span></div></td><td>${a?chip(a+(a===1?" alerta":" alertas"),"c-pend","!"):`<span class="tenue">—</span>`}</td></tr>`}).join("")}</tbody></table></div></section>`;
+    return `<tr class="clic" data-veh="${v.pat}" tabindex="0"><td>${placa(v.pat)}</td><td><b>${esc(v.marca)} ${esc(v.modelo)}</b><br><span class="tenue peq">${esc(v.tipo)} · ${v.anio} · ${v.trac} · ${v.cap} plazas</span></td><td>${chipV(v)}${traspActivo(v)?`<br><span class="chip c-excl" style="margin-top:4px"><i aria-hidden="true">⇄</i>En ${esc(traspActivo(v).destino)}</span>`:""}</td><td class="d">${km(v.km)}</td><td><div class="mini-barra"><span class="medidor"><span style="width:${p}%;background:var(${m.est==="VENC"?"--st-malo":m.est==="PROX"?"--st-pend":"--st-disp"})"></span></span><span class="num">${m.resta<0?"vencida":km(m.resta)+" km"}</span></div></td><td>${a?chip(a+(a===1?" alerta":" alertas"),"c-pend","!"):`<span class="tenue">—</span>`}</td></tr>`}).join("")}</tbody></table></div></section>`;
 }
 function filtroFlota(v,k){ const e=estadoHoy(v); return k==="todos"||(k==="DISP"&&e==="DISP")||(k==="TERR"&&e==="TERR")||(k==="TALLER"&&["TALL_P","TALL_C","MALO"].includes(e))||(k==="alerta"&&alertasVeh(v)>0); }
 post.flota = ()=>{ const V=$("#vista"); const ba=$("#btn-alta-veh"); if(ba) ba.onclick=abrirAltaVehiculo; V.querySelectorAll("[data-ff]").forEach(b=>b.onclick=()=>{sel.flotaFiltro=b.dataset.ff;render()});
@@ -1553,13 +1559,14 @@ post.flota = ()=>{ const V=$("#vista"); const ba=$("#btn-alta-veh"); if(ba) ba.o
 let fichaTab="resumen";
 function abrirFicha(pat, tab, op={}){
   if(tab) fichaTab=tab; const v=VX[pat], g=puedeGestionar();
-  const tabs=[["resumen","Resumen"],["docs","Documentos"],["mant","Mantención"],["comb","Combustible"],["gastos","Gastos"],["salidas","Salidas"]];
+  const tabs=[["resumen","Resumen"],["docs","Documentos"],["mant","Mantención"],["comb","Combustible"],["gastos","Gastos"],["salidas","Salidas"],["trasp","Traspasos"]];
   const ots=OT.filter(o=>o.pat===pat), gs=GASTOS.filter(x=>x.pat===pat).sort((a,b)=>b.fecha.localeCompare(a.fecha)), cs=CARGAS.filter(c=>c.pat===pat).sort((a,b)=>a.km-b.km), sal=RES.filter(r=>r.pat===pat).sort((a,b)=>b.salida.localeCompare(a.salida));
   const m=mant(v);
   let c="";
   if(fichaTab==="resumen") c=`<div class="grid g-2b"><dl class="ficha"><dt>Patente</dt><dd>${placa(v.pat)}</dd><dt>Vehículo</dt><dd>${esc(v.tipo)} ${esc(v.marca)} ${esc(v.modelo)} ${v.anio}</dd><dt>Motor / chasis</dt><dd class="mono peq">${esc(v.motor||"—")} / ${esc(v.chasis||"—")}</dd>${v.color?`<dt>Color</dt><dd>${esc(v.color)}</dd>`:""}<dt>Capacidad</dt><dd>${v.cap} plazas · ${km(v.cargaKg)} kg${v.cargaM3?` · ${String(v.cargaM3).replace(".",",")} m³`:""} · ${v.trac} · ${v.comb}</dd><dt>Modalidad</dt><dd>${esc(v.modalidad)}</dd><dt>Tenencia</dt><dd>${esc(v.tenencia)}</dd><dt>Destinación</dt><dd>${esc(v.unidad)}</dd><dt>Recinto de guarda</dt><dd>${esc(v.guarda||"—")}<br><span class="tenue peq">Guarda nocturna y de fines de semana</span></dd><dt>Programa</dt><dd>${esc(v.programa)}</dd></dl>
     <dl class="ficha"><dt>Estado hoy</dt><dd>${chipV(v)}</dd><dt>Kilometraje</dt><dd class="num">${km(v.km)} km</dd><dt>Mantención</dt><dd>${chipMant(v)}</dd><dt>Seguro</dt><dd><span class="mono">${esc(v.poliza)}</span>${v.aseguradora?` · ${esc(v.aseguradora)}`:""}${v.deducibleUF?` · deducible ${esc(v.deducibleUF)} UF`:""} · vence ${fF(v.polizaVence)}${v.asistencia?`<br><span class="tenue peq">Asistencia en ruta: ${esc(v.asistencia)}</span>`:""}</dd><dt>Tarjeta</dt><dd class="mono">${esc(v.tarjeta)} · ${esc(v.tarjetaEstado)}</dd><dt>Alertas</dt><dd>${alertasVeh(v)||"Sin alertas"}</dd></dl></div>
-    ${g?`<div class="acciones"><button class="btn sec chico" type="button" data-ftab="mant" data-op="ot">Nueva orden de trabajo</button><button class="btn sec chico" type="button" data-ftab="gastos" data-op="gasto">Registrar gasto</button></div>`:""}`;
+    ${g?`<div class="acciones"><button class="btn sec chico" type="button" data-ftab="mant" data-op="ot">Nueva orden de trabajo</button><button class="btn sec chico" type="button" data-ftab="gastos" data-op="gasto">Registrar gasto</button>${rol==="super"&&!traspActivo(v)?`<button class="btn sec chico" type="button" data-ftab="trasp" data-op="trasp">⇄ Traspasar a otra región</button>`:""}</div>`:""}`;
+  if(fichaTab==="resumen"&&traspActivo(v)) c=traspAvisoHTML(v)+c;
   if(fichaTab==="docs"){ const DOCS=[["rt","Revisión técnica"],["gases","Revisión de gases"],["soap","SOAP"],["perm","Permiso de circulación"],["polizaVence","Póliza de seguro"]];
     c=`<p class="tenue peq">Al renovar un documento, registre su nueva fecha de vencimiento.${g?"":" Sólo el encargado de vehículos y el administrador pueden actualizarlos."}</p><div class="tabla-env"><table><thead><tr><th>Documento</th><th>Vencimiento</th><th>Estado</th>${g?"<th></th>":""}</tr></thead><tbody>${DOCS.map(([k,n])=>op.docEdit===k?`<tr><td>${n}</td><td colspan="${g?3:2}"><form class="doc-edit" id="f-doc" data-k="${k}"><label class="sr" for="d-fecha">Nuevo vencimiento</label><input type="date" id="d-fecha" value="${v[k]||""}" min="${iso(HOY).slice(0,10)}">${k==="polizaVence"?`<label class="sr" for="d-num">N° de póliza</label><input type="text" id="d-num" class="mono" value="${esc(v.poliza||"")}" placeholder="N° de póliza">`:`<label class="sr" for="d-num">N° de documento</label><input type="text" id="d-num" class="mono" placeholder="N° o folio (opcional)">`}<button class="btn chico" type="submit">Guardar</button><button class="btn sec chico" type="button" data-doc-cancel>Cancelar</button></form></td></tr>`:`<tr><td>${n}${k==="polizaVence"&&v.poliza?` <span class="tenue peq mono">${esc(v.poliza)}</span>`:""}</td><td class="num">${v[k]?fF(v[k]):"—"}</td><td>${chipEstadoDoc(v[k])}</td>${g?`<td class="d"><button class="btn sec chico" type="button" data-doc="${k}">Actualizar</button></td>`:""}</tr>`).join("")}</tbody></table></div>`; }
   if(fichaTab==="mant") c=`<div class="estado-linea">${chipMant(v)}<span class="tenue peq">Última: ${km(v.ultMant)} km · próxima: ${km(v.proxMant)} km</span></div>
@@ -1568,9 +1575,47 @@ function abrirFicha(pat, tab, op={}){
     <div class="tabla-env"><table><thead><tr><th>Orden</th><th>Fecha</th><th>Tipo</th><th>Trabajos</th><th>Taller</th><th>Estado</th><th></th></tr></thead><tbody>${ots.length?ots.map(o=>`<tr><td class="mono">${o.id}</td><td class="num">${fF(o.fecha)}</td><td class="peq">${o.tipo}</td><td class="peq">${esc(o.trabajos.join(", "))}</td><td class="peq">${esc(o.taller)}</td><td>${o.estado==="Cerrada"?chip("Cerrada","c-neu","✓"):chip(o.estado,"c-tall","⚙")}${o.factura?`<br><span class="peq tenue">${o.factura.n} · ${clp(o.factura.monto)}</span>`:""}</td><td>${g&&o.estado!=="Cerrada"?`<button class="btn sec chico" type="button" data-cerrar-ot="${o.id}">Cerrar</button>`:""}</td></tr>`).join(""):`<tr><td colspan="7" class="tenue">Sin órdenes de trabajo.</td></tr>`}</tbody></table></div><div id="cierre-ot"></div>`;
   if(fichaTab==="comb"){ let tot=0, lts=0; c=`<div class="tabla-env"><table><thead><tr><th>Fecha</th><th>Origen</th><th>Estación</th><th>Litros</th><th>Monto</th><th>Odómetro</th><th>km/L</th></tr></thead><tbody>${cs.map((x,i)=>{const prev=cs[i-1]; const r=prev?(x.km-prev.km)/x.lt:null; tot+=x.monto; lts+=x.lt; return `<tr><td class="num">${fF(x.fecha)}</td><td class="peq">${x.origen}</td><td class="peq">${esc(x.est)}</td><td class="d">${x.lt}</td><td class="d">${clp(x.monto)}</td><td class="d">${km(x.km)}</td><td class="d">${r?(r<6?chip(r.toFixed(1).replace(".",",")+" bajo","c-pend","!"):r.toFixed(1).replace(".",",")):"—"}</td></tr>`}).join("")||`<tr><td colspan="7" class="tenue">Sin cargas registradas.</td></tr>`}</tbody></table></div><div class="pie-tabla"><span>${cs.length} cargas · ${lts} litros</span><span class="total">${clp(tot)}</span></div>`; }
   if(fichaTab==="gastos"){ const t=gs.reduce((s,x)=>s+x.monto,0); c=`${g?(op.nuevoGasto?gastoFormHTML(pat):`<div><button class="btn chico" type="button" data-op2="gasto">Registrar gasto</button></div>`):""}<div class="tabla-env"><table><thead><tr><th>Fecha</th><th>Documento</th><th>Proveedor</th><th>Tipo</th><th>Folio</th><th>Monto</th></tr></thead><tbody>${gs.map(x=>`<tr><td class="num">${fF(x.fecha)}</td><td class="peq">${x.doc} ${esc(x.n)}</td><td class="peq">${esc(x.prov)}</td><td class="peq">${TGX[x.tipo]}</td><td class="mono">${x.folio}</td><td class="d">${clp(x.monto)}</td></tr>`).join("")||`<tr><td colspan="6" class="tenue">Sin gastos registrados.</td></tr>`}</tbody></table></div><div class="pie-tabla"><span>${gs.length} documentos</span><span class="total">${clp(t)}</span></div>`; }
+  if(fichaTab==="trasp") c=traspasosHTML(v,op);
   if(fichaTab==="salidas") c=sal.length?`<div class="tabla-env"><table><thead><tr><th>ID</th><th>Salida</th><th>Destino</th><th>Conductor</th><th>Km</th><th>Estado</th></tr></thead><tbody>${sal.map(r=>`<tr class="clic" data-sal="${r.id}"><td class="mono">${r.id}</td><td class="num">${fFH(r.salida)}</td><td>${esc(r.destinos.map(d=>d.com).join(", "))}</td><td>${esc(nom(r.cond))}</td><td class="d">${r.bit?.odoR?km(r.bit.odoR-r.bit.odoS):"—"}</td><td>${chipR(r.est)}</td></tr>`).join("")}</tbody></table></div>`:vacio("Sin salidas","");
   cajon(`${placa(v.pat)}<h2 id="t-cajon" style="font-size:var(--f-xl)">${esc(v.marca)} ${esc(v.modelo)}</h2>`, chipV(v), tabsHTML(tabs,fichaTab,"data-ftab")+`<div id="ficha-c" class="grid" style="gap:var(--e-4)">${c}</div>`);
   postFicha(pat, op);
+}
+function traspAvisoHTML(v){ const x=traspActivo(v);
+  return `<div class="regla av"><span class="ico" aria-hidden="true">⇄</span><div><b>Traspasado ${x.tipo==="Temporal"?"temporalmente":"en forma definitiva"} a ${esc(x.destino)}</b><span>${x.tipo==="Temporal"?`Vuelve a ${esc(x.origen)} el ${fF(x.hasta)}. `:""}No se ofrece para asignaciones en ${esc(x.origen)}. Motivo: ${esc(x.motivo)}.</span></div></div>`; }
+function salidasEnConflicto(v,desde,hasta){ return RES.filter(r=>r.pat===v.pat&&["APROBADA","CONFIRMADA"].includes(r.est)&&r.regreso.slice(0,10)>=desde&&(!hasta||r.salida.slice(0,10)<=hasta)); }
+function traspasosHTML(v,op){
+  const hist=TRASPASOS.filter(x=>x.pat===v.pat).sort((a,b)=>b.fecha.localeCompare(a.fecha)), act=traspActivo(v), adm=rol==="super";
+  const hoy=iso(HOY).slice(0,10);
+  let f="";
+  if(adm&&op.nuevoTrasp&&!act){ const tipo=op.tTipo||"Temporal", hasta=op.tHasta||"", conf=salidasEnConflicto(v,hoy,tipo==="Temporal"?hasta||hoy:null);
+    f=`<form class="seccion" id="f-trasp" novalidate style="border:1px solid var(--linea);border-radius:var(--r-m);padding:var(--e-4)"><h3>Traspasar a otra región</h3>
+     <p class="tenue peq">Región actual: <b>${esc(regionBase(v))}</b>. Sólo el administrador nacional autoriza traspasos (ERS §3.2).</p>
+     <div class="campos"><div class="campo"><label for="tr-dest">Región de destino</label><select id="tr-dest"><option value="">— Seleccionar —</option>${REGIONES_ALTA.filter(r=>r!==regionBase(v)).map(r=>`<option ${r===op.tDest?"selected":""}>${esc(r)}</option>`).join("")}</select></div>
+     <div class="campo"><span class="lbl">Tipo de traspaso</span><div class="opciones" role="radiogroup"><label><input type="radio" name="tr-tipo" value="Temporal" ${tipo==="Temporal"?"checked":""}> Temporal</label><label><input type="radio" name="tr-tipo" value="Definitivo" ${tipo==="Definitivo"?"checked":""}> Definitivo</label></div></div>
+     ${tipo==="Temporal"?`<div class="campo"><label for="tr-hasta">Fecha de devolución</label><input type="date" id="tr-hasta" min="${hoy}" value="${hasta}"></div>`:""}
+     <div class="campo ancho"><label for="tr-mot">Motivo</label><input type="text" id="tr-mot" placeholder="Por ejemplo: apoyo a la temporada de incendios forestales" value="${esc(op.tMot||"")}"></div></div>
+     ${conf.length?`<div class="regla av"><span class="ico" aria-hidden="true">!</span><div><b>${conf.length===1?"Tiene una salida":"Tiene "+conf.length+" salidas"} con este vehículo en el periodo</b><span>${conf.map(r=>`${r.id} (${fCorta(r.salida)}, ${esc(r.destinos[0]?.com||"")})`).join(" · ")}. Al traspasarlo, el encargado deberá asignarles otro vehículo.</span><label class="peq" style="margin-top:6px;display:flex;gap:6px;align-items:center"><input type="checkbox" id="tr-ok"> Entiendo y autorizo el traspaso igualmente</label></div></div>`:""}
+     <div class="acciones"><button class="btn" type="submit">Autorizar traspaso</button><button class="btn sec" type="button" data-op2="">Cancelar</button></div></form>`; }
+  else if(adm&&!act) f=`<div><button class="btn chico" type="button" data-op2="trasp">⇄ Traspasar a otra región</button></div>`;
+  return `${act?traspAvisoHTML(v)+(adm&&act.tipo==="Temporal"?`<div><button class="btn chico" type="button" id="tr-dev">Registrar devolución anticipada</button></div>`:""):""}${f}
+   <div class="tabla-env">${hist.length?`<table><thead><tr><th>Fecha</th><th>Tipo</th><th>Origen</th><th>Destino</th><th>Hasta</th><th>Motivo</th><th>Autorizó</th><th>Estado</th></tr></thead><tbody>${hist.map(x=>`<tr><td class="num">${fF(x.fecha)}</td><td>${x.tipo}</td><td>${esc(x.origen)}</td><td>${esc(x.destino)}</td><td class="num">${x.tipo==="Temporal"?fF(x.hasta):"—"}</td><td class="peq">${esc(x.motivo)}</td><td class="peq">${esc(nom(x.por))}</td><td>${x.dev?chip("Devuelto "+fF(x.dev),"c-neu","✓"):traspActivo(v)===x?chip("Vigente","c-excl","⇄"):chip("Terminado","c-neu","✓")}</td></tr>`).join("")}</tbody></table>`:vacio("Sin traspasos registrados",adm?"":"Los traspasos entre regiones los autoriza el administrador nacional.")}</div>`;
+}
+function postTraspaso(pat, op){
+  const v=VX[pat], f=$("#f-trasp");
+  const leer=()=>({nuevoTrasp:true,tDest:$("#tr-dest").value,tTipo:document.querySelector('input[name="tr-tipo"]:checked').value,tHasta:$("#tr-hasta")?.value||"",tMot:$("#tr-mot").value});
+  if(f){ f.querySelectorAll('input[name="tr-tipo"]').forEach(r=>r.onchange=()=>abrirFicha(pat,"trasp",leer())); const h=$("#tr-hasta"); if(h) h.onchange=()=>abrirFicha(pat,"trasp",leer());
+    f.onsubmit=e=>{e.preventDefault(); const d=leer(), hoy=iso(HOY).slice(0,10), err=[];
+      if(!d.tDest) err.push(["tr-dest","Elija la región de destino"]);
+      if(d.tTipo==="Temporal"&&(!d.tHasta||d.tHasta<hoy)) err.push(["tr-hasta","Indique una fecha de devolución desde hoy"]);
+      if(!d.tMot.trim()) err.push(["tr-mot","Indique el motivo"]);
+      if($("#tr-ok")&&!$("#tr-ok").checked) err.push(["tr-ok","Confirme que autoriza el traspaso pese a las salidas comprometidas"]);
+      f.querySelectorAll("[aria-invalid]").forEach(x=>x.removeAttribute("aria-invalid")); err.forEach(([id])=>$("#"+id)?.setAttribute("aria-invalid","true"));
+      if(err.length){ tostada(err.map(x=>x[1]).join(" · ")); $("#"+err[0][0])?.focus(); return; }
+      const x={id:nTrasp++,pat,origen:regionBase(v),destino:d.tDest,tipo:d.tTipo,desde:hoy,hasta:d.tTipo==="Temporal"?d.tHasta:null,motivo:d.tMot.trim(),por:ROLES[rol].quien,fecha:iso(HOY)};
+      TRASPASOS.push(x); audit("Autoriza traspaso "+x.tipo.toLowerCase(),pat,x.origen,x.destino+(x.hasta?" hasta "+fF(x.hasta):""));
+      tostada(`${pat} traspasado a ${x.destino}${x.hasta?" hasta el "+fF(x.hasta):" en forma definitiva"}.`); render(); abrirFicha(pat,"trasp"); };
+  }
+  const dv=$("#tr-dev"); if(dv) dv.onclick=()=>{ const x=traspActivo(v); x.dev=iso(HOY).slice(0,10); audit("Registra devolución de traspaso",pat,x.destino,x.origen); tostada(`${pat} vuelve a ${x.origen}.`); render(); abrirFicha(pat,"trasp"); };
 }
 function otFormHTML(v,op){ const tipo=op.tipoOT||"Reparación";
   return `<form class="seccion" id="f-ot" style="border:1px solid var(--linea);border-radius:var(--r-m);padding:var(--e-4)"><h3>Nueva orden de trabajo${op.desde?` · desde ${op.desde}`:""}</h3><div class="campos"><div class="campo"><label for="ot-tipo">Tipo</label><select id="ot-tipo">${Object.keys(TRABAJOS).map(t=>`<option ${t===tipo?"selected":""}>${t}</option>`).join("")}</select></div><div class="campo"><label for="ot-taller">Taller</label><select id="ot-taller">${TALLERES.map(t=>`<option>${t}</option>`).join("")}</select></div>
@@ -1586,6 +1631,7 @@ function gastoFormHTML(pat){ const v=VX[pat];
   <div class="acciones"><button class="btn" type="submit">Guardar gasto</button><button class="btn sec" type="button" data-op2="">Cancelar</button></div></form>`; }
 function postFicha(pat, op){
   const C=$("#capa"), v=VX[pat];
+  postTraspaso(pat, op);
   C.querySelectorAll("[data-doc]").forEach(b=>b.onclick=()=>abrirFicha(pat,"docs",{docEdit:b.dataset.doc}));
   C.querySelectorAll("[data-doc-cancel]").forEach(b=>b.onclick=()=>abrirFicha(pat,"docs"));
   const fd=$("#f-doc"); if(fd) fd.onsubmit=e=>{ e.preventDefault(); const k=fd.dataset.k, f=$("#d-fecha").value, n=$("#d-num").value.trim();
@@ -1593,8 +1639,8 @@ function postFicha(pat, op){
     const ant=VX[pat][k]; VX[pat][k]=f; if(k==="polizaVence"&&n) VX[pat].poliza=n;
     const nomDoc={rt:"Revisión técnica",gases:"Revisión de gases",soap:"SOAP",perm:"Permiso de circulación",polizaVence:"Póliza de seguro"}[k];
     audit("Actualiza documento: "+nomDoc+(n?" · "+n:""),pat,ant?fF(ant):"—",fF(f)); tostada(`${nomDoc} de ${pat} actualizado: vence ${fF(f)}.`); abrirFicha(pat,"docs"); };
-  C.querySelectorAll("[data-ftab]").forEach(b=>b.onclick=()=>{ const o={}; if(b.dataset.op==="ot") o.nuevaOT=true; if(b.dataset.op==="gasto") o.nuevoGasto=true; abrirFicha(pat,b.dataset.ftab,o); });
-  C.querySelectorAll("[data-op2]").forEach(b=>b.onclick=()=>{ const k=b.dataset.op2; abrirFicha(pat,fichaTab,k==="ot"?{nuevaOT:true}:k==="gasto"?{nuevoGasto:true}:{}); });
+  C.querySelectorAll("[data-ftab]").forEach(b=>b.onclick=()=>{ const o={}; if(b.dataset.op==="ot") o.nuevaOT=true; if(b.dataset.op==="gasto") o.nuevoGasto=true; if(b.dataset.op==="trasp") o.nuevoTrasp=true; abrirFicha(pat,b.dataset.ftab,o); });
+  C.querySelectorAll("[data-op2]").forEach(b=>b.onclick=()=>{ const k=b.dataset.op2; abrirFicha(pat,fichaTab,k==="ot"?{nuevaOT:true}:k==="gasto"?{nuevoGasto:true}:k==="trasp"?{nuevoTrasp:true}:{}); });
   const ft=$("#ot-tipo"); if(ft) ft.onchange=()=>abrirFicha(pat,"mant",{...op,nuevaOT:true,tipoOT:ft.value});
   const fo=$("#f-ot"); if(fo) fo.onsubmit=e=>{e.preventDefault(); const tr=[...C.querySelectorAll(".ot-tr:checked")].map(i=>i.value); if(!tr.length){tostada("Marca al menos un trabajo.");return}
     const o={id:"OT-2026-00"+(nOT++),pat,fecha:iso(HOY).slice(0,10),km:+$("#ot-km").value,taller:$("#ot-taller").value,tipo:$("#ot-tipo").value,trabajos:tr,estado:"En taller",obs:$("#ot-obs").value};
