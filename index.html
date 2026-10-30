@@ -430,6 +430,7 @@ fieldset{background:var(--sup);padding:var(--e-4) var(--e-5) var(--e-5)}
 .seccion-num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--boton);color:#fff;font-family:var(--ff-cuerpo);font-weight:700;margin-right:var(--e-2)}
 input[type=text],input[type=number],input[type=datetime-local],input[type=search],select,textarea{border-color:var(--linea-fuerte);border-radius:var(--r-m)}
 input:focus,select:focus,textarea:focus{border-color:var(--verde-acento);box-shadow:0 0 0 3px var(--verde-tinte-2);outline:none}
+input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--foco-color);outline-offset:2px} /* UI-9 y UI-10: el foco de los campos es el mismo token que el del resto */
 th{background:var(--sup-2);color:var(--tinta-2)}
 tr.clic:hover{background:var(--verde-tinte)}
 footer.pie-app{background:var(--verde-tinta);color:#e9f1e7;border-top:4px solid var(--verde-acento)}
@@ -497,6 +498,26 @@ body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{d
 .l-manuales a{display:flex;align-items:center;gap:var(--e-2);padding:var(--e-2) var(--e-3);border-radius:var(--r-m);color:var(--verde-tinta);font-weight:500;text-decoration:none;border:1px solid var(--linea)}
 .l-manuales a:hover{background:var(--verde-tinte);border-color:var(--verde-claro)}
 .l-manuales .ico{color:var(--verde-acento)}
+
+/* Franja: texto completo en escritorio, corto en teléfono */
+.franja .f-corto{display:none}
+@media (max-width:559.98px){ /* teléfono: la cabecera no debe comerse la primera pantalla */
+  .franja{padding-block:6px;flex-wrap:nowrap}
+  .franja .f-largo{display:none} .franja .f-corto{display:inline}
+  .barra-in{flex-wrap:nowrap;gap:var(--e-2);padding-block:6px}
+  .app-nombre .app-txt small{display:none}
+  .perfil{margin-left:auto;flex-wrap:nowrap;gap:var(--e-2)}
+  #rol-chip{display:none}
+  .quien{border-left:0;padding-left:0}
+  .quien .qtxt{display:none}
+  #btn-salir{min-width:44px;min-height:44px;padding:0;justify-content:center}
+  #btn-salir .txt-salir{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .nav{display:none} /* el único botón era «Inicio»: lo cubren el nombre de la aplicación y «Volver al inicio» */
+  .hero{padding:var(--e-4)}
+  .hero h1{font-size:var(--f-xl)}
+  .hero p{font-size:var(--f-s);margin-bottom:0}
+  .hero .fecha{display:none}
+}
 </style>
 
 </head><body>
@@ -505,7 +526,7 @@ body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{d
   <img class="corto" src="banner-gefa-corto.jpg" alt="CONAF · Unidad de Información y Análisis" width="875" height="177">
   <div class="titulo-banner" aria-hidden="true"><div>Sistema Nacional de Gestión de Flota</div></div>
 </div>
-<div class="franja" role="note"><b>Maqueta no operacional</b><span>Vehículos y vencimientos: datos reales de Oficina Central (números de motor y chasis enmascarados) (planilla de mantenciones al 28-09-2026). Personas, RUT, pólizas y cargas de combustible: ficticios. Fecha de referencia: jueves 22-10-2026.</span></div>
+<div class="franja" role="note"><b>Maqueta no operacional</b><span class="f-corto">Datos de ejemplo; vehículos reales de Oficina Central.</span><span class="f-largo">Vehículos y vencimientos: datos reales de Oficina Central (números de motor y chasis enmascarados) (planilla de mantenciones al 28-09-2026). Personas, RUT, pólizas y cargas de combustible: ficticios. Fecha de referencia: jueves 22-10-2026.</span></div>
 
 <section class="login" id="login" aria-labelledby="t-login" hidden>
   <div class="login-caja">
@@ -538,7 +559,7 @@ body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{d
     <div class="perfil">
       <span class="rol-chip" id="rol-chip"></span>
       <div class="quien" id="quien"></div>
-      <button class="btn sec chico" type="button" id="btn-salir"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-salir"/></svg>Cerrar sesión</button>
+      <button class="btn sec chico" type="button" id="btn-salir"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-salir"/></svg><span class="txt-salir">Cerrar sesión</span></button>
     </div>
   </div>
   <nav class="nav" id="nav" aria-label="Módulos"></nav>
