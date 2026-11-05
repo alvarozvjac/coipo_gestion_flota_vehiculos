@@ -116,6 +116,9 @@ main{padding-block:var(--e-5) var(--e-7);padding-left:var(--gutter-l);padding-ri
 .cab-vista{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--e-4);flex-wrap:wrap;margin-bottom:var(--e-5)}
 .cab-vista h1{font-size:var(--f-2xl);font-weight:600}
 .cab-vista p{color:var(--tinta-2);max-width:72ch;margin-top:var(--e-1)}
+.tit-modo{display:flex;align-items:center;gap:var(--e-4);flex-wrap:wrap}
+.tit-modo .seg button{display:inline-flex;align-items:center;gap:6px;min-height:40px}
+.tit-modo .seg .ico{width:16px;height:16px}
 .ref-ers{font-family:var(--ff-dato);font-size:var(--f-xs);color:var(--tinta-3)}
 .grid{display:grid;gap:var(--e-4)}
 .g-kpi{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
@@ -1487,15 +1490,17 @@ post.hoy = ()=>postAccesos();
 
 /* ======================= SALIDAS ======================= */
 function grupoSalida(r){ return r.est==="APROBADA"?"asignar":r.est==="CONFIRMADA"||r.est==="EN_TERRENO"?"entregar":r.est==="FINALIZADA"?"finalizadas":r.est==="PEND_JEFE"||r.est==="OBSERVADA"?"jefatura":"otras"; }
+/* Título de Salidas con el cambio de vista Lista / Calendario al lado */
+const titModo=act=>`<div class="tit-modo"><h1>Salidas a terreno</h1><div class="seg" role="group" aria-label="Vista de las salidas"><button type="button" data-modo="lista" aria-pressed="${act==="lista"}">${ico("lista")}Lista</button><button type="button" data-modo="calendario" aria-pressed="${act==="calendario"}">${ico("calendario")}Calendario</button></div></div>`;
 function vSalidas(){
-  if(sel.salModo==="calendario") return vVisor().replace('<div class="cab-vista">',`<div class="barra-herr">${filtrosHTML([["lista","Lista"],["calendario","Calendario"]],"calendario","data-modo")}</div><div class="cab-vista">`);
+  if(sel.salModo==="calendario") return vVisor().replace('<h1>Visor de disponibilidad</h1>',titModo("calendario"));
   const g={}; RES.forEach(r=>{const k=grupoSalida(r); g[k]=(g[k]||0)+1});
   const q=sel.salQ.toLowerCase();
   const lista=RES.filter(r=>(sel.salFiltro==="todas"||grupoSalida(r)===sel.salFiltro)&&(!q||[r.id,r.pat,nom(r.sol),nom(r.cond),r.cometido,...r.destinos.map(d=>d.com)].join(" ").toLowerCase().includes(q)))
     .sort((a,b)=>sel.salFiltro==="finalizadas"||sel.salFiltro==="todas"?b.salida.localeCompare(a.salida):a.salida.localeCompare(b.salida));
-  return cab("Salidas a terreno","Todas las solicitudes en un solo lugar. Ábrelas para asignar, entregar o recibir el vehículo.","ERS §4.3 · GESAD «Salidas de vehículos»")+
+  return cab("Salidas a terreno","Todas las solicitudes en un solo lugar. Ábrelas para asignar, entregar o recibir el vehículo.","ERS §4.3 · GESAD «Salidas de vehículos»").replace('<h1>Salidas a terreno</h1>',titModo("lista"))+
   `<div class="barra-herr">${filtrosHTML([["asignar","Por asignar",g.asignar||0],["entregar","Entregar o recibir",g.entregar||0],["finalizadas","Finalizadas",g.finalizadas||0],["jefatura","En jefatura",g.jefatura||0],["todas","Todas",RES.length]],sel.salFiltro,"data-sf")}
-   <div class="filtros"><label class="sr" for="s-q">Buscar</label><input type="search" id="s-q" placeholder="Buscar ID, patente, persona o comuna" value="${esc(sel.salQ)}">${filtrosHTML([["lista","Lista"],["calendario","Calendario"]],"lista","data-modo")}</div></div>
+   <div class="filtros"><label class="sr" for="s-q">Buscar</label><input type="search" id="s-q" placeholder="Buscar ID, patente, persona o comuna" value="${esc(sel.salQ)}"></div></div>
   <section class="panel"><div class="tabla-env">${lista.length?`<table><thead><tr><th>ID</th><th>Estado</th><th>Salida</th><th>Regreso</th><th>Destino</th><th>Solicitante</th><th>Vehículo</th><th>Conductor</th></tr></thead><tbody>${lista.map(r=>`<tr class="clic" data-sal="${r.id}" tabindex="0"><td class="mono">${r.id}</td><td>${chipR(r.est)}</td><td class="num">${fCorta(r.salida)}</td><td class="num">${fCorta(r.regreso)}</td><td>${esc(r.destinos.map(d=>d.com).join(" · "))}</td><td>${esc(nom(r.sol))}</td><td>${r.pat?placa(r.pat):'<span class="tenue">Por asignar</span>'}</td><td>${r.cond?esc(nom(r.cond)):r.reqCond?'<span class="tenue">Del pool</span>':"—"}</td></tr>`).join("")}</tbody></table>`:vacio("Sin salidas en este grupo","Cambia el filtro o la búsqueda.")}</div></section>`;
 }
 post.salidas = ()=>{
