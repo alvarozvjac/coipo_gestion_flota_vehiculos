@@ -478,17 +478,19 @@ footer.pie-app{background:var(--verde-tinta);color:#e9f1e7;border-top:4px solid 
 .acceso:hover .a-pie .ico{transform:translateX(4px)}
 .acceso .a-cuenta{position:absolute;top:var(--e-4);right:var(--e-4);background:var(--boton);color:#fff;border-radius:var(--r-pill);font-weight:700;font-size:var(--f-s);padding:2px 10px}
 .acceso .a-cuenta.aviso{background:var(--st-malo)}
-/* Inicio del encargado: «Salidas a terreno» reúne asignar, entregar/recibir y calendario (05-11-2026) */
-.accesos.acc-3{grid-template-columns:repeat(3,minmax(0,1fr))}
-.acceso.ancho{grid-column:span 2}
+/* Inicio del encargado: «Salidas a terreno» reúne asignar, entregar/recibir y calendario (05-11-2026); tarjetas compactas en 4 columnas */
+.accesos.acc-4{grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--e-3)}
 .acceso.banda{grid-column:1/-1;display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"ico tit pie" "ico txt pie";column-gap:var(--e-4);align-items:center}
 .acceso.banda .a-ico{grid-area:ico;margin:0} .acceso.banda h3{grid-area:tit} .acceso.banda p{grid-area:txt} .acceso.banda .a-pie{grid-area:pie;margin:0;gap:var(--e-3)}
-.acceso .a-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--e-2);margin-top:var(--e-1)}
-.acceso .a-stats>span{display:flex;flex-direction:column;gap:2px;background:var(--sup);border:1px solid var(--linea);border-radius:var(--r-m);padding:var(--e-2) var(--e-3);font-size:var(--f-xs);color:var(--tinta-2)}
-.acceso .a-stats b{font-size:var(--f-2xl);font-weight:700;color:var(--tinta-3);line-height:1.1}
-.acceso .a-stats .con b{color:var(--verde-tinta)}
-@media (max-width:899.98px){ /* columna */ .accesos.acc-3{grid-template-columns:repeat(2,minmax(0,1fr))} }
-@media (max-width:559.98px){ /* teléfono */ .accesos.acc-3{grid-template-columns:minmax(0,1fr)} .acceso.ancho,.acceso.banda{grid-column:auto} .acceso.banda{display:flex} .acceso .a-stats b{font-size:var(--f-xl)} }
+.accesos .acceso{padding:var(--e-4);gap:var(--e-1);border-top-width:3px}
+.accesos .acceso .a-ico{width:40px;height:40px;border-radius:10px}
+.accesos .acceso .a-ico svg{width:22px;height:22px}
+.accesos .acceso h3{font-size:var(--f-m)}
+.accesos .acceso p{font-size:var(--f-xs);line-height:1.45}
+.accesos .acceso .a-pie{margin-top:var(--e-1);font-size:var(--f-xs)}
+.accesos .acceso .a-cuenta{top:var(--e-3);right:var(--e-3);font-size:var(--f-xs)}
+@media (max-width:899.98px){ /* columna */ .accesos.acc-4{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:559.98px){ /* teléfono */ .accesos.acc-4,.accesos.acc-5{grid-template-columns:minmax(0,1fr)} .acceso.banda{display:flex} }
 .pasos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;background:var(--sup);border:1px solid var(--linea);border-radius:8px;box-shadow:var(--s-1);margin-bottom:var(--e-6);counter-reset:paso}
 .paso{padding:var(--e-4) var(--e-5);position:relative;display:flex;gap:var(--e-3);align-items:flex-start}
 .paso+.paso{border-left:1px solid var(--linea)}
@@ -549,6 +551,35 @@ body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{d
   .hero p{font-size:var(--f-s);margin-bottom:0}
   .hero .fecha{display:none}
 }
+
+/* Inicio en una sola pantalla (05-11-2026): saludo compacto, tarjetas con el icono junto al título */
+main{padding-top:var(--e-4)}
+.hero{padding:var(--e-4) var(--e-5);margin-bottom:var(--e-4);align-items:center}
+.hero .eyebrow{display:none}
+.hero h1{font-size:1.5rem;margin-top:0}
+.hero p{font-size:var(--f-s);margin-top:2px;max-width:110ch}
+.hero .fecha{padding:var(--e-1) var(--e-3);font-size:var(--f-s)}
+.sec-tit{font-size:var(--f-l);margin-bottom:var(--e-3)}
+.accesos{margin-bottom:var(--e-4)}
+.accesos .acceso{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"ico tit" "txt txt" "pie pie";column-gap:var(--e-3);row-gap:var(--e-1);align-items:center;padding:var(--e-3) var(--e-4)}
+.accesos .acceso .a-ico{grid-area:ico;margin:0;width:36px;height:36px;border-radius:9px}
+.accesos .acceso .a-ico svg{width:20px;height:20px}
+.accesos .acceso h3{grid-area:tit;padding-right:36px}
+.accesos .acceso p{grid-area:txt;align-self:start}
+.accesos .acceso .a-pie{grid-area:pie;margin-top:2px}
+.accesos .acceso.banda{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"ico tit pie" "ico txt pie"}
+.ini-2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--e-5);align-items:start}
+.ini-2 .accesos{grid-template-columns:repeat(2,minmax(0,1fr))}
+.prox-sal{margin-bottom:var(--e-4)}
+.pasos{margin-bottom:var(--e-4)} .paso{padding:var(--e-3) var(--e-4)}
+.accesos.acc-5{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media (max-height:719.98px) and (min-width:900px){ /* portátil con poca altura: el inicio sigue cabiendo en una pantalla */
+  .franja .f-largo{display:none} .franja .f-corto{display:inline} .franja{padding-block:4px}
+  .nav button{min-height:40px;padding-block:var(--e-2)} .barra-in{padding-block:4px}
+  .hero{padding:var(--e-3) var(--e-5)} .accesos .acceso{padding:var(--e-2) var(--e-4)} main{padding-top:var(--e-3)}
+}
+@media (max-width:1399.98px){ /* ancho */ .accesos.acc-5{grid-template-columns:repeat(5,minmax(0,1fr))} }
+@media (max-width:899.98px){ /* columna */ .accesos.acc-5{grid-template-columns:repeat(2,minmax(0,1fr))} .ini-2{grid-template-columns:minmax(0,1fr);gap:0} }
 </style>
 
 </head><body>
@@ -1464,7 +1495,7 @@ function heroHTML(txt){
   return `<section class="hero"><div style="position:relative;z-index:1"><span class="eyebrow">${ico("escudo")}${esc(ROLES[rol].nombre)} · ${esc(p.cargo)}</span><h1>Hola, ${esc(nombre)}</h1><p>${txt}</p></div><span class="fecha">${ico("calendario")}${DS[HOY.getDay()]} ${fF(HOY)}</span></section>`;
 }
 function accesosHTML(lista){
-  return `<div class="accesos ${lista.some(a=>a.ancho)?"acc-3":""}">${lista.map((a,i)=>`<button type="button" class="acceso ${a.principal?"principal":""} ${a.ancho?"ancho":""} ${a.banda?"banda":""}" data-acc="${i}">${a.n&&!a.stats?`<span class="a-cuenta num ${a.aviso?"aviso":""}" aria-label="${a.n} ${esc(a.nl||"pendientes")}">${a.n}</span>`:""}<span class="a-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-${a.ico}"/></svg></span><h3>${a.t}</h3><p>${a.d}</p>${a.stats?`<span class="a-stats">${a.stats.map(([k,l])=>`<span class="${k?"con":""}"><b class="num">${k}</b>${l}</span>`).join("")}</span>`:""}<span class="a-pie">${a.cta}${ico("flecha")}</span></button>`).join("")}</div>`;
+  return `<div class="accesos ${lista===ACCESOS&&rol==="encargado"?"acc-4":lista===ACCESOS&&rol==="super"?"acc-4 acc-5":""}">${lista.map((a,i)=>`<button type="button" class="acceso ${a.principal?"principal":""} ${a.ancho?"ancho":""} ${a.banda?"banda":""}" data-acc="${i}">${a.n&&!a.stats?`<span class="a-cuenta num ${a.aviso?"aviso":""}" aria-label="${a.n} ${esc(a.nl||"pendientes")}">${a.n}</span>`:""}<span class="a-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-${a.ico}"/></svg></span><h3>${a.t}</h3><p>${a.d}</p>${a.stats?`<span class="a-stats">${a.stats.map(([k,l])=>`<span class="${k?"con":""}"><b class="num">${k}</b>${l}</span>`).join("")}</span>`:""}<span class="a-pie">${a.cta}${ico("flecha")}</span></button>`).join("")}</div>`;
 }
 let ACCESOS=[];
 function postAccesos(){ $("#vista").querySelectorAll("[data-acc]").forEach(b=>b.onclick=()=>{const a=ACCESOS[+b.dataset.acc]; if(a.pre) a.pre(); ir(a.v);}); }
@@ -1473,8 +1504,7 @@ function accesosGestion(){
   const cond=COND.map(c=>estCond(c).est), porVencer=cond.filter(e=>e==="POR"||e==="BLOQ").length;
   const est=VEH.map(estadoHoy), ne=k=>est.filter(e=>e===k).length, ven=vencimientos(), nov=novedadesPend().length, venc=ven.filter(a=>a.e==="VENC").length;
   ACCESOS=[
-   {v:"salidas",ico:"aprobar",t:"Salidas a terreno",d:"Asigna vehículo, tarjeta y conductor, registra la entrega y la recepción, y revisa la ocupación en el calendario.",cta:"Ir a salidas a terreno",n:n("APROBADA"),nl:"por asignar",principal:true,ancho:true,
-    stats:[[n("APROBADA"),"por asignar"],[n("CONFIRMADA"),"por entregar"],[n("EN_TERRENO"),"en terreno, por recibir"]],
+   {v:"salidas",ico:"aprobar",t:"Salidas a terreno",d:`${n("APROBADA")} por asignar, ${n("CONFIRMADA")} por entregar y ${n("EN_TERRENO")} en terreno por recibir. Incluye el calendario de la flota.`,cta:"Ir a salidas",n:n("APROBADA")+n("CONFIRMADA")+n("EN_TERRENO"),nl:"salidas por gestionar",aviso:n("APROBADA")+n("CONFIRMADA")+n("EN_TERRENO")>0,principal:true,
     pre:()=>{sel.salModo="lista"; sel.salFiltro=n("APROBADA")?"asignar":"entregar"}},
    {v:"flota",ico:"car",t:"Flota",d:`Hoy: ${ne("DISP")} disponibles de ${VEH.length}, ${ne("TERR")} en terreno, ${ne("TALL_P")+ne("TALL_C")} en taller y ${ne("MALO")+ne("EXCL")+ne("BAJA")} fuera de servicio o exclusivos.`,cta:"Ver vehículos",n:alertas,nl:"con alertas",aviso:alertas>0},
    {v:"mantenciones",ico:"medidor",t:"Mantenciones",d:(()=>{const s=mantStats(); return `${s.venc} ${s.venc===1?"vencida":"vencidas"}, ${s.prox} ${s.prox===1?"próxima":"próximas"} y ${s.ot} ${s.ot===1?"vehículo":"vehículos"} en taller. Crea y cierra órdenes de trabajo.`;})(),cta:"Ver mantenciones",n:mantStats().venc+mantStats().prox+mantStats().ot,nl:"mantenciones por atender",aviso:mantStats().venc>0},
@@ -1483,7 +1513,7 @@ function accesosGestion(){
    {v:"conductores",ico:"licencia",t:"Conductores",d:"Caución y licencia de cada conductor. Los bloqueados no se pueden asignar.",cta:"Ver padrón",n:porVencer,nl:"por vencer o bloqueados",aviso:porVencer>0},
    {v:"combustible",ico:"combustible",t:"Combustible y gastos",d:"Cargas, archivo COPEC, compras a granel y gastos por factura o boleta.",cta:"Ver combustible y gastos"},
    {v:"reportes",ico:"grafico",t:"Reportes",d:"Excel mensual o anual de kilómetros y costos, Tesorería y gastos por vehículo; operatividad y rendimiento.",cta:"Ver reportes"}];
-  if(rol==="super") ACCESOS.push({v:"config",ico:"config",t:"Configuración",d:"Catálogos, usuarios y accesos, cierre mensual y auditoría.",cta:"Configurar",banda:true});
+  if(rol==="super") ACCESOS.push({v:"config",ico:"config",t:"Configuración",d:"Catálogos, usuarios y accesos, cierre mensual y auditoría.",cta:"Configurar"});
   return ACCESOS;
 }
 function vInicio(){
@@ -1495,8 +1525,8 @@ function vInicio(){
              {v:"mis",ico:"lista",t:"Mis salidas",d:"Revisa en qué etapa está cada solicitud y abre la orden de salida.",cta:"Ver mis salidas",n:curso.length,nl:"en curso"}];
     if(obs) ACCESOS.push({v:"mis",ico:"alerta",t:"Solicitudes observadas",d:"Tu jefatura pidió corregir algo antes de aprobar.",cta:"Corregir",n:obs,nl:"observadas",aviso:true});
     return heroHTML("Desde aquí pides un vehículo para tus salidas a terreno y sigues cada solicitud hasta recibir la orden de salida.")+
-      `<h2 class="sec-tit">${ico("flecha")}¿Qué necesitas hacer?</h2>`+accesosHTML(ACCESOS)+
-      (prox?`<h2 class="sec-tit">${ico("car")}Tu próxima salida</h2><section class="panel" style="margin-bottom:var(--e-6)"><div class="cuerpo"><div class="tarea">${prox.pat?placa(prox.pat):""}<div class="q">${esc(prox.destinos.map(d=>d.com).join(" · "))} · ${fCorta(prox.salida)}<small>${prox.id} · conductor ${esc(nom(prox.cond))}</small></div><button class="btn" type="button" data-orden="${prox.id}">Ver orden de salida</button></div></div></section>`:"")+
+      `<div class="ini-2"><div><h2 class="sec-tit">${ico("flecha")}¿Qué necesitas hacer?</h2>`+accesosHTML(ACCESOS)+`</div>`+
+      (prox?`<div><h2 class="sec-tit">${ico("car")}Tu próxima salida</h2><section class="panel prox-sal"><div class="cuerpo"><div class="tarea">${prox.pat?placa(prox.pat):""}<div class="q">${esc(prox.destinos.map(d=>d.com).join(" · "))} · ${fCorta(prox.salida)}<small>${prox.id} · conductor ${esc(nom(prox.cond))}</small></div><button class="btn" type="button" data-orden="${prox.id}">Ver orden de salida</button></div></div></section></div>`:"")+`</div>`+
       `<h2 class="sec-tit">${ico("ruta")}Cómo funciona</h2><div class="pasos"><div class="paso"><b>1</b><span><strong>Solicitas</strong>Destino, fechas, cometido y acompañantes.</span></div><div class="paso"><b>2</b><span><strong>Tu jefatura aprueba</strong>Y define con qué presupuesto se imputa el gasto.</span></div><div class="paso"><b>3</b><span><strong>Se asigna el vehículo</strong>El encargado elige vehículo y conductor habilitado.</span></div><div class="paso"><b>4</b><span><strong>Recibes la orden</strong>La orden de salida para presentar al retirar el vehículo.</span></div></div>`;
   }
   if(rol==="jefatura"){
