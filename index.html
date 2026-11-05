@@ -201,7 +201,7 @@ td.mono,td.num{white-space:nowrap}
 .campo{display:flex;flex-direction:column;gap:var(--e-1);min-width:0}
 .campo>label,.campo>.lbl{font-weight:600;font-size:var(--f-s)}
 .campo .ayuda{font-size:var(--f-xs);color:var(--tinta-3)}
-input[type=text],input[type=number],input[type=datetime-local],input[type=search],select,textarea{min-height:40px;border:1px solid var(--linea-fuerte);border-radius:var(--r-m);background:var(--sup);padding:var(--e-2) var(--e-3);width:100%;transition:border-color var(--t-micro) var(--curva)}
+input[type=text],input[type=number],input[type=datetime-local],input[type=date],input[type=time],input[type=search],select,textarea{min-height:40px;border:1px solid var(--linea-fuerte);border-radius:var(--r-m);background:var(--sup);padding:var(--e-2) var(--e-3);width:100%;transition:border-color var(--t-micro) var(--curva)}
 textarea{min-height:76px;resize:vertical}
 input:disabled,select:disabled,input[readonly]{background:var(--sup-2);color:var(--tinta-2)}
 input[aria-invalid="true"],select[aria-invalid="true"],textarea[aria-invalid="true"]{border-color:var(--st-malo);border-width:2px}
@@ -430,7 +430,7 @@ main{padding-block:var(--e-6) var(--e-7)}
 legend{color:var(--verde-tinta);font-weight:600}
 fieldset{background:var(--sup);padding:var(--e-4) var(--e-5) var(--e-5)}
 .seccion-num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--boton);color:#fff;font-family:var(--ff-cuerpo);font-weight:700;margin-right:var(--e-2)}
-input[type=text],input[type=number],input[type=datetime-local],input[type=search],select,textarea{border-color:var(--linea-fuerte);border-radius:var(--r-m)}
+input[type=text],input[type=number],input[type=datetime-local],input[type=date],input[type=time],input[type=search],select,textarea{border-color:var(--linea-fuerte);border-radius:var(--r-m)}
 input:focus,select:focus,textarea:focus{border-color:var(--verde-acento);box-shadow:0 0 0 3px var(--verde-tinte-2);outline:none}
 input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--foco-color);outline-offset:2px} /* UI-9 y UI-10: el foco de los campos es el mismo token que el del resto */
 th{background:var(--sup-2);color:var(--tinta-2)}
@@ -802,7 +802,7 @@ function condApto(cid, r, ignorar){
       conductores POOL con caución y licencia vigentes al regreso y sin otra salida que se cruce.
    Sólo avisa: la solicitud se puede enviar igual y el encargado decide al asignar. */
 const REQ_SOL=/^(Capacidad|Requiere 4x4|Sin espacio de carga)/;
-const CAMPO_ERR={"Faltan las fechas":"f-sal","Fechas incoherentes":"f-reg","Salida en el pasado":"f-sal","Faltan los kilómetros":"f-km","Destino incompleto":"f-dest","Capacidad excedida":"f-pas","Falta conductor":"f-cond","Conductor no habilitado":"f-cond","Revisa los acompañantes":"f-pas","Cometido incompleto":"f-com"};
+const CAMPO_ERR={"Falta la fecha de salida":"f-sal","Falta la hora de salida":"f-sal-h","Falta la fecha de regreso":"f-reg","Falta la hora de regreso":"f-reg-h","Fechas incoherentes":"f-reg","Salida en el pasado":"f-sal","Faltan los kilómetros":"f-km","Destino incompleto":"f-dest","Capacidad excedida":"f-pas","Falta conductor":"f-cond","Conductor no habilitado":"f-cond","Revisa los acompañantes":"f-pas","Cometido incompleto":"f-com"};
 function disponibilidad(r){
   const region="Oficina Central";
   const pool=VEH.filter(v=>v.modalidad.startsWith("Pool")&&regionBase(v)===region);
@@ -945,8 +945,10 @@ function vNueva(){
      <div class="campo"><label for="f-jefe">Jefatura que autoriza el cometido</label><select id="f-jefe">${jefes.map(j=>`<option value="${j.id}" ${j.id===b.jefe?"selected":""}>${esc(j.nom)} · ${esc(j.cargo)}</option>`).join("")}</select></div>
    </div></fieldset>
    <fieldset><legend><span class="seccion-num">2</span>Programación del viaje</legend><div class="campos">
-     <div class="campo"><label for="f-sal">Salida</label><input type="datetime-local" id="f-sal" value="${b.salida}"></div>
-     <div class="campo"><label for="f-reg">Regreso estimado</label><input type="datetime-local" id="f-reg" value="${b.regreso}"></div>
+     <div class="campo"><label for="f-sal">Fecha de salida</label><input type="date" id="f-sal" value="${b._salF??(b.salida||"").slice(0,10)}"></div>
+     <div class="campo"><label for="f-sal-h">Hora de salida</label><input type="time" id="f-sal-h" step="900" value="${b._salH??(b.salida||"").slice(11,16)}"><span class="ayuda">Por ejemplo, 08:00.</span></div>
+     <div class="campo"><label for="f-reg">Fecha de regreso</label><input type="date" id="f-reg" value="${b._regF??(b.regreso||"").slice(0,10)}"></div>
+     <div class="campo"><label for="f-reg-h">Hora estimada de regreso</label><input type="time" id="f-reg-h" step="900" value="${b._regH??(b.regreso||"").slice(11,16)}"><span class="ayuda">Hora aproximada de llegada a la unidad.</span></div>
      <div class="campo ancho"><span class="lbl">Duración calculada</span><span id="f-dur" class="num"></span></div>
      <div class="campo ancho" id="f-disp" aria-live="polite"></div>
    </div></fieldset>
@@ -979,7 +981,7 @@ post.nueva = ()=>{
     ${b.destinos.length>1?`<button class="btn peligro chico" type="button" data-quitar="${i}" aria-label="Quitar destino ${i+1}">Quitar</button>`:"<span></span>"}</div>`}).join("")};
   const pintarPas=()=>{$("#f-pas").innerHTML=b.pasList.map((x,i)=>`<div class="persona"><input type="text" class="rut" data-p="${i}" data-k="rut" value="${esc(x.rut)}" placeholder="12.345.678-9" maxlength="12" aria-label="RUT acompañante ${i+1}"><input type="text" data-p="${i}" data-k="nom" value="${esc(x.nom)}" placeholder="Nombre completo" aria-label="Nombre acompañante ${i+1}"><button class="btn peligro chico" type="button" data-qpas="${i}" aria-label="Quitar acompañante ${i+1}">Quitar</button></div>`).join("")||`<p class="tenue peq">Sin acompañantes.</p>`};
   const pasValidos=()=>b.pasList.filter(x=>x.rut||x.nom);
-  const leer=()=>{b.jefe=$("#f-jefe").value;b.salida=$("#f-sal").value;b.regreso=$("#f-reg").value;b.cometido=$("#f-com").value;b.km=+$("#f-km").value||0;b.tipo=$("#f-tipo").value;b.t4=$("#f-4x4").checked;b.carga=$("#f-carga").checked;b.reqCond=document.querySelector('input[name="f-rc"]:checked').value==="si";b.cond=b.reqCond?"":$("#f-cond").value;b.externos=0;b.extJust="";};
+  const leer=()=>{b.jefe=$("#f-jefe").value;b._salF=$("#f-sal").value;b._salH=$("#f-sal-h").value;b._regF=$("#f-reg").value;b._regH=$("#f-reg-h").value;b.salida=b._salF&&b._salH?b._salF+"T"+b._salH:"";b.regreso=b._regF&&b._regH?b._regF+"T"+b._regH:"";b.cometido=$("#f-com").value;b.km=+$("#f-km").value||0;b.tipo=$("#f-tipo").value;b.t4=$("#f-4x4").checked;b.carga=$("#f-carga").checked;b.reqCond=document.querySelector('input[name="f-rc"]:checked').value==="si";b.cond=b.reqCond?"":$("#f-cond").value;b.externos=0;b.extJust="";};
   const revisar=()=>{
     leer(); $("#w-cond").hidden=b.reqCond;
     const pv=pasValidos(), relOk=false;
@@ -988,7 +990,7 @@ post.nueva = ()=>{
     $("#f-dur").textContent = dur>0?`${Math.floor(dur/24)} ${Math.floor(dur/24)===1?"día":"días"} y ${Math.round(dur%24)} horas de ocupación del vehículo`:"—";
     $("#f-tot").textContent = tot+" (tú, conductor y acompañantes)";
     const out=[]; const reg=(c,t,d)=>out.push(`<div class="regla ${c}"><span class="ico" aria-hidden="true">${{ok:"✓",av:"!",bl:"✕",inf:"i"}[c]}</span><div><b>${t}</b><span>${d}</span></div></div>`);
-    if(!b.salida||!b.regreso) reg("bl","Faltan las fechas",!b.salida&&!b.regreso?"Indica la fecha y hora de salida y de regreso.":!b.salida?"Indica la fecha y hora de salida.":"Indica la fecha y hora de regreso."); else if(!(dur>0)) reg("bl","Fechas incoherentes","El regreso debe ser posterior a la salida."); else if(F(b.salida)<HOY) reg("bl","Salida en el pasado","La fecha de salida es anterior a hoy."); else reg("ok","Fechas válidas",`Salida ${fCorta(b.salida)} · regreso ${fCorta(b.regreso)}.`);
+    if(!b.salida||!b.regreso){ if(!b._salF) reg("bl","Falta la fecha de salida","Indica la fecha de salida."); if(!b._salH) reg("bl","Falta la hora de salida","Indica la hora de salida."); if(!b._regF) reg("bl","Falta la fecha de regreso","Indica la fecha de regreso."); if(!b._regH) reg("bl","Falta la hora de regreso","Indica la hora estimada de regreso."); } else if(!(dur>0)) reg("bl","Fechas incoherentes","El regreso debe ser posterior a la salida."); else if(F(b.salida)<HOY) reg("bl","Salida en el pasado","La fecha de salida es anterior a hoy."); else reg("ok","Fechas válidas",`Salida ${fCorta(b.salida)} · regreso ${fCorta(b.regreso)}.`);
     const destOk=b.destinos.every(d=>d.reg&&d.prov&&d.com&&d.lug&&(d.lug!==OTRA||d.otro.trim()));
     b.km>0? reg("ok","Kilómetros aproximados",`${km(b.km)} km en total`+((F(b.regreso)-F(b.salida))>0?` · ${km(b.km/Math.max(1,Math.ceil((F(b.regreso)-F(b.salida))/DIA)))} km por día`:"")) : reg("bl","Faltan los kilómetros","Indica la distancia total estimada del viaje (ida, desplazamientos internos y regreso).");
     destOk? reg("ok","Destinos",b.destinos.map(d=>d.com).join(" · ")) : reg("bl","Destino incompleto","Completa región, provincia, comuna y localidad de cada destino.");
@@ -1048,7 +1050,6 @@ post.nueva = ()=>{
       const m=document.createElement("span"); m.className="err-campo"; m.id=k+"-err"; m.innerHTML=`<span aria-hidden="true">✕</span><span>${L.map(x=>x.d||x.t).join(" ")}</span>`; campo.appendChild(m);
       const foco=["INPUT","SELECT","TEXTAREA"].includes(el.tagName)?[el]:[...el.querySelectorAll("input,select")].filter(i=>k==="f-pas"?(!!i.value&&L.some(x=>x.d.includes(i.value))):!i.value);
       foco.forEach(i=>{i.setAttribute("aria-invalid","true"); i.setAttribute("aria-describedby",k+"-err");}); });
-    if(porCampo["f-sal"]&&!b.regreso){ const r=$("#f-reg"); r.setAttribute("aria-invalid","true"); r.setAttribute("aria-describedby","f-sal-err"); }
   }
   function mostrarFaltan(){ const fl=$("#f-faltan"), L=b._errs||[]; if(!L.length){ fl.hidden=true; fl.innerHTML=""; return; } fl.hidden=false; fl.innerHTML=`<b>No se puede enviar: ${L.length===1?"falta completar un campo":"faltan "+L.length+" campos por completar"}.</b> Están marcados en rojo.`; }
   f.addEventListener("submit",e=>{e.preventDefault();leer();revisar();
