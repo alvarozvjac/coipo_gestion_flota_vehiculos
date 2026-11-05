@@ -661,6 +661,19 @@ footer.pie-app span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;mi
 .cuenta-tit{display:inline-block;min-width:1.6em;padding:0 .45em;margin-left:var(--e-2);border-radius:var(--r-pill);background:var(--st-malo-bg);color:var(--st-malo);font-size:var(--f-s);vertical-align:middle;text-align:center}
 #decision{box-shadow:none}
 @media (max-width:899.98px){ /* columna */ .mis-tabla th:nth-child(6),.mis-tabla td:nth-child(6){display:none} }
+/* Inicio de la jefatura: panel de mando */
+.jef-2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--e-4);margin-top:var(--e-4)}
+.jef-2 .panel>header{padding-block:var(--e-2)}
+.mini-lista{list-style:none;margin:0;padding:0}
+.mini-fila{display:flex;align-items:center;gap:var(--e-3);padding:6px var(--e-4);border-top:1px solid var(--linea)}
+.mini-fila:first-child{border-top:0}
+.mini-dato{flex:1;min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:var(--e-3);row-gap:0;align-items:baseline;text-align:left;background:none;border:0;padding:2px 0;font:inherit;color:inherit;cursor:pointer}
+.mini-dato .tenue{grid-column:2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini-dato:hover b{text-decoration:underline}
+.mini-mas{margin:0 var(--e-4) var(--e-2)} .mini-vacio{padding:var(--e-3) var(--e-4);color:var(--tinta-3);margin:0}
+.jef-mes{display:flex;flex-wrap:wrap;gap:var(--e-2) var(--e-5);align-items:baseline;margin-top:var(--e-4);padding:var(--e-2) var(--e-4);background:var(--sup);border:1px solid var(--linea);border-radius:var(--r-l);font-size:var(--f-s);color:var(--tinta-2)}
+.jef-mes>b{color:var(--verde-tinta)} .jef-mes span b{color:var(--tinta);font-size:var(--f-m);margin-right:4px}
+@media (max-width:899.98px){ /* columna */ .jef-2{grid-template-columns:minmax(0,1fr)} }
 </style>
 
 </head><body>
@@ -1716,16 +1729,35 @@ function vInicio(){
       `<p class="guia"><b>Cómo funciona:</b><span><i>1</i>Solicitas</span><span aria-hidden="true">→</span><span><i>2</i>Tu jefatura aprueba</span><span aria-hidden="true">→</span><span><i>3</i>Se asigna el vehículo</span><span aria-hidden="true">→</span><span><i>4</i>Recibes la orden de salida</span></p>`;
   }
   if(rol==="jefatura"){
-    const pend=RES.filter(r=>r.est==="PEND_JEFE"&&r.jefe===yo), eq=RES.filter(r=>r.jefe===yo);
-    ACCESOS=[{v:"bandeja",ico:"aprobar",t:"Aprobar solicitudes",d:"Define la imputación presupuestaria y aprueba, observa o rechaza cada solicitud de tu equipo.",cta:"Revisar solicitudes",n:pend.length,nl:"por aprobar",principal:true},
-             {v:"equipo",ico:"equipo",t:"Salidas de mi equipo",d:"Historial y estado de las salidas que autorizaste.",cta:"Ver historial",n:eq.filter(r=>["CONFIRMADA","EN_TERRENO"].includes(r.est)).length,nl:"en curso"}];
+    // Panel de mando de la jefatura (05-11-2026): pendientes, equipo en terreno, próximas salidas y cifras del mes.
+    const eq=RES.filter(r=>r.jefe===yo), pend=eq.filter(r=>r.est==="PEND_JEFE").sort((a,b)=>a.fSol.localeCompare(b.fSol));
+    const terr=eq.filter(r=>r.est==="EN_TERRENO"), fin7=new Date(HOY.getTime()+7*DIA);
+    const prox=eq.filter(r=>["APROBADA","CONFIRMADA"].includes(r.est)&&F(r.salida)>=HOY&&F(r.salida)<fin7);
+    const semana=eq.filter(r=>["PEND_JEFE","OBSERVADA","APROBADA","CONFIRMADA","EN_TERRENO"].includes(r.est)&&F(r.regreso)>=HOY&&F(r.salida)<fin7).sort((a,b)=>a.salida.localeCompare(b.salida));
+    const dias=x=>Math.max(0,Math.floor((HOY-F(x))/DIA)), hace=d=>d===0?"hoy":d===1?"hace 1 día":`hace ${d} días`;
+    const mes=eq.filter(r=>r.est==="FINALIZADA"&&r.bit?.sal&&F(r.bit.sal).getMonth()===HOY.getMonth()&&F(r.bit.sal).getFullYear()===HOY.getFullYear());
+    const kmMes=mes.reduce((a,r)=>a+(r.bit.odoR?r.bit.odoR-r.bit.odoS:0),0), diasMes=mes.reduce((a,r)=>a+Math.max(1,Math.ceil((F(r.bit.reg||r.regreso)-F(r.bit.sal))/DIA)),0);
+    const pers=mes.reduce((a,r)=>a+pasajeros(r),0), folios=[...new Set(mes.map(r=>r.cc).filter(Boolean))];
+    ACCESOS=[{v:"bandeja",ico:"aprobar",t:"Por aprobar",d:pend.length?`La más antigua espera desde ${hace(dias(pend[0].fSol))}.`:"No hay solicitudes esperando tu decisión.",cta:"Revisar",n:pend.length,nl:"por aprobar",aviso:true,principal:true},
+             {v:"equipo",ico:"ruta",t:"En terreno hoy",d:terr.length?terr.map(r=>`${esc(nom(r.sol).split(" ")[0])} · ${esc(r.destinos[0]?.com||"")}, regresa ${fCorta(r.regreso)}`).join("<br>"):"Nadie de tu equipo está en terreno.",cta:"Ver salidas",n:terr.length,nl:"en terreno"},
+             {v:"equipo",ico:"calendario",t:"Próximos 7 días",d:prox.length?`${prox.length} ${prox.length===1?"salida aprobada":"salidas aprobadas"}; la primera el ${fCorta(prox.sort((a,b)=>a.salida.localeCompare(b.salida))[0].salida)}.`:"Sin salidas aprobadas para la próxima semana.",cta:"Ver salidas",n:prox.length,nl:"próximas"},
+             {v:"equipo",ico:"equipo",t:"Salidas de mi equipo",d:"Historial de lo que autorizaste y Excel mensual o anual.",cta:"Ver historial"}];
+    const filaPend=r=>`<li class="mini-fila"><button type="button" class="mini-dato" data-revisar="${r.id}"><span class="mono peq">${r.id}</span><b>${esc(nom(r.sol))}</b><span class="tenue peq">${fCorta(r.salida)} · ${esc(r.destinos.map(d=>d.com).join(" · "))} · ${pasajeros(r)} personas · solicitada ${hace(dias(r.fSol))}</span></button><button class="btn chico" type="button" data-revisar="${r.id}">Revisar</button></li>`;
+    const filaSem=r=>`<li class="mini-fila"><button type="button" class="mini-dato" data-sal="${r.id}"><span class="mono peq">${fCorta(r.salida)}</span><b>${esc(nom(r.sol))}</b><span class="tenue peq">${esc(r.destinos.map(d=>d.com).join(" · "))}${r.pat?" · "+esc(r.pat):""}</span></button>${chipR(r.est)}</li>`;
+    const nPend=3, nSem=3;
     return heroHTML(pend.length?`Tienes ${pend.length} ${pend.length===1?"solicitud":"solicitudes"} de tu equipo esperando tu aprobación.`:"No tienes solicitudes pendientes de aprobación.")+
-      `<h2 class="sec-tit">${ico("flecha")}¿Qué necesitas hacer?</h2>`+accesosHTML(ACCESOS)+
-      "";
+      `<div class="accesos acc-n acc-jef" style="--n:4">${accesosHTML(ACCESOS).replace(/^<div[^>]*>/,"").replace(/<\/div>$/,"")}</div>
+      <div class="jef-2">
+       <section class="panel"><header><h2>Por aprobar</h2><span class="sub">${pend.length?`${pend.length} ${pend.length===1?"solicitud":"solicitudes"}, la más antigua primero`:"Bandeja al día"}</span></header>
+        ${pend.length?`<ul class="mini-lista">${pend.slice(0,nPend).map(filaPend).join("")}</ul>${pend.length>nPend?`<button class="link-edit mini-mas" type="button" data-ir="bandeja">Ver las ${pend.length}</button>`:""}`:`<p class="mini-vacio">No hay solicitudes esperando tu decisión.</p>`}</section>
+       <section class="panel"><header><h2>Mi equipo esta semana</h2><span class="sub">${fCorta(HOY).split(" ").slice(0,2).join(" ")} al ${fF(new Date(fin7.getTime()-DIA)).slice(0,5)}</span></header>
+        ${semana.length?`<ul class="mini-lista">${semana.slice(0,nSem).map(filaSem).join("")}</ul>${semana.length>nSem?`<button class="link-edit mini-mas" type="button" data-ir="equipo">Ver las ${semana.length}</button>`:""}`:`<p class="mini-vacio">Sin salidas de tu equipo en los próximos 7 días.</p>`}</section>
+      </div>
+      <p class="jef-mes"><b>${MESES[HOY.getMonth()][0].toUpperCase()+MESES[HOY.getMonth()].slice(1)} ${HOY.getFullYear()} · tu equipo</b><span><b class="num">${mes.length}</b> ${mes.length===1?"salida realizada":"salidas realizadas"}</span><span><b class="num">${km(kmMes)}</b> km recorridos</span><span><b class="num">${diasMes}</b> días en terreno</span><span><b class="num">${pers}</b> personas trasladadas</span><span>Folio${folios.length===1?"":"s"}: <b class="mono">${folios.join(", ")||"—"}</b></span></p>`;
   }
   return "";
 }
-post.inicio = ()=>postAccesos();
+post.inicio = ()=>{ postAccesos(); $("#vista").querySelectorAll("[data-revisar]").forEach(b=>b.onclick=e=>{e.stopPropagation(); abrirDecision(b.dataset.revisar)}); };
 post.hoy = ()=>postAccesos();
 
 /* ======================= SALIDAS ======================= */
