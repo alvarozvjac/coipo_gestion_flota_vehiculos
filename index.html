@@ -478,6 +478,17 @@ footer.pie-app{background:var(--verde-tinta);color:#e9f1e7;border-top:4px solid 
 .acceso:hover .a-pie .ico{transform:translateX(4px)}
 .acceso .a-cuenta{position:absolute;top:var(--e-4);right:var(--e-4);background:var(--boton);color:#fff;border-radius:var(--r-pill);font-weight:700;font-size:var(--f-s);padding:2px 10px}
 .acceso .a-cuenta.aviso{background:var(--st-malo)}
+/* Inicio del encargado: «Salidas a terreno» reúne asignar, entregar/recibir y calendario (05-11-2026) */
+.accesos.acc-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.acceso.ancho{grid-column:span 2}
+.acceso.banda{grid-column:1/-1;display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"ico tit pie" "ico txt pie";column-gap:var(--e-4);align-items:center}
+.acceso.banda .a-ico{grid-area:ico;margin:0} .acceso.banda h3{grid-area:tit} .acceso.banda p{grid-area:txt} .acceso.banda .a-pie{grid-area:pie;margin:0;gap:var(--e-3)}
+.acceso .a-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--e-2);margin-top:var(--e-1)}
+.acceso .a-stats>span{display:flex;flex-direction:column;gap:2px;background:var(--sup);border:1px solid var(--linea);border-radius:var(--r-m);padding:var(--e-2) var(--e-3);font-size:var(--f-xs);color:var(--tinta-2)}
+.acceso .a-stats b{font-size:var(--f-2xl);font-weight:700;color:var(--tinta-3);line-height:1.1}
+.acceso .a-stats .con b{color:var(--verde-tinta)}
+@media (max-width:899.98px){ /* columna */ .accesos.acc-3{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:559.98px){ /* teléfono */ .accesos.acc-3{grid-template-columns:minmax(0,1fr)} .acceso.ancho,.acceso.banda{grid-column:auto} .acceso.banda{display:flex} .acceso .a-stats b{font-size:var(--f-xl)} }
 .pasos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;background:var(--sup);border:1px solid var(--linea);border-radius:8px;box-shadow:var(--s-1);margin-bottom:var(--e-6);counter-reset:paso}
 .paso{padding:var(--e-4) var(--e-5);position:relative;display:flex;gap:var(--e-3);align-items:flex-start}
 .paso+.paso{border-left:1px solid var(--linea)}
@@ -1453,7 +1464,7 @@ function heroHTML(txt){
   return `<section class="hero"><div style="position:relative;z-index:1"><span class="eyebrow">${ico("escudo")}${esc(ROLES[rol].nombre)} · ${esc(p.cargo)}</span><h1>Hola, ${esc(nombre)}</h1><p>${txt}</p></div><span class="fecha">${ico("calendario")}${DS[HOY.getDay()]} ${fF(HOY)}</span></section>`;
 }
 function accesosHTML(lista){
-  return `<div class="accesos">${lista.map((a,i)=>`<button type="button" class="acceso ${a.principal?"principal":""}" data-acc="${i}">${a.n?`<span class="a-cuenta num ${a.aviso?"aviso":""}" aria-label="${a.n} ${esc(a.nl||"pendientes")}">${a.n}</span>`:""}<span class="a-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-${a.ico}"/></svg></span><h3>${a.t}</h3><p>${a.d}</p><span class="a-pie">${a.cta}${ico("flecha")}</span></button>`).join("")}</div>`;
+  return `<div class="accesos ${lista.some(a=>a.ancho)?"acc-3":""}">${lista.map((a,i)=>`<button type="button" class="acceso ${a.principal?"principal":""} ${a.ancho?"ancho":""} ${a.banda?"banda":""}" data-acc="${i}">${a.n&&!a.stats?`<span class="a-cuenta num ${a.aviso?"aviso":""}" aria-label="${a.n} ${esc(a.nl||"pendientes")}">${a.n}</span>`:""}<span class="a-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-${a.ico}"/></svg></span><h3>${a.t}</h3><p>${a.d}</p>${a.stats?`<span class="a-stats">${a.stats.map(([k,l])=>`<span class="${k?"con":""}"><b class="num">${k}</b>${l}</span>`).join("")}</span>`:""}<span class="a-pie">${a.cta}${ico("flecha")}</span></button>`).join("")}</div>`;
 }
 let ACCESOS=[];
 function postAccesos(){ $("#vista").querySelectorAll("[data-acc]").forEach(b=>b.onclick=()=>{const a=ACCESOS[+b.dataset.acc]; if(a.pre) a.pre(); ir(a.v);}); }
@@ -1462,17 +1473,17 @@ function accesosGestion(){
   const cond=COND.map(c=>estCond(c).est), porVencer=cond.filter(e=>e==="POR"||e==="BLOQ").length;
   const est=VEH.map(estadoHoy), ne=k=>est.filter(e=>e===k).length, ven=vencimientos(), nov=novedadesPend().length, venc=ven.filter(a=>a.e==="VENC").length;
   ACCESOS=[
-   {v:"salidas",ico:"aprobar",t:"Asignar vehículos",d:"Solicitudes aprobadas por la jefatura que esperan vehículo y conductor.",cta:"Ir a asignar",n:n("APROBADA"),nl:"por asignar",principal:true,pre:()=>{sel.salFiltro="asignar";sel.salModo="lista"}},
-   {v:"salidas",ico:"llave",t:"Entregar y recibir",d:"Vehículos que salen o regresan: odómetro, combustible y documentación del vehículo.",cta:"Ver salidas",n:n("CONFIRMADA")+n("EN_TERRENO"),nl:"en curso",pre:()=>{sel.salFiltro="entregar";sel.salModo="lista"}},
-   {v:"salidas",ico:"calendario",t:"Calendario de la flota",d:"Ocupación de cada vehículo día a día, con reservas y mantenciones.",cta:"Abrir calendario",pre:()=>{sel.salModo="calendario"}},
+   {v:"salidas",ico:"aprobar",t:"Salidas a terreno",d:"Asigna vehículo, tarjeta y conductor, registra la entrega y la recepción, y revisa la ocupación en el calendario.",cta:"Ir a salidas a terreno",n:n("APROBADA"),nl:"por asignar",principal:true,ancho:true,
+    stats:[[n("APROBADA"),"por asignar"],[n("CONFIRMADA"),"por entregar"],[n("EN_TERRENO"),"en terreno, por recibir"]],
+    pre:()=>{sel.salModo="lista"; sel.salFiltro=n("APROBADA")?"asignar":"entregar"}},
    {v:"flota",ico:"car",t:"Flota",d:`Hoy: ${ne("DISP")} disponibles de ${VEH.length}, ${ne("TERR")} en terreno, ${ne("TALL_P")+ne("TALL_C")} en taller y ${ne("MALO")+ne("EXCL")+ne("BAJA")} fuera de servicio o exclusivos.`,cta:"Ver vehículos",n:alertas,nl:"con alertas",aviso:alertas>0},
    {v:"mantenciones",ico:"medidor",t:"Mantenciones",d:(()=>{const s=mantStats(); return `${s.venc} ${s.venc===1?"vencida":"vencidas"}, ${s.prox} ${s.prox===1?"próxima":"próximas"} y ${s.ot} ${s.ot===1?"vehículo":"vehículos"} en taller. Crea y cierra órdenes de trabajo.`;})(),cta:"Ver mantenciones",n:mantStats().venc+mantStats().prox+mantStats().ot,nl:"mantenciones por atender",aviso:mantStats().venc>0},
    {v:"novedades",ico:"taller",t:"Novedades mecánicas",d:"Desperfectos reportados al recibir los vehículos, para crear la orden de trabajo.",cta:"Ver novedades",n:nov,nl:"novedades por atender",aviso:nov>0},
    {v:"vencimientos",ico:"alerta",t:"Próximos vencimientos",d:`Revisión técnica, gases, SOAP, permiso de circulación y póliza. ${venc} vencidos y ${ven.length-venc} por vencer en 30 días.`,cta:"Ver vencimientos",n:ven.length,nl:"vencimientos",aviso:venc>0},
    {v:"conductores",ico:"licencia",t:"Conductores",d:"Caución y licencia de cada conductor. Los bloqueados no se pueden asignar.",cta:"Ver padrón",n:porVencer,nl:"por vencer o bloqueados",aviso:porVencer>0},
    {v:"combustible",ico:"combustible",t:"Combustible y gastos",d:"Cargas, archivo COPEC, compras a granel y gastos por factura o boleta.",cta:"Ver combustible y gastos"},
-   {v:"reportes",ico:"grafico",t:"Reportes",d:"Kilómetros, rendimiento, operatividad y el Excel mensual o anual para Tesorería.",cta:"Ver reportes"}];
-  if(rol==="super") ACCESOS.push({v:"config",ico:"config",t:"Configuración",d:"Catálogos, usuarios y accesos, cierre mensual y auditoría.",cta:"Configurar"});
+   {v:"reportes",ico:"grafico",t:"Reportes",d:"Excel mensual o anual de kilómetros y costos, Tesorería y gastos por vehículo; operatividad y rendimiento.",cta:"Ver reportes"}];
+  if(rol==="super") ACCESOS.push({v:"config",ico:"config",t:"Configuración",d:"Catálogos, usuarios y accesos, cierre mensual y auditoría.",cta:"Configurar",banda:true});
   return ACCESOS;
 }
 function vInicio(){
