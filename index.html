@@ -122,8 +122,10 @@ main{padding-block:var(--e-5) var(--e-7);padding-left:var(--gutter-l);padding-ri
 .g-2{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
 .g-2b{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 .g-form{grid-template-columns:minmax(0,1.7fr) minmax(280px,1fr);align-items:start}
+.g-form.rev-izq{grid-template-columns:minmax(280px,1fr) minmax(0,1.7fr)}
+.rev-panel{position:sticky;top:120px}
 @media (max-width:767.98px){ /* tableta */ .barra{position:relative;top:0} .perfil{margin-left:0} }
-@media (max-width:899.98px){ /* columna */ .g-2,.g-2b,.g-form{grid-template-columns:minmax(0,1fr)} }
+@media (max-width:899.98px){ /* columna */ .g-2,.g-2b,.g-form,.g-form.rev-izq{grid-template-columns:minmax(0,1fr)} .g-form.rev-izq>.rev-panel{order:2;position:static} }
 .panel{background:var(--sup);border:1px solid var(--linea);border-radius:var(--r-m);min-width:0}
 .panel>header{display:flex;align-items:center;justify-content:space-between;gap:var(--e-3);padding:var(--e-3) var(--e-4);border-bottom:1px solid var(--linea);flex-wrap:wrap}
 .panel>header h2{font-size:var(--f-l);font-weight:600}
@@ -790,6 +792,25 @@ function condApto(cid, r, ignorar){
   if(choque) motivos.push("Ocupado en "+choque.id);
   return {ok:!motivos.length,motivos};
 }
+/* ---------- Disponibilidad al solicitar (flujo en el documento de observaciones) ----------
+   1) Fechas válidas y futuras → 2) vehículos del pool de la región del solicitante →
+   3) libres en esas fechas: sin reserva confirmada o en terreno que se cruce, fuera de taller,
+      de baja, de asignación exclusiva y de traspaso, con documentos vigentes al regreso →
+   4) de esos, los que cumplen capacidad, 4x4 y carga → 5) si pide conductor del pool:
+      conductores POOL con caución y licencia vigentes al regreso y sin otra salida que se cruce.
+   Sólo avisa: la solicitud se puede enviar igual y el encargado decide al asignar. */
+const REQ_SOL=/^(Capacidad|Requiere 4x4|Sin espacio de carga)/;
+function disponibilidad(r){
+  const region="Oficina Central";
+  const pool=VEH.filter(v=>v.modalidad.startsWith("Pool")&&regionBase(v)===region);
+  const ev=pool.map(v=>({v,a:vehApto(v,{...r,id:"tmp",pat:null})}));
+  const libres=ev.filter(x=>x.a.motivos.every(m=>REQ_SOL.test(m)));
+  const cumplen=libres.filter(x=>x.a.ok);
+  const cuenta={}; ev.filter(x=>!libres.includes(x)).forEach(x=>{const m=x.a.motivos.find(m=>!REQ_SOL.test(m))||""; const k=/^Reservado/.test(m)?"reservados":/taller/i.test(m)?"en taller":/vencid/.test(m)?"con documentos vencidos":/Traspasado/.test(m)?"traspasados":/servicio|baja/i.test(m)?"fuera de servicio o de baja":/exclusiva/i.test(m)?"de asignación exclusiva":"no habilitados"; cuenta[k]=(cuenta[k]||0)+1;});
+  const faltas=[...new Set(libres.flatMap(x=>x.a.motivos.map(m=>/^Capacidad/.test(m)?`capacidad para ${pasajeros(r)} personas`:/4x4/.test(m)?"tracción 4x4":"espacio de carga")))].join(", ");
+  const cp=COND.filter(c=>c.tipo==="POOL"), cl=cp.filter(c=>condApto(c.id,{...r,id:"tmp",pat:null}).ok);
+  return {region,pool:pool.length,libres:libres.length,cumplen:cumplen.length,resumen:Object.entries(cuenta).map(([k,n])=>`${n} ${k}`).join(", "),faltas,condPool:cp.length,condLibres:cl.length};
+}
 /* ---------- Traspasos entre regiones (sólo administrador nacional, ERS §3.2) ---------- */
 let TRASPASOS=[]; let nTrasp=1;
 const regionBase=v=>v.region||"Oficina Central";
@@ -912,10 +933,11 @@ function vNueva(){
   const regionSol = "Oficina Central";
   const habil = COND.filter(c=>c.tipo==="HABILITADO" && (c.region||"Oficina Central")===regionSol && condApto(c.id,{...b,id:"tmp",pas:[],req:{},salida:b.salida||iso(HOY),regreso:b.regreso||iso(HOY)},null).ok);
   const condOpts=(selId)=>`<option value="">— Seleccionar —</option>`+habil.map(c=>`<option value="${c.id}" ${c.id===selId?"selected":""}>${esc(nom(c.id))} · licencia ${c.clases.join("/")}</option>`).join("");
-  return cab("Nueva solicitud de vehículo","Reemplaza el formulario Word «Solicitud de vehículo para salida a terreno» y el correo de aprobación. Tus datos se cargan desde la nómina institucional y la imputación presupuestaria la define tu jefatura al aprobar.","ERS §4.3-A · Formulario vigente")+
+  return cab("Nueva solicitud de vehículo","Reemplaza el formulario Word «Solicitud de vehículo para salida a terreno» y el correo de aprobación. Tus datos se cargan desde la nómina institucional.","ERS §4.3-A · Formulario vigente")+
   (b.editId?`<div class="regla av" style="margin-bottom:var(--e-4)"><span class="ico" aria-hidden="true">!</span><div><b>Corrigiendo la solicitud ${b.editId}</b><span>${esc(b.obs||"Tu jefatura pidió corregir la solicitud.")} Al enviar, vuelve a tu jefatura para su aprobación.</span></div></div>`:"")+
   (b.ejemplo&&!b.editId?`<p class="nota" style="margin-bottom:var(--e-4)">Formulario precargado con un ejemplo para la demostración. <button class="btn sec chico" type="button" id="btn-limpiar">Limpiar formulario</button></p>`:"")+
-  `<div class="grid g-form"><form id="form-sol" class="grid" novalidate>
+  `<div class="grid g-form rev-izq"><aside class="panel rev-panel"><header><h2>Revisión automática</h2><span class="sub">Se actualiza al escribir</span></header><div class="cuerpo"><div class="revision" id="revision"></div></div></aside>
+  <form id="form-sol" class="grid" novalidate>
    <fieldset><legend><span class="seccion-num">1</span>Identificación</legend><div class="campos">
      <div class="campo"><span class="lbl">Solicitante</span><input type="text" id="f-sol" readonly value="${esc(yo.nom)} · ${esc(yo.rut)}"><span class="ayuda">${esc(yo.cargo)} · ${esc(yo.ger)}</span></div>
      <div class="campo"><label for="f-jefe">Jefatura que autoriza el cometido</label><select id="f-jefe">${jefes.map(j=>`<option value="${j.id}" ${j.id===b.jefe?"selected":""}>${esc(j.nom)} · ${esc(j.cargo)}</option>`).join("")}</select></div>
@@ -924,6 +946,7 @@ function vNueva(){
      <div class="campo"><label for="f-sal">Salida</label><input type="datetime-local" id="f-sal" value="${b.salida}"></div>
      <div class="campo"><label for="f-reg">Regreso estimado</label><input type="datetime-local" id="f-reg" value="${b.regreso}"></div>
      <div class="campo ancho"><span class="lbl">Duración calculada</span><span id="f-dur" class="num"></span></div>
+     <div class="campo ancho" id="f-disp" aria-live="polite"></div>
    </div></fieldset>
    <fieldset><legend><span class="seccion-num">3</span>Itinerario y cometido</legend><div class="campos">
      <div class="campo ancho"><span class="lbl">Destinos</span><div id="f-dest" class="grid" style="gap:var(--e-3)"></div><div><button class="btn sec chico" type="button" id="btn-dest">Agregar destino o parada</button></div></div>
@@ -940,8 +963,7 @@ function vNueva(){
    </div></fieldset>
    <div class="faltan" id="f-faltan" role="alert" hidden></div>
    <div class="acciones"><button class="btn" type="submit" id="btn-enviar">${b.editId?"Reenviar a jefatura":"Enviar a jefatura"}</button><button class="btn sec" type="button" id="btn-borr">Guardar sin enviar</button></div>
-  </form>
-  <aside class="panel" style="position:sticky;top:120px"><header><h2>Revisión automática</h2><span class="sub">Se actualiza al escribir</span></header><div class="cuerpo"><div class="revision" id="revision"></div></div></aside></div>`;
+  </form></div>`;
 }
 post.nueva = ()=>{
   const b=borrador;
@@ -970,14 +992,24 @@ post.nueva = ()=>{
     destOk? reg("ok","Destinos",b.destinos.map(d=>d.com).join(" · ")) : reg("bl","Destino incompleto","Completa región, provincia, comuna y localidad de cada destino.");
     const maxCap=Math.max(...VEH.filter(v=>v.estado==="DISP").map(v=>v.cap));
     tot>maxCap? reg("bl","Capacidad excedida",`${tot} personas superan la capacidad máxima del pool (${maxCap}).`) : reg("ok","Capacidad",`${tot} personas.`);
+    const fechasOk=dur>0&&F(b.salida)>=HOY, D=fechasOk?disponibilidad(r):null, cajaD=[];
+    if(D){
+      const rango=`entre el ${fCorta(b.salida)} y el ${fCorta(b.regreso)}`;
+      if(!D.libres){ const t="No hay vehículos del pool disponibles en esas fechas", d=`Los ${D.pool} vehículos del pool de ${D.region} están ocupados o no habilitados ${rango} (${D.resumen}). Puedes enviar igual: el encargado revisará la disponibilidad al asignar.`; reg("av",t,d); cajaD.push(["av",t,d]); }
+      else if(!D.cumplen){ const t="Ningún vehículo libre cumple lo que pides", d=`Hay ${D.libres} ${D.libres===1?"vehículo libre":"vehículos libres"} ${rango}, pero ninguno cumple: ${D.faltas}. Puedes ajustar los requisitos o enviar igual.`; reg("av",t,d); cajaD.push(["av",t,d]); }
+      else cajaD.push(["ok","Hay vehículos disponibles",`${D.cumplen} ${D.cumplen===1?"vehículo del pool cumple":"vehículos del pool cumplen"} lo solicitado ${rango}.`]);
+      if(b.reqCond){ if(!D.condLibres){ const t="No hay conductores del pool disponibles en esas fechas", d=`Los ${D.condPool} conductores del pool están ocupados o con caución o licencia vencida ${rango}. Puedes enviar igual, o indicar un conductor habilitado de tu región (opción «No» en la sección 4).`; reg("av",t,d); cajaD.push(["av",t,d]); }
+        else cajaD.push(["ok","Hay conductores del pool disponibles",`${D.condLibres} de ${D.condPool} conductores del pool ${rango}.`]); }
+    }
+    $("#f-disp").innerHTML=cajaD.map(([c,t,d])=>`<div class="regla ${c}"><span class="ico" aria-hidden="true">${c==="ok"?"✓":"!"}</span><div><b>${t}</b><span>${d}</span></div></div>`).join("");
+    $("#f-disp").hidden=!cajaD.length;
     if(!b.reqCond){ if(!b.cond) reg("bl","Falta conductor","Selecciona un conductor habilitado de tu región o solicita uno del pool."); else { const a=condApto(b.cond,{...r,relevo:null}); a.ok?reg("ok","Conductor habilitado",`${nom(b.cond)}: caución y licencia vigentes al regreso.`):reg("bl","Conductor no habilitado",a.motivos.join(" · ")); } }
-    else reg("inf","Conductor del pool","Logística asignará un conductor institucional disponible.");
+    else if(!(D&&!D.condLibres)) reg("inf","Conductor del pool","El encargado de vehículos asignará un conductor institucional disponible.");
     const yoRut=rutLimpio(PX[ROLES[rol].quien].rut), condRut=b.cond&&PX[b.cond]?rutLimpio(PX[b.cond].rut):"", vistosR=new Set(), probPas=[];
     pv.forEach((x,i)=>{ const k=rutLimpio(x.rut); let m="";
       if(!rutValido(x.rut)) m="RUT inválido"; else if(!personaPorRut(x.rut)) m="no está en la nómina de CONAF"; else if(k===yoRut) m="eres tú: ya cuentas como ocupante"; else if(k===condRut) m="ya va como conductor"; else if(vistosR.has(k)) m="está repetido";
       vistosR.add(k); if(m) probPas.push({i,m,rut:x.rut}); });
     if(probPas.length) reg("bl","Revisa los acompañantes",probPas.map(x=>`${x.rut||"Sin RUT"}: ${x.m}`).join(" · ")+"."); else if(pv.length) reg("ok","Acompañantes",`${pv.length} ${pv.length===1?"acompañante":"acompañantes"}.`);
-    reg("inf","Imputación presupuestaria","La define tu jefatura directa al aprobar la solicitud.");
     if(b.cometido.trim().length<15) reg("bl","Cometido incompleto","Describe la labor institucional a realizar (mín. 15 caracteres).");
     $("#revision").innerHTML=out.join("");
     b._bloqueos=out.filter(x=>x.includes('regla bl')).map(x=>(x.match(/<b>(.*?)<\/b>/)||[])[1]);
