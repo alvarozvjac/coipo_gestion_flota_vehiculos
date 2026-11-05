@@ -525,6 +525,15 @@ body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{d
 .faltan{border:2px solid var(--st-malo);background:var(--st-malo-bg);color:var(--tinta);border-radius:var(--r-m);padding:var(--e-3) var(--e-4)}
 .faltan ul{margin:var(--e-1) 0 0;padding-left:1.2em}
 .form-sol-env{max-width:960px}
+.wiz{list-style:none;margin:0 0 var(--e-4);padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--e-2)}
+.wiz button{width:100%;display:flex;align-items:center;gap:var(--e-2);border:1px solid var(--linea);background:var(--sup);border-radius:var(--r-m);padding:var(--e-2) var(--e-3);font:inherit;font-size:var(--f-s);color:var(--tinta-2);cursor:pointer;text-align:left;min-height:44px}
+.wiz .n{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--linea-fuerte);font-size:var(--f-xs);font-weight:700}
+.wiz button.hecho{color:var(--st-disp);border-color:var(--st-disp);background:var(--st-disp-bg)} .wiz button.hecho .n{background:var(--st-disp);border-color:var(--st-disp);color:var(--sup)}
+.wiz button[aria-current="step"]{border:2px solid var(--boton);color:var(--tinta);font-weight:600} .wiz button[aria-current="step"] .n{background:var(--boton);border-color:var(--boton);color:var(--boton-texto)}
+.wiz button:disabled{cursor:default;opacity:.6}
+.nav-pasos{justify-content:space-between} .nav-pasos #btn-sig{margin-left:auto}
+.link-edit{border:0;background:none;color:var(--verde-tinta);font:inherit;font-size:var(--f-xs);font-weight:600;text-decoration:underline;cursor:pointer;margin-left:var(--e-2)}
+@media (max-width:559.98px){ /* teléfono */ .wiz{grid-template-columns:repeat(4,minmax(0,1fr))} .wiz button{flex-direction:column;justify-content:center;text-align:center;font-size:11px;padding:var(--e-1)} }
 .err-campo{display:flex;gap:6px;align-items:flex-start;color:var(--st-malo);font-size:var(--f-s);font-weight:600;margin-top:4px}
 .l-manuales{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:var(--e-1)}
 @media (max-width:559.98px){ .l-manuales{grid-template-columns:minmax(0,1fr)} }
@@ -593,6 +602,39 @@ body>main{flex:1 0 auto;width:100%;padding-bottom:var(--e-4)}
 footer.pie-app{padding-block:6px;border-top-width:2px;font-size:11px;line-height:1.4;gap:var(--e-3)}
 footer.pie-app span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 @media (max-width:559.98px){ /* teléfono */ footer.pie-app{flex-direction:column;gap:2px} footer.pie-app span{white-space:normal} }
+
+/* Solicitud en pasos: cada paso cabe en una pantalla de escritorio (05-11-2026) */
+.cab-compacta{align-items:center;margin-bottom:var(--e-3)} .cab-compacta h1{font-size:1.5rem}
+.nota-mini{font-size:var(--f-xs);color:var(--tinta-2);margin:0}
+#form-sol{gap:var(--e-3)}
+#form-sol .seccion-num{display:none}
+#form-sol fieldset{padding:var(--e-2) var(--e-4) var(--e-3)}
+#form-sol .campos{gap:var(--e-2) var(--e-4)}
+#form-sol .campos.c4{grid-template-columns:repeat(4,minmax(0,1fr))}
+#form-sol .campos.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+#form-sol .regla{padding:6px var(--e-3)}
+#form-sol textarea{min-height:56px}
+.dato-fijo{display:flex;flex-direction:column;min-height:40px;justify-content:center;font-weight:600} .dato-fijo small{font-weight:400;color:var(--tinta-3);font-size:var(--f-xs)}
+.fila-dur{flex-direction:row;align-items:baseline;gap:var(--e-2)}
+.opciones.vert{flex-direction:column;align-items:flex-start;gap:4px}
+#f-disp{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--e-2)}
+#f-resumen .ficha{row-gap:2px} #f-resumen .ficha dt,#f-resumen .ficha dd{padding-block:2px} #f-resumen .cuerpo{display:grid;gap:var(--e-2)} #f-resumen header{padding-block:var(--e-2)}
+.wiz{margin-bottom:var(--e-3)}
+@media (max-width:899.98px){ /* columna */ #form-sol .campos.c4,#form-sol .campos.c3{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:559.98px){ /* teléfono */ #form-sol .campos.c4,#form-sol .campos.c3{grid-template-columns:minmax(0,1fr)} .cab-compacta{flex-direction:column;align-items:flex-start} }
+/* Barra de pasos fija al pie de la ventana: «Siguiente» y «Enviar» siempre a la vista */
+#form-sol .nav-pasos{position:sticky;bottom:0;z-index:4;background:var(--bg);margin:0;padding:var(--e-2) 0;border-top:1px solid var(--linea);box-shadow:0 -6px 12px -10px rgba(0,0,0,.25)}
+.env-pasos{display:flex;gap:var(--e-2);margin-left:auto} .env-pasos[hidden]{display:none}
+#f-resumen .disp-res{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:var(--e-2)}
+@media (max-width:559.98px){ /* teléfono */ .env-pasos{flex-direction:column-reverse;width:100%} #form-sol .nav-pasos{flex-wrap:wrap} }
+.form-sol-env{max-width:1200px}
+@media (max-width:1399.98px){ /* ancho: en el asistente el destino cabe en una fila */ #form-sol .destino{grid-template-columns:repeat(4,minmax(0,1fr)) auto} }
+@media (max-width:899.98px){ /* columna */ #form-sol .destino{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:559.98px){ /* teléfono */ #form-sol .destino{grid-template-columns:minmax(0,1fr)} }
+.cab-compacta{margin-bottom:var(--e-2)} .cab-compacta h1{font-size:1.375rem} .cab-compacta h1::after{display:none}
+#wiz button{padding:6px var(--e-3)} #wiz{margin-bottom:var(--e-2)}
+#form-sol legend{padding-block:0}
+.lbl-nota{font-weight:400;color:var(--tinta-3);font-size:var(--f-xs)}
 </style>
 
 </head><body>
@@ -873,6 +915,8 @@ function condApto(cid, r, ignorar){
       conductores POOL con caución y licencia vigentes al regreso y sin otra salida que se cruce.
    Sólo avisa: la solicitud se puede enviar igual y el encargado decide al asignar. */
 const REQ_SOL=/^(Capacidad|Requiere 4x4|Sin espacio de carga)/;
+const PASOS_SOL=["Viaje","Destinos y cometido","Personas","Revisar y enviar"];
+const PASO_DE={"f-sal":1,"f-sal-h":1,"f-reg":1,"f-reg-h":1,"f-dest":2,"f-com":2,"f-km":2,"f-cond":3,"f-pas":3};
 const CAMPO_ERR={"Falta la fecha de salida":"f-sal","Falta la hora de salida":"f-sal-h","Falta la fecha de regreso":"f-reg","Falta la hora de regreso":"f-reg-h","Fechas incoherentes":"f-reg","Salida en el pasado":"f-sal","Faltan los kilómetros":"f-km","Destino incompleto":"f-dest","Capacidad excedida":"f-pas","Falta conductor":"f-cond","Conductor no habilitado":"f-cond","Revisa los acompañantes":"f-pas","Cometido incompleto":"f-com"};
 function disponibilidad(r){
   const region="Oficina Central";
@@ -1007,37 +1051,39 @@ function vNueva(){
   const regionSol = "Oficina Central";
   const habil = COND.filter(c=>c.tipo==="HABILITADO" && (c.region||"Oficina Central")===regionSol && condApto(c.id,{...b,id:"tmp",pas:[],req:{},salida:b.salida||iso(HOY),regreso:b.regreso||iso(HOY)},null).ok);
   const condOpts=(selId)=>`<option value="">— Seleccionar —</option>`+habil.map(c=>`<option value="${c.id}" ${c.id===selId?"selected":""}>${esc(nom(c.id))} · licencia ${c.clases.join("/")}</option>`).join("");
-  return cab("Nueva solicitud de vehículo","Reemplaza el formulario Word «Solicitud de vehículo para salida a terreno» y el correo de aprobación. Tus datos se cargan desde la nómina institucional.","ERS §4.3-A · Formulario vigente")+
+  b._paso=b._paso||1; b._max=Math.max(b._max||1,b._paso);
+  return `<div class="cab-vista cab-compacta"><h1>Nueva solicitud de vehículo</h1>${b.ejemplo&&!b.editId?`<p class="nota-mini">Ejemplo precargado para la demostración. <button class="link-edit" type="button" id="btn-limpiar">Limpiar formulario</button></p>`:""}</div>`+
   (b.editId?`<div class="regla av" style="margin-bottom:var(--e-4)"><span class="ico" aria-hidden="true">!</span><div><b>Corrigiendo la solicitud ${b.editId}</b><span>${esc(b.obs||"Tu jefatura pidió corregir la solicitud.")} Al enviar, vuelve a tu jefatura para su aprobación.</span></div></div>`:"")+
-  (b.ejemplo&&!b.editId?`<p class="nota" style="margin-bottom:var(--e-4)">Formulario precargado con un ejemplo para la demostración. <button class="btn sec chico" type="button" id="btn-limpiar">Limpiar formulario</button></p>`:"")+
-  `<div class="form-sol-env"><form id="form-sol" class="grid" novalidate>
-   <fieldset><legend><span class="seccion-num">1</span>Identificación</legend><div class="campos">
-     <div class="campo"><span class="lbl">Solicitante</span><input type="text" id="f-sol" readonly value="${esc(yo.nom)} · ${esc(yo.rut)}"><span class="ayuda">${esc(yo.cargo)} · ${esc(yo.ger)}</span></div>
+  `<div class="form-sol-env"><ol class="wiz" id="wiz" aria-label="Pasos de la solicitud">${PASOS_SOL.map((n,i)=>`<li><button type="button" data-wiz="${i+1}"><span class="n">${i+1}</span>${n}</button></li>`).join("")}</ol>
+  <form id="form-sol" class="grid" novalidate>
+   <fieldset data-paso="1"><legend><span class="seccion-num">1</span>Identificación</legend><div class="campos">
+     <div class="campo"><span class="lbl">Solicitante</span><span class="dato-fijo" id="f-sol">${esc(yo.nom)} · ${esc(yo.rut)}<small>${esc(yo.cargo)} · ${esc(yo.ger)}</small></span></div>
      <div class="campo"><label for="f-jefe">Jefatura que autoriza el cometido</label><select id="f-jefe">${jefes.map(j=>`<option value="${j.id}" ${j.id===b.jefe?"selected":""}>${esc(j.nom)} · ${esc(j.cargo)}</option>`).join("")}</select></div>
    </div></fieldset>
-   <fieldset><legend><span class="seccion-num">2</span>Programación del viaje</legend><div class="campos">
+   <fieldset data-paso="1"><legend><span class="seccion-num">2</span>Programación del viaje</legend><div class="campos c4">
      <div class="campo"><label for="f-sal">Fecha de salida</label><input type="date" id="f-sal" value="${b._salF??(b.salida||"").slice(0,10)}"></div>
-     <div class="campo"><label for="f-sal-h">Hora de salida</label><input type="time" id="f-sal-h" step="900" value="${b._salH??(b.salida||"").slice(11,16)}"><span class="ayuda">Por ejemplo, 08:00.</span></div>
+     <div class="campo"><label for="f-sal-h">Hora de salida</label><input type="time" id="f-sal-h" step="900" value="${b._salH??(b.salida||"").slice(11,16)}"></div>
      <div class="campo"><label for="f-reg">Fecha de regreso</label><input type="date" id="f-reg" value="${b._regF??(b.regreso||"").slice(0,10)}"></div>
-     <div class="campo"><label for="f-reg-h">Hora estimada de regreso</label><input type="time" id="f-reg-h" step="900" value="${b._regH??(b.regreso||"").slice(11,16)}"><span class="ayuda">Hora aproximada de llegada a la unidad.</span></div>
-     <div class="campo ancho"><span class="lbl">Duración calculada</span><span id="f-dur" class="num"></span></div>
+     <div class="campo"><label for="f-reg-h">Hora estimada de regreso</label><input type="time" id="f-reg-h" step="900" value="${b._regH??(b.regreso||"").slice(11,16)}"></div>
+     <div class="campo ancho fila-dur"><span class="lbl">Duración calculada:</span><span id="f-dur" class="num"></span></div>
      <div class="campo ancho" id="f-disp" aria-live="polite"></div>
    </div></fieldset>
-   <fieldset><legend><span class="seccion-num">3</span>Itinerario y cometido</legend><div class="campos">
+   <fieldset data-paso="2"><legend><span class="seccion-num">3</span>Itinerario y cometido</legend><div class="campos c3">
      <div class="campo ancho"><span class="lbl">Destinos</span><div id="f-dest" class="grid" style="gap:var(--e-3)"></div><div><button class="btn sec chico" type="button" id="btn-dest">Agregar destino o parada</button></div></div>
-     <div class="campo ancho"><label for="f-com">Cometido / objetivo del viaje</label><textarea id="f-com">${esc(b.cometido)}</textarea></div>
-     <div class="campo"><label for="f-km">Kilómetros aproximados</label><input type="number" id="f-km" min="1" max="10000" step="10" value="${b.km||""}" placeholder="Ej.: 520"><span class="ayuda">Distancia total estimada: ida, desplazamientos internos y regreso.</span></div>
-     <div class="campo ancho"><label for="f-tipo">Tipo de vehículo requerido</label><select id="f-tipo">${["Indistinto","Camioneta doble cabina","SUV / Station wagon","Furgón","Camión","Automóvil sedán"].map(t=>`<option ${t===b.tipo?"selected":""}>${t}</option>`).join("")}</select></div>
-     <div class="campo ancho"><div class="opciones"><label><input type="checkbox" id="f-4x4" ${b.t4?"checked":""}> Requiere 4x4 (caminos forestales o rurales)</label><label><input type="checkbox" id="f-carga" ${b.carga?"checked":""}> Requiere espacio de carga</label></div></div>
+     <div class="campo ancho"><label for="f-com">Cometido / objetivo del viaje</label><textarea id="f-com" rows="2">${esc(b.cometido)}</textarea></div>
+     <div class="campo"><label for="f-km">Km aproximados <small class="lbl-nota">(ida, internos y regreso)</small></label><input type="number" id="f-km" min="1" max="10000" step="10" value="${b.km||""}" placeholder="Ej.: 520"></div>
+     <div class="campo"><label for="f-tipo">Tipo de vehículo requerido</label><select id="f-tipo">${["Indistinto","Camioneta doble cabina","SUV / Station wagon","Furgón","Camión","Automóvil sedán"].map(t=>`<option ${t===b.tipo?"selected":""}>${t}</option>`).join("")}</select></div>
+     <div class="campo"><span class="lbl">Requisitos</span><div class="opciones vert"><label><input type="checkbox" id="f-4x4" ${b.t4?"checked":""}> 4x4 (caminos forestales o rurales)</label><label><input type="checkbox" id="f-carga" ${b.carga?"checked":""}> Espacio de carga</label></div></div>
    </div></fieldset>
-   <fieldset><legend><span class="seccion-num">4</span>Conductores y pasajeros</legend><div class="campos">
+   <fieldset data-paso="3"><legend><span class="seccion-num">4</span>Conductores y pasajeros</legend><div class="campos">
      <div class="campo ancho"><span class="lbl">¿Requiere conductor del pool?</span><div class="opciones" role="radiogroup"><label><input type="radio" name="f-rc" value="si" ${b.reqCond?"checked":""}> Sí</label><label><input type="radio" name="f-rc" value="no" ${!b.reqCond?"checked":""}> No</label></div></div>
      <div class="campo ancho" ${b.reqCond?"hidden":""} id="w-cond"><label for="f-cond">Conductor</label><select id="f-cond">${condOpts(b.cond)}</select><span class="ayuda">Conductores habilitados de ${regionSol}: caución y licencia vigentes para las fechas del viaje.</span></div>
      <div class="campo ancho"><span class="lbl">Acompañantes (nómina CONAF)</span><div id="f-pas" class="grid" style="gap:var(--e-2)"></div><div><button class="btn sec chico" type="button" id="btn-pas">Agregar acompañante</button></div><span class="ayuda">Ingresa el RUT; si el funcionario está en la nómina, el nombre se completa solo.</span></div>
      <div class="campo ancho"><span class="lbl">Total de personas en el vehículo</span><span id="f-tot" class="num" style="font-size:var(--f-xl);font-weight:600"></span></div>
    </div></fieldset>
+   <section class="panel" data-paso="4" id="f-resumen" aria-labelledby="t-resumen"></section>
    <div class="faltan" id="f-faltan" role="alert" hidden></div>
-   <div class="acciones"><button class="btn" type="submit" id="btn-enviar">${b.editId?"Reenviar a jefatura":"Enviar a jefatura"}</button><button class="btn sec" type="button" id="btn-borr">Guardar sin enviar</button></div>
+   <div class="acciones nav-pasos"><button class="btn sec" type="button" id="btn-ant">← Anterior</button><button class="btn" type="button" id="btn-sig">Siguiente →</button><span class="env-pasos" data-paso="4"><button class="btn sec" type="button" id="btn-borr">Guardar sin enviar</button><button class="btn" type="submit" id="btn-enviar">${b.editId?"Reenviar a jefatura":"Enviar a jefatura"}</button></span></div>
   </form></div>`;
 }
 post.nueva = ()=>{
@@ -1115,16 +1161,47 @@ post.nueva = ()=>{
   function pintarErrores(){
     document.querySelectorAll("#form-sol .err-campo").forEach(x=>x.remove());
     document.querySelectorAll("#form-sol [aria-invalid]").forEach(x=>{x.removeAttribute("aria-invalid"); x.removeAttribute("aria-describedby");});
-    const ver=()=>b._intento; // los mensajes aparecen al intentar enviar y desde ahí se actualizan al escribir
+    const ver=k=>b._intento||(b._valid&&b._valid.has(PASO_DE[k])); // aparecen al intentar avanzar o enviar, y se actualizan al escribir
     const porCampo={}; (b._errs||[]).forEach(x=>{ if(ver(x.campo)) (porCampo[x.campo]=porCampo[x.campo]||[]).push(x); });
     Object.entries(porCampo).forEach(([k,L])=>{ const el=$("#"+k); if(!el) return; const campo=el.closest(".campo")||el.parentElement;
       const m=document.createElement("span"); m.className="err-campo"; m.id=k+"-err"; m.innerHTML=`<span aria-hidden="true">✕</span><span>${L.map(x=>x.d||x.t).join(" ")}</span>`; campo.appendChild(m);
       const foco=["INPUT","SELECT","TEXTAREA"].includes(el.tagName)?[el]:[...el.querySelectorAll("input,select")].filter(i=>k==="f-pas"?(!!i.value&&L.some(x=>x.d.includes(i.value))):!i.value);
       foco.forEach(i=>{i.setAttribute("aria-invalid","true"); i.setAttribute("aria-describedby",k+"-err");}); });
   }
+  function pintarResumen(){
+    const d=b.destinos.map(x=>`${x.lug===OTRA?x.otro:x.lug}, ${x.com} (${x.reg})`).join("<br>"), pv=pasValidos();
+    const fila=(t,v,p)=>`<dt>${t}</dt><dd>${v} <button type="button" class="link-edit" data-wiz="${p}">Editar</button></dd>`;
+    $("#f-resumen").innerHTML=`<header><h2 id="t-resumen">Revisa tu solicitud antes de enviarla</h2></header><div class="cuerpo"><dl class="ficha">
+      ${fila("Jefatura que autoriza",esc(nom(b.jefe)),1)}
+      ${fila("Salida y regreso",b.salida&&b.regreso?`${fCorta(b.salida)} → ${fCorta(b.regreso)} · ${$("#f-dur").textContent}`:"—",1)}
+      ${fila("Destinos",d||"—",2)}
+      ${fila("Cometido",esc(b.cometido)||"—",2)}
+      ${fila("Distancia y vehículo",`${b.km?km(b.km)+" km aprox.":"—"} · ${esc(b.tipo)}${b.t4?" · 4x4":""}${b.carga?" · carga":""}`,2)}
+      ${fila("Conductor",b.reqCond?"Del pool (lo asigna el encargado)":esc(nom(b.cond)||"—"),3)}
+      ${fila("Acompañantes",pv.length?pv.map(x=>esc(x.nom||x.rut)).join(", "):"Ninguno",3)}
+      ${fila("Total de personas",esc($("#f-tot").textContent),3)}
+    </dl><div class="disp-res">${$("#f-disp").innerHTML}</div></div>`;
+  }
+  function mostrarPaso(n){
+    b._paso=n; b._max=Math.max(b._max||1,n);
+    document.querySelectorAll("#form-sol [data-paso]").forEach(el=>el.hidden=+el.dataset.paso!==n);
+    $("#btn-ant").hidden=n===1; $("#btn-sig").hidden=n===4;
+    document.querySelectorAll("#wiz [data-wiz]").forEach(bt=>{const k=+bt.dataset.wiz; bt.setAttribute("aria-current",k===n?"step":"false"); bt.classList.toggle("hecho",k<n||(k<=b._max&&k!==n)); bt.disabled=k>b._max;});
+    if(n===4) pintarResumen(); else { const fl=$("#f-faltan"); fl.hidden=true; }
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+  function erroresDePaso(n){ return (b._errs||[]).filter(x=>PASO_DE[x.campo]===n); }
+  function siguiente(){ leer(); revisar(); const e=erroresDePaso(b._paso);
+    if(e.length){ (b._valid=b._valid||new Set()).add(b._paso); pintarErrores(); const p1=$("#"+e[0].campo); const foco=p1&&(["INPUT","SELECT","TEXTAREA"].includes(p1.tagName)?p1:p1.querySelector("[aria-invalid],input,select")); if(foco) foco.focus(); tostada(e.length===1?"Completa el campo marcado para continuar.":`Completa los ${e.length} campos marcados para continuar.`); return; }
+    mostrarPaso(b._paso+1); }
+  $("#btn-sig").onclick=siguiente;
+  $("#btn-ant").onclick=()=>mostrarPaso(Math.max(1,b._paso-1));
+  document.querySelector(".form-sol-env").addEventListener("click",e=>{ const w=e.target.closest("[data-wiz]"); if(!w||w.disabled) return; e.preventDefault(); const k=+w.dataset.wiz; if(k>b._paso){ for(let p=b._paso;p<k;p++){ if(erroresDePaso(p).length){ mostrarPaso(p); siguiente(); return; } } } mostrarPaso(k); });
+  mostrarPaso(b._paso);
   function mostrarFaltan(){ const fl=$("#f-faltan"), L=b._errs||[]; if(!L.length){ fl.hidden=true; fl.innerHTML=""; return; } fl.hidden=false; fl.innerHTML=`<b>No se puede enviar: ${L.length===1?"falta completar un campo":"faltan "+L.length+" campos por completar"}.</b> Están marcados en rojo.`; }
   f.addEventListener("submit",e=>{e.preventDefault();leer();revisar();
-    if((b._bloqueos||[]).length){ b._intento=true; pintarErrores(); mostrarFaltan(); const p1=$("#"+b._errs[0].campo); const foco=p1&&(["INPUT","SELECT","TEXTAREA"].includes(p1.tagName)?p1:p1.querySelector("[aria-invalid],input,select")); if(foco){ foco.scrollIntoView({block:"center",behavior:"smooth"}); foco.focus({preventScroll:true}); } return; }
+    if(b._paso<4){ siguiente(); return; }
+    if((b._bloqueos||[]).length){ b._intento=true; const pe=PASO_DE[b._errs[0].campo]||1; if(pe!==b._paso){ mostrarPaso(pe); } pintarErrores(); mostrarFaltan(); const p1=$("#"+b._errs[0].campo); const foco=p1&&(["INPUT","SELECT","TEXTAREA"].includes(p1.tagName)?p1:p1.querySelector("[aria-invalid],input,select")); if(foco){ foco.scrollIntoView({block:"center",behavior:"smooth"}); foco.focus({preventScroll:true}); } return; }
     const destinos=b.destinos.map(d=>({reg:d.reg,prov:d.prov,com:d.com,lug:d.lug===OTRA?d.otro.trim():d.lug}));
     const relevo=null;
     const pas=pasValidos().map(x=>personaPorRut(x.rut).id);
