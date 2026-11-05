@@ -705,6 +705,9 @@ footer.pie-app span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;mi
 /* Columnas que cada lista oculta en pantallas angostas (tablaFilas) */
 @media (max-width:899.98px){ /* columna */ .oc-c1 :is(th,td):nth-child(1),.oc-c2 :is(th,td):nth-child(2),.oc-c3 :is(th,td):nth-child(3),.oc-c4 :is(th,td):nth-child(4),.oc-c5 :is(th,td):nth-child(5),.oc-c6 :is(th,td):nth-child(6),.oc-c7 :is(th,td):nth-child(7){display:none} }
 @media (max-width:559.98px){ /* teléfono */ .oc-t1 :is(th,td):nth-child(1),.oc-t2 :is(th,td):nth-child(2),.oc-t3 :is(th,td):nth-child(3),.oc-t4 :is(th,td):nth-child(4),.oc-t5 :is(th,td):nth-child(5),.oc-t6 :is(th,td):nth-child(6),.oc-t7 :is(th,td):nth-child(7){display:none} }
+/* Inicio de la jefatura: tres tarjetas del mismo alto y ancho */
+.acc-jef{align-items:stretch;margin-bottom:var(--e-4)} .acc-jef .acceso{height:100%;min-height:132px}
+.jef-mes{margin-top:0}
 </style>
 
 </head><body>
@@ -1800,17 +1803,8 @@ function vInicio(){
     ACCESOS=[{v:"bandeja",ico:"aprobar",t:"Por aprobar",d:pend.length?`La más antigua espera desde ${hace(dias(pend[0].fSol))}.`:"No hay solicitudes esperando tu decisión.",cta:"Revisar",n:pend.length,nl:"por aprobar",aviso:true,principal:true},
              {v:"calendario",ico:"calendario",t:"Calendario de mi equipo",d:`Salidas y vehículos de tu equipo por estado, por mes o por año.${terr.length?` Hoy hay ${terr.length} en terreno.`:""}`,cta:"Ver calendario"},
              {v:"equipo",ico:"equipo",t:"Salidas de mi equipo",d:"Historial de lo que autorizaste y Excel mensual o anual.",cta:"Ver historial"}];
-    const filaPend=r=>`<li class="mini-fila"><button type="button" class="mini-dato" data-revisar="${r.id}"><span class="mono peq">${r.id}</span><b>${esc(nom(r.sol))}</b><span class="tenue peq">${fCorta(r.salida)} · ${esc(r.destinos.map(d=>d.com).join(" · "))} · ${pasajeros(r)} personas · solicitada ${hace(dias(r.fSol))}</span></button><button class="btn chico" type="button" data-revisar="${r.id}">Revisar</button></li>`;
-    const filaSem=r=>`<li class="mini-fila"><button type="button" class="mini-dato" data-sal="${r.id}"><span class="mono peq">${fCorta(r.salida)}</span><b>${esc(nom(r.sol))}</b><span class="tenue peq">${esc(r.destinos.map(d=>d.com).join(" · "))}${r.pat?" · "+esc(r.pat):""}</span></button>${chipR(r.est)}</li>`;
-    const nPend=3, nSem=3;
     return heroHTML(pend.length?`Tienes ${pend.length} ${pend.length===1?"solicitud":"solicitudes"} de tu equipo esperando tu aprobación.`:"No tienes solicitudes pendientes de aprobación.")+
       `<div class="accesos acc-n acc-jef" style="--n:3">${accesosHTML(ACCESOS).replace(/^<div[^>]*>/,"").replace(/<\/div>$/,"")}</div>
-      <div class="jef-2">
-       <section class="panel"><header><h2>Por aprobar</h2><span class="sub">${pend.length?`${pend.length} ${pend.length===1?"solicitud":"solicitudes"}, la más antigua primero`:"Bandeja al día"}</span></header>
-        ${pend.length?`<ul class="mini-lista">${pend.slice(0,nPend).map(filaPend).join("")}</ul>${pend.length>nPend?`<button class="link-edit mini-mas" type="button" data-ir="bandeja">Ver las ${pend.length}</button>`:""}`:`<p class="mini-vacio">No hay solicitudes esperando tu decisión.</p>`}</section>
-       <section class="panel"><header><h2>Mi equipo esta semana</h2><span class="sub">${fCorta(HOY).split(" ").slice(0,2).join(" ")} al ${fF(new Date(fin7.getTime()-DIA)).slice(0,5)}</span></header>
-        ${semana.length?`<ul class="mini-lista">${semana.slice(0,nSem).map(filaSem).join("")}</ul>${semana.length>nSem?`<button class="link-edit mini-mas" type="button" data-ir="equipo">Ver las ${semana.length}</button>`:""}`:`<p class="mini-vacio">Sin salidas de tu equipo en los próximos 7 días.</p>`}</section>
-      </div>
       <p class="jef-mes"><b>${MESES[HOY.getMonth()][0].toUpperCase()+MESES[HOY.getMonth()].slice(1)} ${HOY.getFullYear()} · tu equipo</b><span><b class="num">${mes.length}</b> ${mes.length===1?"salida realizada":"salidas realizadas"}</span><span><b class="num">${km(kmMes)}</b> km recorridos</span><span><b class="num">${diasMes}</b> días en terreno</span><span><b class="num">${pers}</b> personas trasladadas</span><span>Folio${folios.length===1?"":"s"}: <b class="mono">${folios.join(", ")||"—"}</b></span></p>`;
   }
   return "";
