@@ -708,6 +708,10 @@ footer.pie-app span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;mi
 /* Inicio de la jefatura: tres tarjetas del mismo alto y ancho */
 .acc-jef{align-items:stretch;margin-bottom:var(--e-4)} .acc-jef .acceso{height:100%;min-height:132px}
 .jef-mes{margin-top:0}
+/* Solicitud: el título de cada sección va dentro del recuadro, no sobre el borde (05-11-2026) */
+#form-sol fieldset{padding-top:var(--e-3)}
+#form-sol fieldset>legend{float:left;width:100%;padding:0 0 var(--e-2);margin:0 0 var(--e-3);border-bottom:1px solid var(--linea);font-size:var(--f-m);line-height:1.3}
+#form-sol fieldset>legend+*{clear:both}
 </style>
 
 </head><body>
