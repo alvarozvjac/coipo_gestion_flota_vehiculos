@@ -238,6 +238,19 @@ legend{font-family:var(--ff-titulo);font-weight:600;font-size:var(--f-m);padding
 
 /* Flujo de estados */
 .flujo{display:flex;gap:0;flex-wrap:wrap;margin-top:var(--e-2)}
+.pasos-sal{list-style:none;margin:var(--e-2) 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--e-2)}
+.pasos-sal li{display:flex;gap:var(--e-2);align-items:flex-start;padding:var(--e-2) var(--e-3);border:1px solid var(--linea);border-radius:var(--r-m);background:var(--sup);min-width:0}
+.pasos-sal .marca{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:var(--f-xs);font-weight:700;border:1.5px solid var(--linea-fuerte);color:var(--tinta-3)}
+.pasos-sal .txt{display:flex;flex-direction:column;min-width:0;line-height:1.3}
+.pasos-sal .txt b{font-size:var(--f-s)} .pasos-sal .txt span{font-size:var(--f-xs);color:var(--tinta-2)}
+.pasos-sal li.hecho{border-color:var(--st-disp);background:var(--st-disp-bg)} .pasos-sal li.hecho .marca{background:var(--st-disp);border-color:var(--st-disp);color:var(--sup)}
+.pasos-sal li.actual{border:2px solid var(--boton);box-shadow:var(--s-1)} .pasos-sal li.actual .marca{background:var(--boton);border-color:var(--boton);color:var(--boton-texto)}
+.pasos-sal li.bloq{opacity:.75;background:var(--sup-2)} .pasos-sal li.espera .marca{border-style:dashed}
+@media (max-width:767.98px){ /* tableta */ .pasos-sal{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} }
+.confirma{border:2px solid var(--boton);border-radius:var(--r-m);padding:var(--e-4);background:var(--sup);display:grid;gap:var(--e-3)}
+.hecho-paso{display:flex;gap:var(--e-3);align-items:flex-start;border:1px solid var(--st-disp);background:var(--st-disp-bg);border-radius:var(--r-m);padding:var(--e-4)}
+.hecho-paso .ok{flex:none;width:32px;height:32px;border-radius:50%;background:var(--st-disp);color:var(--sup);display:grid;place-items:center;font-weight:700}
+.pie-cajon{position:sticky;bottom:0;margin:0 calc(-1 * var(--e-4)) calc(-1 * var(--e-6));padding:var(--e-3) var(--e-4) calc(var(--e-3) + env(safe-area-inset-bottom,0px));background:var(--sup);border-top:1px solid var(--linea)}
 .flujo span{font-size:var(--f-xs);padding:2px 8px;border:1px solid var(--linea);margin-right:-1px;color:var(--tinta-3);background:var(--sup)}
 .flujo span.hecho{background:var(--st-disp-bg);color:var(--st-disp);border-color:var(--st-disp)}
 .flujo span.actual{background:var(--boton);color:var(--boton-texto);border-color:var(--boton);font-weight:600}
@@ -715,7 +728,7 @@ let RES = [
  R({id:"OC-2026-000403",est:"RECHAZADA",fSol:"2026-10-13T10:02",sol:"p6",jefe:"p5",salida:"2026-10-21T09:00",regreso:"2026-10-21T14:00",destinos:[{reg:"Metropolitana",com:"Santiago",lug:"Oficina Regional RM"}],cometido:"Reunión de coordinación de pronóstico.",km:30,cc:"48015",obsLog:"Rechazada: la reunión puede realizarse por videoconferencia."}),
  R({id:"OC-2026-000406",est:"ANULADA",fSol:"2026-10-15T15:20",sol:"p4",jefe:"p3",salida:"2026-10-22T08:00",regreso:"2026-10-22T17:00",destinos:[{reg:"Valparaíso",com:"Valparaíso",lug:"Dirección Regional"}],cometido:"Visita a bodega regional.",km:250,cc:"P01-601",obsLog:"Anulada por la solicitante: visita reprogramada."}),
  R({id:"OC-2026-000405",est:"EN_TERRENO",fSol:"2026-10-16T12:30",sol:"p7",jefe:"p8",salida:"2026-10-21T07:30",regreso:"2026-10-23T19:00",destinos:[{reg:"Valparaíso",com:"Quillota",lug:"Sector Pocochay"},{reg:"Valparaíso",com:"Hijuelas",lug:"Predio denunciado"}],cometido:"Fiscalización por corta no autorizada de bosque nativo (denuncia ciudadana).",km:420,cc:"48046",cond:"p7",pas:["p12"],pat:"PLLH-22",req:{t4:true},bit:{sal:"2026-10-21T07:38",odoS:119106,combS:"Lleno",docs:true}}),
- R({id:"OC-2026-000408",est:"CONFIRMADA",fSol:"2026-10-17T09:05",sol:"p9",jefe:"p10",salida:"2026-10-23T07:30",regreso:"2026-10-24T13:00",destinos:[{reg:"O'Higgins",com:"Rancagua",lug:"Municipalidad de Rancagua"}],cometido:"Entrega de plantas del Programa de Arborización a municipio.",km:210,cc:"48067",reqCond:true,cond:"c1",pat:"JXZS-29",req:{carga:true}}),
+ R({id:"OC-2026-000408",est:"CONFIRMADA",fSol:"2026-10-17T09:05",sol:"p9",jefe:"p10",salida:"2026-10-22T11:00",regreso:"2026-10-24T13:00",destinos:[{reg:"O'Higgins",com:"Rancagua",lug:"Municipalidad de Rancagua"}],cometido:"Entrega de plantas del Programa de Arborización a municipio.",km:210,cc:"48067",reqCond:true,cond:"c1",pat:"JXZS-29",req:{carga:true}}),
  R({id:"OC-2026-000409",est:"CONFIRMADA",fSol:"2026-10-18T16:44",sol:"p6",jefe:"p5",salida:"2026-10-24T08:00",regreso:"2026-10-25T18:00",destinos:[{reg:"Biobío",com:"Santa Juana",lug:"Sede vecinal sector Tanahuillín"}],cometido:"Apoyo a simulacro comunitario de evacuación ante incendios forestales.",km:1050,cc:"48007",reqCond:true,cond:"c2",relevo:"c3",pas:["p13"],pat:"SFHW-60",req:{t4:true}}),
  R({id:"OC-2026-000410",est:"APROBADA",fSol:"2026-10-19T10:15",sol:"p9",jefe:"p10",salida:"2026-10-27T07:00",regreso:"2026-10-30T20:00",destinos:[{reg:"Ñuble",com:"Chillán",lug:"Vivero Chillán (carga)"},{reg:"Atacama",com:"Copiapó",lug:"Vivero Copiapó (descarga)"}],cometido:"Traslado de plantas desde Vivero Chillán a Vivero Copiapó.",km:2700,cc:"48065",reqCond:true,pas:["p14"],req:{carga:true}}),
  R({id:"OC-2026-000411",est:"CONFIRMADA",fSol:"2026-10-19T14:02",sol:"p4",jefe:"p3",salida:"2026-10-28T08:00",regreso:"2026-10-30T18:00",destinos:[{reg:"La Araucanía",com:"Temuco",lug:"Dirección Regional La Araucanía"}],cometido:"Supervisión de inventario de bodega regional y cierre de procesos de compra.",km:1450,cc:"P01-601",reqCond:true,cond:"c2",pas:["p15"],pat:"KBSW-97"}),
@@ -1374,7 +1387,7 @@ function render(){
   $("#vista").innerHTML=(ROLES[rol].menu&&vista!==HOME()&&!VISTAS_INICIO.includes(vista)?volverHTML():"")+fn();
   (post[vista]||(()=>{}))();
 }
-function cerrarCapa(){ $("#capa").innerHTML=""; }
+function cerrarCapa(){ $("#capa").innerHTML=""; paso={rid:null,conf:null,hecho:null,form:{},anular:false}; }
 function cajon(titulo, sub, cuerpo){
   $("#capa").innerHTML=`<div class="velo" id="velo"><div class="cajon" role="dialog" aria-modal="true" aria-labelledby="t-cajon"><header><div style="display:flex;gap:var(--e-3);align-items:center;flex-wrap:wrap;min-width:0">${titulo}${sub?`<span class="sub">${sub}</span>`:""}</div><button class="btn sec chico" type="button" id="cerrar">Cerrar</button></header><div class="cuerpo">${cuerpo}</div></div></div>`;
   $("#cerrar").onclick=()=>{cerrarCapa();render()}; $("#velo").onclick=e=>{if(e.target.id==="velo"){cerrarCapa();render()}};
@@ -1517,20 +1530,86 @@ let asig={pat:null,cond:null,rel:null,tarj:null};
 function abrirSalida(id){
   const r=RES.find(x=>x.id===id); if(!r) return;
   if(asig.rid!==id) asig={pat:null,cond:null,rel:null,tarj:null,rid:id};
+  if(paso.rid!==id) paso={rid:id,conf:null,hecho:null,form:{},anular:false};
   const cc=CCX[r.cc], gestor=puedeGestionar(), cond=rol==="conductor"&&(r.cond==="c1"||r.relevo==="c1");
   let accion="";
-  if(r.est==="APROBADA") accion = gestor?asignacionHTML(r):`<p class="nota">El encargado de vehículos está asignando vehículo y conductor.</p>`;
-  else if(r.est==="CONFIRMADA") accion = (gestor||cond)?despachoHTML(r):`<p class="nota">Vehículo ${r.pat} confirmado. Retíralo el ${fCorta(r.salida)}.</p>`;
+  if(gestor&&paso.hecho) accion = hechoHTML(r);
+  else if(gestor&&paso.conf) accion = confirmHTML(r);
+  else if(gestor&&paso.anular) accion = anularHTML(r);
+  else if(r.est==="APROBADA") accion = gestor?asignacionHTML(r):`<p class="nota">El encargado de vehículos está asignando vehículo y conductor.</p>`;
+  else if(r.est==="CONFIRMADA") accion = (gestor||cond)?(entregaAbierta(r)?despachoHTML(r):esperaHTML(r)):`<p class="nota">Vehículo ${r.pat} confirmado. Retíralo el ${fCorta(r.salida)}.</p>`;
   else if(r.est==="EN_TERRENO") accion = (gestor||cond)?recepcionHTML(r):`<p class="nota">En terreno desde ${fCorta(r.bit.sal)}.</p>`;
   else if(r.est==="FINALIZADA") accion = cierreHTML(r);
   else if(r.est==="PEND_JEFE") accion = `<p class="nota">Esperando la visación de ${esc(nom(r.jefe))}.</p>`;
   else if(r.obsLog) accion = `<p class="nota">${esc(r.obsLog)}</p>`;
-  const cuerpo=`<div class="estado-linea">${chipR(r.est)}</div>${flujoHTML(r.est)}
+  if(gestor&&!paso.hecho&&!paso.conf&&!paso.anular&&rol==="super"&&(r._snaps||[]).length) accion+=`<p class="tenue peq" style="margin-top:var(--e-3)">¿El último registro fue un error? <button class="btn sec chico" type="button" id="x-anular">Anular último registro</button></p>`;
+  const cuerpo=`<div class="estado-linea">${chipR(r.est)}</div>${gestor?pasosHTML(r):flujoHTML(r.est)}
    <div class="seccion"><h3>Solicitud</h3><dl class="ficha"><dt>Cometido</dt><dd>${esc(r.cometido)}</dd><dt>Destino</dt><dd>${r.destinos.map(d=>esc(`${d.lug}, ${d.com} (${d.reg})`)).join("<br>")}</dd><dt>Periodo</dt><dd class="num">${fFH(r.salida)} → ${fFH(r.regreso)}</dd><dt>Personas</dt><dd>${pasajeros(r)} · ${[r.sol!==r.cond?nom(r.sol)+" (solicitante)":"",r.cond?nom(r.cond)+" (conductor)":r.reqCond?"conductor del pool":"",r.relevo?nom(r.relevo)+" (relevo)":"",...r.pas.map(nom)].filter(Boolean).map(esc).join(", ")}</dd><dt>Requisitos</dt><dd>${[r.req.t4?"4x4":"",r.req.carga?"espacio de carga":""].filter(Boolean).join(" · ")||"—"}</dd><dt>Distancia</dt><dd>${distanciaTxt(r)}</dd><dt>Solicita</dt><dd>${esc(nom(r.sol))} · autoriza ${esc(nom(r.jefe))}</dd><dt>Imputación</dt><dd>${r.cc?`<span class="mono">${esc(r.cc)}</span> ${cc?esc(cc.t):""}`:"Por definir (jefatura)"}</dd>${r.pat?`<dt>Vehículo</dt><dd>${placa(r.pat)} ${esc(VX[r.pat].marca+" "+VX[r.pat].modelo)}</dd>`:""}</dl>
    ${["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)?`<div><button class="btn sec chico" type="button" data-orden="${r.id}">Ver orden de salida</button></div>`:""}</div>
-   <div class="seccion" id="accion">${accion}</div>`;
+   <div class="seccion" id="accion">${accion}</div>
+   ${gestor&&paso.hecho?"":`<div class="pie-cajon"><button class="btn sec" type="button" data-volver-sal>← Volver a Salidas a terreno</button></div>`}`;
   cajon(`<h2 id="t-cajon" style="font-size:var(--f-xl)" class="mono">${r.id}</h2>`, esc(r.destinos.map(d=>d.com).join(" · ")), cuerpo);
   postSalida(r);
+}
+/* ---------- Flujo de la salida, un paso a la vez (05-11-2026) ----------
+   Aprobación → Asignación → Salida → Regreso. Sólo se muestra el formulario del paso actual;
+   la entrega se habilita el día de la salida; las horas no pueden ser futuras; cada registro
+   pide confirmación; al terminar no aparece el paso siguiente; «Deshacer» dura 10 minutos y
+   después sólo el administrador nacional anula, con motivo. */
+let paso={rid:null,conf:null,hecho:null,form:{},anular:false};
+const UNDO_MS=10*60*1000;
+const diaTxt=s=>fCorta(s).split(" ").slice(0,3).join(" ");
+const entregaAbierta=r=>HOY>=F(r.salida.slice(0,10));
+function pasosHTML(r){
+  const idx={PEND_JEFE:0,OBSERVADA:0,APROBADA:1,CONFIRMADA:2,EN_TERRENO:3,FINALIZADA:4}[r.est];
+  if(idx==null) return flujoHTML(r.est);
+  const b=r.bit||{};
+  const P=[["Aprobación",idx>0?`Aprobada por ${nom(r.jefe)}`:`Esperando a ${nom(r.jefe)}`],
+   ["Asignación",idx>1?`${r.pat} · ${r.cond?nom(r.cond):"conductor propio"}`:idx===1?"Elegir vehículo, tarjeta y conductor":"Se habilita al aprobar la jefatura"],
+   ["Salida",idx>2?`${fCorta(b.sal)} · ${km(b.odoS)} km`:idx===2?(entregaAbierta(r)?"Registrar la entrega del vehículo":`Se habilita el ${diaTxt(r.salida)}`):"Se habilita al asignar"],
+   ["Regreso",idx>3?`${fCorta(b.reg)} · ${km(b.odoR-b.odoS)} km recorridos`:idx===3?"Registrar la recepción del vehículo":"Se habilita al registrar la salida"]];
+  return `<ol class="pasos-sal" aria-label="Etapas de la salida">${P.map(([n,d],i)=>{ const st=i<idx?"hecho":(i===idx&&!(i===2&&!entregaAbierta(r))&&i!==0)?"actual":i===idx&&i===0?"espera":"bloq";
+    return `<li class="${st}" ${st==="actual"?'aria-current="step"':""}><span class="marca" aria-hidden="true">${st==="hecho"?"✓":st==="bloq"?'<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>':i+1}</span><span class="txt"><b>${n}</b><span>${esc(d)}</span></span></li>`}).join("")}</ol>`;
+}
+function esperaHTML(r){
+  return `<div class="regla inf"><span class="ico" aria-hidden="true">i</span><div><b>Nada que registrar todavía</b><span>Vehículo ${esc(r.pat)} asignado. La entrega se habilita el ${diaTxt(r.salida)} (salida programada ${fCorta(r.salida)}).</span></div></div>`;
+}
+function snapSalida(r,tipo){ (r._snaps=r._snaps||[]).push({tipo,t:Date.now(),est:r.est,pat:r.pat,tarjeta:r.tarjeta,cond:r.cond,relevo:r.relevo,obsLog:r.obsLog,bit:r.bit?JSON.parse(JSON.stringify(r.bit)):r.bit,hist:r.hist.length,vkm:r.pat&&VX[r.pat]?VX[r.pat].km:null,cargas:CARGAS.length}); }
+function restaurarSalida(r){ const s=r._snaps.pop(); const pat=r.pat; if(pat&&VX[pat]&&s.vkm!=null&&s.tipo==="reg") VX[pat].km=s.vkm;
+  Object.assign(r,{est:s.est,pat:s.pat,tarjeta:s.tarjeta,cond:s.cond,relevo:s.relevo,obsLog:s.obsLog,bit:s.bit}); r.hist.length=s.hist; CARGAS.length=s.cargas; return s; }
+const NOMBRE_PASO={asig:"la asignación",sal:"la salida",reg:"el regreso"};
+function confirmHTML(r){
+  const c=paso.conf, d=c.d, v=VX[c.tipo==="asig"?asig.pat:r.pat];
+  let txt="";
+  if(c.tipo==="asig") txt=`Vas a asignar <b>${esc(asig.pat)}</b> (${esc(v.marca)} ${esc(v.modelo)}) con la tarjeta <b>${esc(asig.tarj)}</b>${r.reqCond?`, conductor <b>${esc(nom(asig.cond))}</b>${asig.rel?` y relevo <b>${esc(nom(asig.rel))}</b>`:""}`:""}.`;
+  if(c.tipo==="sal") txt=`Vas a registrar la <b>salida</b> de ${esc(r.pat)}: <b>${fCorta(d.hora)}</b>, odómetro <b>${km(d.odo)} km</b>, estanque <b>${esc(d.comb)}</b>. Documentación entregada: ${d.docsEnt.length} de ${DOCS_ENTREGA.length}.`;
+  if(c.tipo==="reg") txt=`Vas a registrar el <b>regreso</b> de ${esc(r.pat)}: <b>${fCorta(d.hora)}</b>, odómetro <b>${km(d.odo)} km</b> (${km(d.odo-r.bit.odoS)} km recorridos), estanque <b>${esc(d.comb)}</b>. ${esc(d.sin?"Sin novedades":"Novedades: "+d.nov)}.`;
+  return `<h3>Confirma ${NOMBRE_PASO[c.tipo]}</h3><div class="confirma"><p>${txt}</p><p class="tenue peq">Revisa los datos antes de confirmar. Si te equivocas, tendrás 10 minutos para deshacer.</p>
+   <div class="acciones"><button class="btn" type="button" id="c-ok">Confirmar</button><button class="btn sec" type="button" id="c-back">Volver y corregir</button></div></div>`;
+}
+function hechoHTML(r){
+  const h=paso.hecho, resta=UNDO_MS-(Date.now()-h.t), min=Math.max(0,Math.ceil(resta/60000));
+  const T={asig:["Asignación confirmada",`La entrega del vehículo se habilita el ${diaTxt(r.salida)}.`],sal:["Salida registrada","El regreso se registra cuando el vehículo vuelva."],reg:["Regreso registrado","La salida quedó finalizada."]}[h.tipo];
+  return `<div class="hecho-paso" role="status"><span class="ok" aria-hidden="true">✓</span><div><h3>${T[0]}</h3><p>${T[1]}</p></div></div>
+   <div class="acciones"><button class="btn" type="button" data-volver-sal>Volver a Salidas a terreno</button>${["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)?`<button class="btn sec" type="button" data-orden="${r.id}">Ver orden de salida</button>`:""}${resta>0?`<button class="btn sec" type="button" id="h-undo">Deshacer (${min} min)</button>`:""}</div>
+   ${resta>0?"":`<p class="tenue peq">Pasaron 10 minutos: para corregir, pide al administrador nacional que anule el registro.</p>`}`;
+}
+function anularHTML(r){ const s=r._snaps[r._snaps.length-1];
+  return `<h3>Anular ${NOMBRE_PASO[s.tipo]}</h3><p class="tenue peq">La salida vuelve a la etapa anterior. Queda en la auditoría con el motivo.</p>
+   <div class="campo"><label for="x-mot">Motivo de la anulación</label><textarea id="x-mot" placeholder="Ej.: se registró la salida de un vehículo que no salió"></textarea></div>
+   <div class="acciones"><button class="btn peligro" type="button" id="x-ok">Anular</button><button class="btn sec" type="button" id="x-back">Cancelar</button></div>`;
+}
+function aplicarPaso(r){
+  const c=paso.conf, d=c.d; snapSalida(r,c.tipo);
+  if(c.tipo==="asig"){ r.pat=asig.pat; r.tarjeta=asig.tarj; if(r.reqCond){r.cond=asig.cond; r.relevo=asig.rel||null} r.est="CONFIRMADA"; if(d.obs) r.obsLog="Logística: "+d.obs;
+    r.hist.push({t:iso(HOY),quien:ROLES[rol].quien,acc:"Asignada"}); audit("Asigna vehículo y conductor",r.id,"Aprobada",r.pat+" · "+nom(r.cond)); asig={pat:null,cond:null,rel:null,tarj:null,rid:r.id}; }
+  if(c.tipo==="sal"){ r.bit={sal:d.hora,odoS:d.odo,combS:d.comb,docs:d.docsEnt.length===DOCS_ENTREGA.length,docsEnt:d.docsEnt}; r.est="EN_TERRENO"; r.hist.push({t:d.hora,quien:ROLES[rol].quien,acc:"Salida"});
+    audit("Registra salida",r.id+" · "+r.pat,"Confirmada","En terreno · "+km(d.odo)+" km"); }
+  if(c.tipo==="reg"){ Object.assign(r.bit,{reg:d.hora,odoR:d.odo,combR:d.comb,nov:d.sin?"Sin novedades":d.nov,lt:d.lt,monto:d.monto});
+    const v=VX[r.pat], ant=v.km; v.km=d.odo; r.est="FINALIZADA"; r.hist.push({t:d.hora,quien:ROLES[rol].quien,acc:"Regreso"});
+    if(d.lt) CARGAS.push({id:nCarga++,fecha:d.hora.slice(0,10),pat:r.pat,origen:"Efectivo",est:"Informada en el regreso",lt:d.lt,monto:d.monto,km:d.odo,cond:r.cond});
+    audit("Registra regreso",r.id+" · "+r.pat,"En terreno","Finalizada · "+km(ant)+" → "+km(d.odo)+" km"); }
+  paso.hecho={tipo:c.tipo,t:Date.now()}; paso.conf=null; paso.form={};
 }
 function asignacionHTML(r){
   const tmp={...r,pat:asig.pat};
@@ -1562,14 +1641,14 @@ function bloqueosEntrega(r){ const v=VX[r.pat], m=[];
 function despachoHTML(r){
   const v=VX[r.pat], bloq=bloqueosEntrega(r);
   return `<h3>Entregar vehículo</h3>${bloq.length?`<div class="regla bl"><span class="ico">✕</span><div><b>No se puede entregar este vehículo</b><span>${bloq.join(" · ")}. Reasigne la salida o regularice el vehículo.</span></div></div>`:""}
-  <div class="campos"><div class="campo"><label for="s-hora">Hora de salida</label><input type="datetime-local" id="s-hora" value="${r.salida}"></div><div class="campo"><label for="s-odo">Odómetro (km)</label><input type="number" id="s-odo" value="${v.km}" min="${v.km}"><span class="ayuda">Último registro: ${km(v.km)} km</span></div>
+  <div class="campos"><div class="campo"><label for="s-hora">Fecha y hora de salida</label><input type="datetime-local" id="s-hora" value="${paso.form.hora||iso(HOY)}" min="${r.salida.slice(0,10)}T00:00" max="${iso(HOY)}"><span class="ayuda">No puede ser posterior a ahora.</span></div><div class="campo"><label for="s-odo">Odómetro (km)</label><input type="number" id="s-odo" value="${v.km}" min="${v.km}"><span class="ayuda">Último registro: ${km(v.km)} km</span></div>
   <div class="campo"><label for="s-comb">Estanque</label><select id="s-comb">${["1/4","1/2","3/4","Lleno"].map(x=>`<option ${x==="Lleno"?"selected":""}>${x}</option>`).join("")}</select></div><div class="campo"><span class="lbl">Retira</span><span>${esc(nom(r.cond))}</span></div></div>
   <fieldset><legend>Documentación entregada</legend><span class="ayuda">Desmarca lo que no se entrega. Queda registrado en la bitácora.</span>${checklistHTML(r)}</fieldset>
   <div class="acciones"><button class="btn" type="button" id="s-ok" ${bloq.length?"disabled":""}>Registrar salida</button></div>`;
 }
 function recepcionHTML(r){
   return `<h3>Recibir vehículo</h3><p class="tenue peq">Salió ${fFH(r.bit.sal)} con ${km(r.bit.odoS)} km y estanque ${esc(r.bit.combS)}.</p>
-  <div class="campos"><div class="campo"><label for="g-hora">Hora de llegada</label><input type="datetime-local" id="g-hora" value="${r.regreso}"></div><div class="campo"><label for="g-odo">Odómetro (km)</label><input type="number" id="g-odo" value="" min="${r.bit.odoS+1}" placeholder="Lea el tablero"><span class="ayuda">Salió con ${km(r.bit.odoS)} km${r.km?` · estimado al regreso: ${km(r.bit.odoS+r.km)} km`:""}</span><span class="ayuda" id="g-rec"></span></div>
+  <div class="campos"><div class="campo"><label for="g-hora">Fecha y hora de llegada</label><input type="datetime-local" id="g-hora" value="${paso.form.hora||iso(HOY)}" min="${r.bit.sal}" max="${iso(HOY)}"><span class="ayuda">Entre la salida y ahora.</span></div><div class="campo"><label for="g-odo">Odómetro (km)</label><input type="number" id="g-odo" value="" min="${r.bit.odoS+1}" placeholder="Lea el tablero"><span class="ayuda">Salió con ${km(r.bit.odoS)} km${r.km?` · estimado al regreso: ${km(r.bit.odoS+r.km)} km`:""}</span><span class="ayuda" id="g-rec"></span></div>
   <div class="campo"><label for="g-comb">Estanque</label><select id="g-comb"><option value="">— Seleccionar —</option>${["Reserva","1/4","1/2","3/4","Lleno"].map(x=>`<option>${x}</option>`).join("")}</select></div>
   <div class="campo"><span class="lbl">Carga de combustible en ruta</span><div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--e-2)"><input type="number" id="g-lt" placeholder="Litros" aria-label="Litros"><input type="number" id="g-monto" placeholder="Monto $" aria-label="Monto"></div></div></div>
   <div class="campo"><label for="g-nov">Novedades mecánicas</label><textarea id="g-nov" placeholder="Ej.: luz quemada, ruido de suspensión, testigo encendido"></textarea><div class="opciones"><label><input type="checkbox" id="g-sin"> Sin novedades</label></div></div>
@@ -1581,31 +1660,35 @@ function cierreHTML(r){
 }
 function postSalida(r){
   const C=$("#capa");
+  C.querySelectorAll("[data-volver-sal]").forEach(b=>b.onclick=()=>{cerrarCapa();render()});
+  const cok=$("#c-ok"); if(cok) cok.onclick=()=>{ aplicarPaso(r); tostada({asig:"Asignación confirmada.",sal:"Salida registrada.",reg:"Regreso registrado."}[paso.hecho.tipo]); abrirSalida(r.id); };
+  const cbk=$("#c-back"); if(cbk) cbk.onclick=()=>{ paso.conf=null; abrirSalida(r.id); };
+  const hu=$("#h-undo"); if(hu) hu.onclick=()=>{ if(Date.now()-paso.hecho.t>UNDO_MS){ tostada("Pasaron 10 minutos: pide al administrador nacional que lo anule."); abrirSalida(r.id); return; } const s=restaurarSalida(r); audit("Deshace "+NOMBRE_PASO[s.tipo],r.id,"—","Vuelve a "+EST[r.est][0]); paso.hecho=null; tostada("Registro deshecho."); abrirSalida(r.id); };
+  const xa=$("#x-anular"); if(xa) xa.onclick=()=>{ paso.anular=true; abrirSalida(r.id); };
+  const xb=$("#x-back"); if(xb) xb.onclick=()=>{ paso.anular=false; abrirSalida(r.id); };
+  const xo=$("#x-ok"); if(xo) xo.onclick=()=>{ const m=$("#x-mot").value.trim(); if(m.length<10){$("#x-mot").setAttribute("aria-invalid","true");$("#x-mot").focus();tostada("Indica el motivo (mín. 10 caracteres).");return} const s=restaurarSalida(r); audit("Anula "+NOMBRE_PASO[s.tipo]+" · "+m,r.id,"—","Vuelve a "+EST[r.est][0]); paso.anular=false; tostada("Registro anulado."); abrirSalida(r.id); };
   const ap=$("#a-pat"); if(ap) ap.onchange=()=>{asig.pat=ap.value||null;asig.cond=null;asig.rel=null;asig.tarj=null;abrirSalida(r.id)};
   const at=$("#a-tarj"); if(at) at.onchange=()=>{asig.tarj=at.value||null;abrirSalida(r.id)};
   const ac=$("#a-cond"); if(ac) ac.onchange=()=>{asig.cond=ac.value||null;abrirSalida(r.id)};
   const ar=$("#a-rel"); if(ar) ar.onchange=()=>{asig.rel=ar.value||null};
   const ok=$("#a-ok"); if(ok) ok.onclick=()=>{ const va=VX[asig.pat]?vehApto(VX[asig.pat],r):{ok:false,motivos:["Vehículo no válido"]}; if(!va.ok){ tostada("El vehículo ya no cumple: "+va.motivos.join(", ")+"."); asig.pat=null; asig.tarj=null; abrirSalida(r.id); return; }
     if(r.reqCond&&asig.cond&&!condApto(asig.cond,{...r,pat:asig.pat}).ok){ tostada("El conductor ya no está disponible."); asig.cond=null; abrirSalida(r.id); return; }
-    r.pat=asig.pat; r.tarjeta=asig.tarj; if(r.reqCond){r.cond=asig.cond; r.relevo=asig.rel||null} r.est="CONFIRMADA"; const o=$("#a-obs").value.trim(); if(o) r.obsLog="Logística: "+o;
-    r.hist.push({t:iso(HOY),quien:ROLES[rol].quien,acc:"Asignada"}); audit("Asigna vehículo y conductor",r.id,"Aprobada",r.pat+" · "+nom(r.cond)); asig={pat:null,cond:null,rel:null,tarj:null,rid:null}; tostada(`${r.id} confirmada con ${r.pat}.`); abrirSalida(r.id); };
+    paso.conf={tipo:"asig",d:{obs:$("#a-obs").value.trim()}}; abrirSalida(r.id); };
   const sd=$("#a-sd"); if(sd) sd.onclick=()=>{ r.est="SIN_DISP"; r.obsLog="Logística: sin vehículos del pool que cumplan requisitos."; audit("Marca sin disponibilidad",r.id,"Aprobada","Sin disponibilidad"); tostada(`${r.id}: se avisó al solicitante.`); abrirSalida(r.id); };
-  const so=$("#s-ok"); if(so) so.onclick=()=>{ if(bloqueosEntrega(r).length) return; const v=VX[r.pat], odo=+$("#s-odo").value;
-    if(odo<v.km){$("#s-odo").setAttribute("aria-invalid","true");tostada(`El odómetro no puede ser menor a ${km(v.km)} km.`);return}
+  const so=$("#s-ok"); if(so) so.onclick=()=>{ if(bloqueosEntrega(r).length) return; const v=VX[r.pat], odo=+$("#s-odo").value, hora=$("#s-hora").value;
+    if(!hora||F(hora)>HOY){$("#s-hora").setAttribute("aria-invalid","true");$("#s-hora").focus();tostada(`La hora de salida no puede ser posterior a ahora (${fCorta(HOY)}).`);return}
+    if(F(hora)<F(r.salida.slice(0,10))){$("#s-hora").setAttribute("aria-invalid","true");$("#s-hora").focus();tostada(`La salida no puede registrarse antes del ${diaTxt(r.salida)}.`);return}
+    if(!(odo>=v.km)){$("#s-odo").setAttribute("aria-invalid","true");$("#s-odo").focus();tostada(`El odómetro no puede ser menor a ${km(v.km)} km.`);return}
     const docsEnt=[...C.querySelectorAll(".s-doc:checked")].map(i=>i.value);
-    r.bit={sal:$("#s-hora").value,odoS:odo,combS:$("#s-comb").value,docs:docsEnt.length===DOCS_ENTREGA.length,docsEnt}; r.est="EN_TERRENO"; r.hist.push({t:r.bit.sal,quien:ROLES[rol].quien,acc:"Salida"});
-    audit("Registra salida",r.id+" · "+r.pat,"Confirmada","En terreno · "+km(odo)+" km"); tostada(`${r.pat} en terreno.`); abrirSalida(r.id); };
+    paso.form={hora,odo,comb:$("#s-comb").value,docsEnt}; paso.conf={tipo:"sal",d:paso.form}; abrirSalida(r.id); };
   const go=$("#g-ok"); if(go){ const rec=()=>{const val=$("#g-odo").value, d=(+val)-r.bit.odoS; $("#g-rec").textContent=!val?"":d>0?`Recorridos: ${km(d)} km`:`Debe superar ${km(r.bit.odoS)} km`}; rec(); $("#g-odo").oninput=rec; $("#g-sin").onchange=e=>{$("#g-nov").disabled=e.target.checked};
     go.onclick=()=>{ const odo=+$("#g-odo").value, sin=$("#g-sin").checked, nov=$("#g-nov").value.trim();
       if(!(odo>r.bit.odoS)){$("#g-odo").setAttribute("aria-invalid","true");$("#g-odo").focus();tostada(`Ingresa el odómetro del tablero (mayor a ${km(r.bit.odoS)} km).`);return}
       if(!$("#g-comb").value){$("#g-comb").setAttribute("aria-invalid","true");$("#g-comb").focus();tostada("Indica el nivel del estanque al regreso.");return}
       if(!sin&&!nov){$("#g-nov").setAttribute("aria-invalid","true");$("#g-nov").focus();tostada("Describe las novedades o marca «Sin novedades».");return}
-      const lt=+$("#g-lt").value||0, monto=+$("#g-monto").value||0;
-      Object.assign(r.bit,{reg:$("#g-hora").value,odoR:odo,combR:$("#g-comb").value,nov:sin?"Sin novedades":nov,lt,monto});
-      const v=VX[r.pat], ant=v.km; v.km=odo; r.est="FINALIZADA"; r.hist.push({t:r.bit.reg,quien:ROLES[rol].quien,acc:"Regreso"});
-      if(lt) CARGAS.push({id:nCarga++,fecha:r.bit.reg.slice(0,10),pat:r.pat,origen:"Efectivo",est:"Informada en el regreso",lt,monto,km:odo,cond:r.cond});
-      audit("Registra regreso",r.id+" · "+r.pat,"En terreno","Finalizada · "+km(ant)+" → "+km(odo)+" km");
-      tostada(`${r.id} cerrada: ${km(odo-r.bit.odoS)} km.`);
+      const lt=+$("#g-lt").value||0, monto=+$("#g-monto").value||0, hora=$("#g-hora").value;
+      if(!hora||F(hora)>HOY||F(hora)<=F(r.bit.sal)){$("#g-hora").setAttribute("aria-invalid","true");$("#g-hora").focus();tostada(`La llegada debe estar entre la salida (${fCorta(r.bit.sal)}) y ahora (${fCorta(HOY)}).`);return}
+      paso.form={hora,odo,comb:$("#g-comb").value,sin,nov,lt,monto}; paso.conf={tipo:"reg",d:paso.form};
       abrirSalida(r.id);
     }; }
 }
