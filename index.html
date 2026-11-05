@@ -674,6 +674,30 @@ footer.pie-app span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;mi
 .jef-mes{display:flex;flex-wrap:wrap;gap:var(--e-2) var(--e-5);align-items:baseline;margin-top:var(--e-4);padding:var(--e-2) var(--e-4);background:var(--sup);border:1px solid var(--linea);border-radius:var(--r-l);font-size:var(--f-s);color:var(--tinta-2)}
 .jef-mes>b{color:var(--verde-tinta)} .jef-mes span b{color:var(--tinta);font-size:var(--f-m);margin-right:4px}
 @media (max-width:899.98px){ /* columna */ .jef-2{grid-template-columns:minmax(0,1fr)} }
+/* Calendario de mi equipo (jefatura) */
+.cal-ctl{display:flex;align-items:center;gap:var(--e-2);flex-wrap:wrap} .cal-tit{min-width:9.5em;text-align:center}
+.cal-panel{padding:var(--e-3) var(--e-4)}
+.cal-ley{display:flex;flex-wrap:wrap;gap:var(--e-2);align-items:center;margin-bottom:var(--e-2)} .cal-ley .chip b{margin-left:4px}
+.cal-mes{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));grid-template-rows:auto repeat(var(--semanas),minmax(0,1fr));height:calc(100vh - 430px);height:calc(100dvh - 430px);min-height:250px;border:1px solid var(--linea);border-radius:var(--r-m);overflow:hidden}
+.cal-dsem{font-size:var(--f-xs);color:var(--tinta-3);text-transform:uppercase;letter-spacing:.05em;text-align:center;padding:4px 0;background:var(--sup-2)}
+.cal-dia{border-top:1px solid var(--linea);border-left:1px solid var(--linea);padding:2px 4px;min-width:0;overflow:hidden;display:flex;flex-direction:column;gap:2px}
+.cal-dia:nth-child(7n+1){border-left:0} .cal-dia.fuera{background:var(--sup-2)} .cal-dia.finde{background:var(--sup-2)}
+.cal-dia.hoy .cal-n{background:var(--boton);color:#fff;border-radius:var(--r-pill);padding:0 6px}
+.cal-n{font-size:var(--f-xs);color:var(--tinta-2);align-self:flex-start}
+.cal-ev{display:block;width:100%;text-align:left;border:0;border-radius:var(--r-s);padding:1px 6px;font:inherit;font-size:11px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.cal-ev:hover{filter:brightness(.95);text-decoration:underline}
+.cal-mas{font-size:11px;color:var(--tinta-3)}
+.cal-anio{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--e-2) var(--e-4)}
+.cal-mini-t{background:none;border:0;padding:0 0 4px;font:inherit;font-weight:600;color:var(--verde-tinta);cursor:pointer;text-align:left}
+.cal-mini-t .num{font-size:var(--f-xs);background:var(--verde-tinte);border-radius:var(--r-pill);padding:0 6px;margin-left:4px}
+.cal-mini-g{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;text-align:center}
+.cal-mini-g .cal-dsem{background:none;padding:0;font-size:10px}
+.cal-md:not(.c-pend):not(.c-disp):not(.c-res):not(.c-terr):not(.c-neu){background:none}
+.cal-md[class*=" c-"]{font-weight:700}
+.cal-md{border:0;font:inherit;font-size:11px;line-height:18px;border-radius:3px;padding:0;color:var(--tinta-2);cursor:pointer}
+.cal-md.hoy{outline:2px solid var(--boton);outline-offset:-2px}
+@media (max-width:899.98px){ /* columna */ .cal-anio{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:559.98px){ /* teléfono */ .cal-anio{grid-template-columns:repeat(2,minmax(0,1fr))} .cal-mes{height:auto;min-height:0;grid-template-rows:auto} .cal-ev{font-size:10px;padding:0 3px} .cal-ev b{display:none} .cab-mis{flex-wrap:wrap} }
 </style>
 
 </head><body>
@@ -1586,7 +1610,7 @@ const mesCerrado = f=>CIERRES.some(c=>c.estado==="Cerrado"&&f.slice(0,7)===c.mes
 
 /* ---------- Perfiles y navegación ---------- */
 ROLES.solicitante.nav=[["inicio","Inicio"],["nueva","Nueva solicitud"],["mis","Mis salidas"]];
-ROLES.jefatura.nav=[["inicio","Inicio"],["bandeja","Por aprobar"],["equipo","Salidas de mi equipo"]];
+ROLES.jefatura.nav=[["inicio","Inicio"],["bandeja","Por aprobar"],["equipo","Salidas de mi equipo"],["calendario","Calendario de mi equipo"]];
 ROLES.encargado.nav=[["hoy","Inicio"],["salidas","Salidas"],["flota","Flota"],["conductores","Conductores"],["combustible","Combustible y gastos"],["reportes","Reportes"]];
 delete ROLES.conductor; // el conductor no usa la plataforma: la salida y el regreso los registra el encargado
 ROLES.super.nav=[...ROLES.encargado.nav,["config","Configuración"]];
@@ -1595,7 +1619,7 @@ const VISTAS_INICIO=["novedades","vencimientos","mantenciones"];
 /* Encargado y administrador: el menú sólo muestra «Inicio»; el resto se abre desde las tarjetas */
 ROLES.encargado.menu=[["hoy","Inicio"]]; ROLES.super.menu=[["hoy","Inicio"]]; ROLES.solicitante.menu=[["inicio","Inicio"]]; ROLES.jefatura.menu=[["inicio","Inicio"]];
 const HOME=()=>ROLES[rol].nav[0][0];
-const NAV_ICO={inicio:"home",hoy:"home",nueva:"plus",mis:"lista",bandeja:"aprobar",equipo:"equipo",salidas:"ruta",flota:"car",conductores:"licencia",combustible:"combustible",reportes:"grafico",config:"config"};
+const NAV_ICO={calendario:"calendario",inicio:"home",hoy:"home",nueva:"plus",mis:"lista",bandeja:"aprobar",equipo:"equipo",salidas:"ruta",flota:"car",conductores:"licencia",combustible:"combustible",reportes:"grafico",config:"config"};
 const ico=(n,c="ico")=>`<svg class="${c}" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-${n}"/></svg>`;
 const iniciales=n=>String(n||"").split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase();
 
@@ -1623,7 +1647,7 @@ function render(){
   if(!ROLES[rol].nav.some(n=>n[0]===vista) && !(puedeGestionar()&&VISTAS_INICIO.includes(vista))) vista=ROLES[rol].nav[0][0];
   pintarBarra();
   const viejo=$("#vista"), nuevo=viejo.cloneNode(false); viejo.replaceWith(nuevo);
-  const fn={mantenciones:vMantenciones,novedades:vNovedades,vencimientos:vVencimientos,inicio:vInicio,mis:vMis,nueva:vNueva,visor:vVisor,bandeja:vBandeja,equipo:vEquipo,hoy:vHoy,salidas:vSalidas,flota:vFlota,conductores:vConductores,combustible:vCombustible,reportes:vReportes,config:vConfig}[vista];
+  const fn={mantenciones:vMantenciones,novedades:vNovedades,vencimientos:vVencimientos,inicio:vInicio,mis:vMis,nueva:vNueva,visor:vVisor,bandeja:vBandeja,equipo:vEquipo,calendario:vCalJefe,hoy:vHoy,salidas:vSalidas,flota:vFlota,conductores:vConductores,combustible:vCombustible,reportes:vReportes,config:vConfig}[vista];
   $("#vista").innerHTML=(ROLES[rol].menu&&vista!==HOME()&&!VISTAS_INICIO.includes(vista)?volverHTML():"")+fn();
   (post[vista]||(()=>{}))();
 }
@@ -1739,14 +1763,13 @@ function vInicio(){
     const kmMes=mes.reduce((a,r)=>a+(r.bit.odoR?r.bit.odoR-r.bit.odoS:0),0), diasMes=mes.reduce((a,r)=>a+Math.max(1,Math.ceil((F(r.bit.reg||r.regreso)-F(r.bit.sal))/DIA)),0);
     const pers=mes.reduce((a,r)=>a+pasajeros(r),0), folios=[...new Set(mes.map(r=>r.cc).filter(Boolean))];
     ACCESOS=[{v:"bandeja",ico:"aprobar",t:"Por aprobar",d:pend.length?`La más antigua espera desde ${hace(dias(pend[0].fSol))}.`:"No hay solicitudes esperando tu decisión.",cta:"Revisar",n:pend.length,nl:"por aprobar",aviso:true,principal:true},
-             {v:"equipo",ico:"ruta",t:"En terreno hoy",d:terr.length?terr.map(r=>`${esc(nom(r.sol).split(" ")[0])} · ${esc(r.destinos[0]?.com||"")}, regresa ${fCorta(r.regreso)}`).join("<br>"):"Nadie de tu equipo está en terreno.",cta:"Ver salidas",n:terr.length,nl:"en terreno"},
-             {v:"equipo",ico:"calendario",t:"Próximos 7 días",d:prox.length?`${prox.length} ${prox.length===1?"salida aprobada":"salidas aprobadas"}; la primera el ${fCorta(prox.sort((a,b)=>a.salida.localeCompare(b.salida))[0].salida)}.`:"Sin salidas aprobadas para la próxima semana.",cta:"Ver salidas",n:prox.length,nl:"próximas"},
+             {v:"calendario",ico:"calendario",t:"Calendario de mi equipo",d:`Salidas y vehículos de tu equipo por estado, por mes o por año.${terr.length?` Hoy hay ${terr.length} en terreno.`:""}`,cta:"Ver calendario"},
              {v:"equipo",ico:"equipo",t:"Salidas de mi equipo",d:"Historial de lo que autorizaste y Excel mensual o anual.",cta:"Ver historial"}];
     const filaPend=r=>`<li class="mini-fila"><button type="button" class="mini-dato" data-revisar="${r.id}"><span class="mono peq">${r.id}</span><b>${esc(nom(r.sol))}</b><span class="tenue peq">${fCorta(r.salida)} · ${esc(r.destinos.map(d=>d.com).join(" · "))} · ${pasajeros(r)} personas · solicitada ${hace(dias(r.fSol))}</span></button><button class="btn chico" type="button" data-revisar="${r.id}">Revisar</button></li>`;
     const filaSem=r=>`<li class="mini-fila"><button type="button" class="mini-dato" data-sal="${r.id}"><span class="mono peq">${fCorta(r.salida)}</span><b>${esc(nom(r.sol))}</b><span class="tenue peq">${esc(r.destinos.map(d=>d.com).join(" · "))}${r.pat?" · "+esc(r.pat):""}</span></button>${chipR(r.est)}</li>`;
     const nPend=3, nSem=3;
     return heroHTML(pend.length?`Tienes ${pend.length} ${pend.length===1?"solicitud":"solicitudes"} de tu equipo esperando tu aprobación.`:"No tienes solicitudes pendientes de aprobación.")+
-      `<div class="accesos acc-n acc-jef" style="--n:4">${accesosHTML(ACCESOS).replace(/^<div[^>]*>/,"").replace(/<\/div>$/,"")}</div>
+      `<div class="accesos acc-n acc-jef" style="--n:3">${accesosHTML(ACCESOS).replace(/^<div[^>]*>/,"").replace(/<\/div>$/,"")}</div>
       <div class="jef-2">
        <section class="panel"><header><h2>Por aprobar</h2><span class="sub">${pend.length?`${pend.length} ${pend.length===1?"solicitud":"solicitudes"}, la más antigua primero`:"Bandeja al día"}</span></header>
         ${pend.length?`<ul class="mini-lista">${pend.slice(0,nPend).map(filaPend).join("")}</ul>${pend.length>nPend?`<button class="link-edit mini-mas" type="button" data-ir="bandeja">Ver las ${pend.length}</button>`:""}`:`<p class="mini-vacio">No hay solicitudes esperando tu decisión.</p>`}</section>
@@ -2184,6 +2207,48 @@ post.reportes = ()=>{
 
 /* ======================= JEFATURA: SALIDAS DEL EQUIPO ======================= */
 post.equipo = ()=>{ postExport("equipo"); if(postPaginar("eq")) return; };
+/* ----- Calendario de mi equipo (jefatura): salidas y vehículos por estado, mensual o anual (05-11-2026) ----- */
+const CAL_EST=[["PEND","Pendiente de aprobación","c-pend",["PEND_JEFE","OBSERVADA"]],["APROB","Aprobada · por asignar","c-disp",["APROBADA"]],["ASIG","Vehículo asignado","c-res",["CONFIRMADA"]],["TERR","En terreno","c-terr",["EN_TERRENO"]],["FIN","Finalizada","c-neu",["FINALIZADA"]]];
+const calGrupo=r=>CAL_EST.find(g=>g[3].includes(r.est));
+const DIAS_SEM=["lu","ma","mi","ju","vi","sá","do"];
+function vCalJefe(){
+  const c=sel.calj=sel.calj||{modo:"mes",anio:HOY.getFullYear(),mes:HOY.getMonth()};
+  const yo=ROLES[rol].quien, L=RES.filter(r=>r.jefe===yo&&calGrupo(r));
+  const hoyIso=iso(HOY).slice(0,10), dIso=d=>iso(d).slice(0,10);
+  const enDia=d=>{const a=dIso(d); return L.filter(r=>(r.bit?.sal||r.salida).slice(0,10)<=a&&(r.bit?.reg||r.regreso).slice(0,10)>=a).sort((x,y)=>x.salida.localeCompare(y.salida));};
+  const ini=c.modo==="mes"?new Date(c.anio,c.mes,1):new Date(c.anio,0,1), fin=c.modo==="mes"?new Date(c.anio,c.mes+1,1):new Date(c.anio+1,0,1);
+  const delPer=L.filter(r=>F(r.salida)<fin&&F(r.bit?.reg||r.regreso)>=ini);
+  const titulo=c.modo==="mes"?`${MESES[c.mes][0].toUpperCase()+MESES[c.mes].slice(1)} ${c.anio}`:`Año ${c.anio}`;
+  const leyenda=`<div class="cal-ley">${CAL_EST.map(g=>{const n=delPer.filter(r=>calGrupo(r)===g).length; return `<span class="chip ${g[2]}">${g[1]} <b class="num">${n}</b></span>`;}).join("")}<span class="tenue peq">Anuladas y rechazadas no se muestran.</span></div>`;
+  let cuerpo="";
+  if(c.modo==="mes"){
+    const pri=new Date(c.anio,c.mes,1), off=(pri.getDay()+6)%7, nd=new Date(c.anio,c.mes+1,0).getDate(), celdas=Math.ceil((off+nd)/7)*7;
+    cuerpo=`<div class="cal-mes" style="--semanas:${celdas/7}">${DIAS_SEM.map(d=>`<div class="cal-dsem">${d}</div>`).join("")}${[...Array(celdas)].map((_,i)=>{
+      const n=i-off+1; if(n<1||n>nd) return `<div class="cal-dia fuera"></div>`;
+      const d=new Date(c.anio,c.mes,n), lst=enDia(d), finde=d.getDay()===0||d.getDay()===6||FERIADOS.includes(dIso(d));
+      return `<div class="cal-dia ${finde?"finde":""} ${dIso(d)===hoyIso?"hoy":""}"><span class="cal-n">${n}</span>${lst.slice(0,3).map(r=>{const g=calGrupo(r); return `<button type="button" class="cal-ev ${g[2]}" data-sal="${r.id}" title="${r.id} · ${esc(nom(r.sol))} · ${esc(r.destinos.map(x=>x.com).join(", "))} · ${g[1]}">${r.pat?`<b>${esc(r.pat)}</b>`:"Sin vehículo"} · ${esc(r.destinos[0]?.com||"")}</button>`;}).join("")}${lst.length>3?`<span class="cal-mas">+${lst.length-3} más</span>`:""}</div>`;
+    }).join("")}</div>`;
+  } else {
+    const prio=["TERR","ASIG","APROB","PEND","FIN"];
+    cuerpo=`<div class="cal-anio">${MESES.map((m,mi)=>{const pri=new Date(c.anio,mi,1), off=(pri.getDay()+6)%7, nd=new Date(c.anio,mi+1,0).getDate();
+      const nMes=L.filter(r=>F(r.salida)<new Date(c.anio,mi+1,1)&&F(r.bit?.reg||r.regreso)>=pri).length;
+      return `<section class="cal-mini"><button type="button" class="cal-mini-t" data-calmes="${mi}">${m[0].toUpperCase()+m.slice(1)}${nMes?` <span class="num">${nMes}</span>`:""}</button><div class="cal-mini-g">${DIAS_SEM.map(d=>`<span class="cal-dsem">${d[0]}</span>`).join("")}${[...Array(off)].map(()=>"<span></span>").join("")}${[...Array(nd)].map((_,k)=>{const d=new Date(c.anio,mi,k+1), lst=enDia(d);
+        const g=lst.length?CAL_EST.find(x=>x[0]===prio.find(p=>lst.some(r=>calGrupo(r)[0]===p))):null;
+        return `<button type="button" class="cal-md ${g?g[2]:""} ${dIso(d)===hoyIso?"hoy":""}" data-calmes="${mi}" ${lst.length?`title="${fF(d)} · ${lst.length} ${lst.length===1?"salida":"salidas"}: ${esc(lst.map(r=>(r.pat||"sin vehículo")+" "+calGrupo(r)[1].toLowerCase()).join(", "))}"`:`tabindex="-1"`}>${k+1}</button>`;}).join("")}</div></section>`;}).join("")}</div>`;
+  }
+  return `<div class="cab-vista cab-compacta cab-mis"><h1>Calendario de mi equipo</h1><div class="cal-ctl">
+     <div class="seg" role="group" aria-label="Vista"><button type="button" data-calmodo="mes" aria-pressed="${c.modo==="mes"}">Mes</button><button type="button" data-calmodo="anio" aria-pressed="${c.modo==="anio"}">Año</button></div>
+     <button class="btn sec chico" type="button" data-calmov="-1" aria-label="Anterior">‹</button><b class="cal-tit">${titulo}</b><button class="btn sec chico" type="button" data-calmov="1" aria-label="Siguiente">›</button>
+     <button class="btn sec chico" type="button" data-calhoy>Hoy</button></div></div>
+   <section class="panel cal-panel">${leyenda}${cuerpo}</section>`;
+}
+post.calendario = ()=>{
+  const V=$("#vista"), c=sel.calj;
+  V.querySelectorAll("[data-calmodo]").forEach(b=>b.onclick=()=>{c.modo=b.dataset.calmodo; render()});
+  V.querySelectorAll("[data-calmov]").forEach(b=>b.onclick=()=>{const k=+b.dataset.calmov; if(c.modo==="anio") c.anio+=k; else { c.mes+=k; if(c.mes<0){c.mes=11;c.anio--} if(c.mes>11){c.mes=0;c.anio++} } render()});
+  V.querySelector("[data-calhoy]").onclick=()=>{c.anio=HOY.getFullYear(); c.mes=HOY.getMonth(); render()};
+  V.querySelectorAll("[data-calmes]").forEach(b=>b.onclick=()=>{c.mes=+b.dataset.calmes; c.modo="mes"; render()});
+};
 function vEquipo(){
   const yo=ROLES[rol].quien, lista=RES.filter(r=>r.jefe===yo).sort((a,b)=>b.salida.localeCompare(a.salida));
   const {ver,pie}=paginar(lista,"eq","Selecciona una fila para ver el detalle de la salida.");
