@@ -495,6 +495,8 @@ body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{d
 .doc-edit input{width:auto;min-width:160px}
 .faltan{border:2px solid var(--st-malo);background:var(--st-malo-bg);color:var(--tinta);border-radius:var(--r-m);padding:var(--e-3) var(--e-4)}
 .faltan ul{margin:var(--e-1) 0 0;padding-left:1.2em}
+.form-sol-env{max-width:960px}
+.err-campo{display:flex;gap:6px;align-items:flex-start;color:var(--st-malo);font-size:var(--f-s);font-weight:600;margin-top:4px}
 .l-manuales{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:var(--e-1)}
 @media (max-width:559.98px){ .l-manuales{grid-template-columns:minmax(0,1fr)} }
 .l-manuales a{display:flex;align-items:center;gap:var(--e-2);padding:var(--e-2) var(--e-3);border-radius:var(--r-m);color:var(--verde-tinta);font-weight:500;text-decoration:none;border:1px solid var(--linea)}
@@ -800,6 +802,7 @@ function condApto(cid, r, ignorar){
       conductores POOL con caución y licencia vigentes al regreso y sin otra salida que se cruce.
    Sólo avisa: la solicitud se puede enviar igual y el encargado decide al asignar. */
 const REQ_SOL=/^(Capacidad|Requiere 4x4|Sin espacio de carga)/;
+const CAMPO_ERR={"Faltan las fechas":"f-sal","Fechas incoherentes":"f-reg","Salida en el pasado":"f-sal","Faltan los kilómetros":"f-km","Destino incompleto":"f-dest","Capacidad excedida":"f-pas","Falta conductor":"f-cond","Conductor no habilitado":"f-cond","Revisa los acompañantes":"f-pas","Cometido incompleto":"f-com"};
 function disponibilidad(r){
   const region="Oficina Central";
   const pool=VEH.filter(v=>v.modalidad.startsWith("Pool")&&regionBase(v)===region);
@@ -936,8 +939,7 @@ function vNueva(){
   return cab("Nueva solicitud de vehículo","Reemplaza el formulario Word «Solicitud de vehículo para salida a terreno» y el correo de aprobación. Tus datos se cargan desde la nómina institucional.","ERS §4.3-A · Formulario vigente")+
   (b.editId?`<div class="regla av" style="margin-bottom:var(--e-4)"><span class="ico" aria-hidden="true">!</span><div><b>Corrigiendo la solicitud ${b.editId}</b><span>${esc(b.obs||"Tu jefatura pidió corregir la solicitud.")} Al enviar, vuelve a tu jefatura para su aprobación.</span></div></div>`:"")+
   (b.ejemplo&&!b.editId?`<p class="nota" style="margin-bottom:var(--e-4)">Formulario precargado con un ejemplo para la demostración. <button class="btn sec chico" type="button" id="btn-limpiar">Limpiar formulario</button></p>`:"")+
-  `<div class="grid g-form rev-izq"><aside class="panel rev-panel"><header><h2>Revisión automática</h2><span class="sub">Se actualiza al escribir</span></header><div class="cuerpo"><div class="revision" id="revision"></div></div></aside>
-  <form id="form-sol" class="grid" novalidate>
+  `<div class="form-sol-env"><form id="form-sol" class="grid" novalidate>
    <fieldset><legend><span class="seccion-num">1</span>Identificación</legend><div class="campos">
      <div class="campo"><span class="lbl">Solicitante</span><input type="text" id="f-sol" readonly value="${esc(yo.nom)} · ${esc(yo.rut)}"><span class="ayuda">${esc(yo.cargo)} · ${esc(yo.ger)}</span></div>
      <div class="campo"><label for="f-jefe">Jefatura que autoriza el cometido</label><select id="f-jefe">${jefes.map(j=>`<option value="${j.id}" ${j.id===b.jefe?"selected":""}>${esc(j.nom)} · ${esc(j.cargo)}</option>`).join("")}</select></div>
@@ -986,7 +988,7 @@ post.nueva = ()=>{
     $("#f-dur").textContent = dur>0?`${Math.floor(dur/24)} ${Math.floor(dur/24)===1?"día":"días"} y ${Math.round(dur%24)} horas de ocupación del vehículo`:"—";
     $("#f-tot").textContent = tot+" (tú, conductor y acompañantes)";
     const out=[]; const reg=(c,t,d)=>out.push(`<div class="regla ${c}"><span class="ico" aria-hidden="true">${{ok:"✓",av:"!",bl:"✕",inf:"i"}[c]}</span><div><b>${t}</b><span>${d}</span></div></div>`);
-    if(!(dur>0)) reg("bl","Fechas incoherentes","El regreso debe ser posterior a la salida."); else if(F(b.salida)<HOY) reg("bl","Salida en el pasado","La fecha de salida es anterior a hoy."); else reg("ok","Fechas válidas",`Salida ${fCorta(b.salida)} · regreso ${fCorta(b.regreso)}.`);
+    if(!b.salida||!b.regreso) reg("bl","Faltan las fechas",!b.salida&&!b.regreso?"Indica la fecha y hora de salida y de regreso.":!b.salida?"Indica la fecha y hora de salida.":"Indica la fecha y hora de regreso."); else if(!(dur>0)) reg("bl","Fechas incoherentes","El regreso debe ser posterior a la salida."); else if(F(b.salida)<HOY) reg("bl","Salida en el pasado","La fecha de salida es anterior a hoy."); else reg("ok","Fechas válidas",`Salida ${fCorta(b.salida)} · regreso ${fCorta(b.regreso)}.`);
     const destOk=b.destinos.every(d=>d.reg&&d.prov&&d.com&&d.lug&&(d.lug!==OTRA||d.otro.trim()));
     b.km>0? reg("ok","Kilómetros aproximados",`${km(b.km)} km en total`+((F(b.regreso)-F(b.salida))>0?` · ${km(b.km/Math.max(1,Math.ceil((F(b.regreso)-F(b.salida))/DIA)))} km por día`:"")) : reg("bl","Faltan los kilómetros","Indica la distancia total estimada del viaje (ida, desplazamientos internos y regreso).");
     destOk? reg("ok","Destinos",b.destinos.map(d=>d.com).join(" · ")) : reg("bl","Destino incompleto","Completa región, provincia, comuna y localidad de cada destino.");
@@ -1011,10 +1013,11 @@ post.nueva = ()=>{
       vistosR.add(k); if(m) probPas.push({i,m,rut:x.rut}); });
     if(probPas.length) reg("bl","Revisa los acompañantes",probPas.map(x=>`${x.rut||"Sin RUT"}: ${x.m}`).join(" · ")+"."); else if(pv.length) reg("ok","Acompañantes",`${pv.length} ${pv.length===1?"acompañante":"acompañantes"}.`);
     if(b.cometido.trim().length<15) reg("bl","Cometido incompleto","Describe la labor institucional a realizar (mín. 15 caracteres).");
-    $("#revision").innerHTML=out.join("");
-    b._bloqueos=out.filter(x=>x.includes('regla bl')).map(x=>(x.match(/<b>(.*?)<\/b>/)||[])[1]);
-    $("#f-sal").setAttribute("aria-invalid",!(dur>0)); $("#f-com").setAttribute("aria-invalid",b.cometido.trim().length<15);
-    document.querySelectorAll('#f-pas input[data-k="rut"]').forEach(i=>{ const pr=probPas.find(x=>rutLimpio(x.rut)===rutLimpio(i.value)&&i.value); i.setAttribute("aria-invalid",!!pr); });
+    // Sin panel de revisión: cada campo obligatorio muestra su propio mensaje y el envío queda bloqueado mientras falte algo.
+    const errs=out.filter(x=>x.includes('regla bl')).map(x=>({t:(x.match(/<b>(.*?)<\/b>/)||[])[1],d:(x.match(/<span>(.*?)<\/span><\/div><\/div>$/)||[])[1]||""}));
+    errs.forEach(x=>x.campo=CAMPO_ERR[x.t]||"f-com");
+    b._bloqueos=errs.map(x=>x.t); b._errs=errs;
+    pintarErrores();
     const fl=$("#f-faltan"); if(fl&&!fl.hidden) mostrarFaltan();
   };
   const rutEnVivo=(inp)=>{ const f=rutFormato(inp.value); if(f!==inp.value){ inp.value=f; } };
@@ -1036,9 +1039,20 @@ post.nueva = ()=>{
   $("#btn-pas").onclick=()=>{b.pasList.push({rut:"",nom:""});pintarPas();revisar(); const ins=document.querySelectorAll('#f-pas input[data-k="rut"]'); ins[ins.length-1]?.focus();};
   const limpiar=$("#btn-limpiar"); if(limpiar) limpiar.onclick=()=>{borrador=borradorVacio();render()};
   $("#btn-borr").onclick=()=>{leer();tostada("Solicitud guardada sin enviar. Puedes retomarla desde esta pantalla.")};
-  function mostrarFaltan(){ const fl=$("#f-faltan"), L=b._bloqueos||[]; if(!L.length){ fl.hidden=true; fl.innerHTML=""; return; } fl.hidden=false; fl.innerHTML=`<b>Antes de enviar, corrige ${L.length===1?"esto":"estos "+L.length+" puntos"}:</b><ul>${L.map(x=>`<li>${x}</li>`).join("")}</ul>`; }
+  function pintarErrores(){
+    document.querySelectorAll("#form-sol .err-campo").forEach(x=>x.remove());
+    document.querySelectorAll("#form-sol [aria-invalid]").forEach(x=>{x.removeAttribute("aria-invalid"); x.removeAttribute("aria-describedby");});
+    const ver=()=>b._intento; // los mensajes aparecen al intentar enviar y desde ahí se actualizan al escribir
+    const porCampo={}; (b._errs||[]).forEach(x=>{ if(ver(x.campo)) (porCampo[x.campo]=porCampo[x.campo]||[]).push(x); });
+    Object.entries(porCampo).forEach(([k,L])=>{ const el=$("#"+k); if(!el) return; const campo=el.closest(".campo")||el.parentElement;
+      const m=document.createElement("span"); m.className="err-campo"; m.id=k+"-err"; m.innerHTML=`<span aria-hidden="true">✕</span><span>${L.map(x=>x.d||x.t).join(" ")}</span>`; campo.appendChild(m);
+      const foco=["INPUT","SELECT","TEXTAREA"].includes(el.tagName)?[el]:[...el.querySelectorAll("input,select")].filter(i=>k==="f-pas"?(!!i.value&&L.some(x=>x.d.includes(i.value))):!i.value);
+      foco.forEach(i=>{i.setAttribute("aria-invalid","true"); i.setAttribute("aria-describedby",k+"-err");}); });
+    if(porCampo["f-sal"]&&!b.regreso){ const r=$("#f-reg"); r.setAttribute("aria-invalid","true"); r.setAttribute("aria-describedby","f-sal-err"); }
+  }
+  function mostrarFaltan(){ const fl=$("#f-faltan"), L=b._errs||[]; if(!L.length){ fl.hidden=true; fl.innerHTML=""; return; } fl.hidden=false; fl.innerHTML=`<b>No se puede enviar: ${L.length===1?"falta completar un campo":"faltan "+L.length+" campos por completar"}.</b> Están marcados en rojo.`; }
   f.addEventListener("submit",e=>{e.preventDefault();leer();revisar();
-    if((b._bloqueos||[]).length){ mostrarFaltan(); $("#f-faltan").scrollIntoView({block:"center",behavior:"smooth"}); return; }
+    if((b._bloqueos||[]).length){ b._intento=true; pintarErrores(); mostrarFaltan(); const p1=$("#"+b._errs[0].campo); const foco=p1&&(["INPUT","SELECT","TEXTAREA"].includes(p1.tagName)?p1:p1.querySelector("[aria-invalid],input,select")); if(foco){ foco.scrollIntoView({block:"center",behavior:"smooth"}); foco.focus({preventScroll:true}); } return; }
     const destinos=b.destinos.map(d=>({reg:d.reg,prov:d.prov,com:d.com,lug:d.lug===OTRA?d.otro.trim():d.lug}));
     const relevo=null;
     const pas=pasValidos().map(x=>personaPorRut(x.rut).id);
