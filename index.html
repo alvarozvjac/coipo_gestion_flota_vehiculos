@@ -490,7 +490,7 @@ footer.pie-app{background:var(--verde-tinta);color:#e9f1e7;border-top:4px solid 
 .accesos .acceso .a-pie{margin-top:var(--e-1);font-size:var(--f-xs)}
 .accesos .acceso .a-cuenta{top:var(--e-3);right:var(--e-3);font-size:var(--f-xs)}
 @media (max-width:899.98px){ /* columna */ .accesos.acc-4{grid-template-columns:repeat(2,minmax(0,1fr))} }
-@media (max-width:559.98px){ /* teléfono */ .accesos.acc-4,.accesos.acc-5{grid-template-columns:minmax(0,1fr)} .acceso.banda{display:flex} }
+@media (max-width:559.98px){ /* teléfono */ .accesos.acc-n,.accesos.acc-4,.accesos.acc-5{grid-template-columns:minmax(0,1fr)} .acceso.banda{display:flex} }
 .pasos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;background:var(--sup);border:1px solid var(--linea);border-radius:8px;box-shadow:var(--s-1);margin-bottom:var(--e-6);counter-reset:paso}
 .paso{padding:var(--e-4) var(--e-5);position:relative;display:flex;gap:var(--e-3);align-items:flex-start}
 .paso+.paso{border-left:1px solid var(--linea)}
@@ -568,6 +568,11 @@ main{padding-top:var(--e-4)}
 .accesos .acceso p{grid-area:txt;align-self:start}
 .accesos .acceso .a-pie{grid-area:pie;margin-top:2px}
 .accesos .acceso.banda{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"ico tit pie" "ico txt pie"}
+.accesos.acc-n{grid-template-columns:repeat(var(--n),minmax(0,1fr))}
+.guia{display:flex;flex-wrap:wrap;align-items:center;gap:var(--e-2);font-size:var(--f-xs);color:var(--tinta-3);margin:0 0 var(--e-4)}
+.guia b{color:var(--tinta-2);font-weight:600;margin-right:var(--e-1)}
+.guia span{display:inline-flex;align-items:center;gap:6px}
+.guia i{font-style:normal;display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1px solid var(--linea-fuerte);font-size:11px;color:var(--tinta-2)}
 .ini-2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--e-5);align-items:start}
 .ini-2 .accesos{grid-template-columns:repeat(2,minmax(0,1fr))}
 .prox-sal{margin-bottom:var(--e-4)}
@@ -579,7 +584,8 @@ main{padding-top:var(--e-4)}
   .hero{padding:var(--e-3) var(--e-5)} .accesos .acceso{padding:var(--e-2) var(--e-4)} main{padding-top:var(--e-3)}
 }
 @media (max-width:1399.98px){ /* ancho */ .accesos.acc-5{grid-template-columns:repeat(5,minmax(0,1fr))} }
-@media (max-width:899.98px){ /* columna */ .accesos.acc-5{grid-template-columns:repeat(2,minmax(0,1fr))} .ini-2{grid-template-columns:minmax(0,1fr);gap:0} }
+@media (max-width:899.98px){ /* columna */ .accesos.acc-n{grid-template-columns:repeat(2,minmax(0,1fr))} .accesos.acc-5{grid-template-columns:repeat(2,minmax(0,1fr))} .ini-2{grid-template-columns:minmax(0,1fr);gap:0} }
+@media (max-width:559.98px){ /* teléfono */ .accesos.acc-n,.accesos.acc-5{grid-template-columns:minmax(0,1fr)} }
 </style>
 
 </head><body>
@@ -1495,10 +1501,10 @@ function heroHTML(txt){
   return `<section class="hero"><div style="position:relative;z-index:1"><span class="eyebrow">${ico("escudo")}${esc(ROLES[rol].nombre)} · ${esc(p.cargo)}</span><h1>Hola, ${esc(nombre)}</h1><p>${txt}</p></div><span class="fecha">${ico("calendario")}${DS[HOY.getDay()]} ${fF(HOY)}</span></section>`;
 }
 function accesosHTML(lista){
-  return `<div class="accesos ${lista===ACCESOS&&rol==="encargado"?"acc-4":lista===ACCESOS&&rol==="super"?"acc-4 acc-5":""}">${lista.map((a,i)=>`<button type="button" class="acceso ${a.principal?"principal":""} ${a.ancho?"ancho":""} ${a.banda?"banda":""}" data-acc="${i}">${a.n&&!a.stats?`<span class="a-cuenta num ${a.aviso?"aviso":""}" aria-label="${a.n} ${esc(a.nl||"pendientes")}">${a.n}</span>`:""}<span class="a-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-${a.ico}"/></svg></span><h3>${a.t}</h3><p>${a.d}</p>${a.stats?`<span class="a-stats">${a.stats.map(([k,l])=>`<span class="${k?"con":""}"><b class="num">${k}</b>${l}</span>`).join("")}</span>`:""}<span class="a-pie">${a.cta}${ico("flecha")}</span></button>`).join("")}</div>`;
+  return `<div class="accesos ${lista===ACCESOS&&rol==="encargado"?"acc-4":lista===ACCESOS&&rol==="super"?"acc-4 acc-5":lista===ACCESOS&&rol==="solicitante"?"acc-n":""}" style="--n:${Math.min(lista.length,4)}">${lista.map((a,i)=>`<button type="button" class="acceso ${a.principal?"principal":""} ${a.ancho?"ancho":""} ${a.banda?"banda":""}" data-acc="${i}">${a.n&&!a.stats?`<span class="a-cuenta num ${a.aviso?"aviso":""}" aria-label="${a.n} ${esc(a.nl||"pendientes")}">${a.n}</span>`:""}<span class="a-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-${a.ico}"/></svg></span><h3>${a.t}</h3><p>${a.d}</p>${a.stats?`<span class="a-stats">${a.stats.map(([k,l])=>`<span class="${k?"con":""}"><b class="num">${k}</b>${l}</span>`).join("")}</span>`:""}<span class="a-pie">${a.cta}${ico("flecha")}</span></button>`).join("")}</div>`;
 }
 let ACCESOS=[];
-function postAccesos(){ $("#vista").querySelectorAll("[data-acc]").forEach(b=>b.onclick=()=>{const a=ACCESOS[+b.dataset.acc]; if(a.pre) a.pre(); ir(a.v);}); }
+function postAccesos(){ $("#vista").querySelectorAll("[data-acc]").forEach(b=>b.onclick=()=>{const a=ACCESOS[+b.dataset.acc]; if(a.orden){abrirOrden(a.orden);return} if(a.pre) a.pre(); ir(a.v);}); }
 function accesosGestion(){
   const n=e=>RES.filter(r=>r.est===e).length, alertas=VEH.filter(v=>alertasVeh(v)>0).length;
   const cond=COND.map(c=>estCond(c).est), porVencer=cond.filter(e=>e==="POR"||e==="BLOQ").length;
@@ -1524,10 +1530,11 @@ function vInicio(){
     ACCESOS=[{v:"nueva",ico:"plus",t:"Solicitar un vehículo",d:"Indica destino, fechas, cometido y acompañantes. Tu jefatura recibirá la solicitud para aprobarla.",cta:"Nueva solicitud",principal:true},
              {v:"mis",ico:"lista",t:"Mis salidas",d:"Revisa en qué etapa está cada solicitud y abre la orden de salida.",cta:"Ver mis salidas",n:curso.length,nl:"en curso"}];
     if(obs) ACCESOS.push({v:"mis",ico:"alerta",t:"Solicitudes observadas",d:"Tu jefatura pidió corregir algo antes de aprobar.",cta:"Corregir",n:obs,nl:"observadas",aviso:true});
+    ACCESOS.push(prox?{v:"mis",ico:"car",t:"Tu próxima salida",d:`${prox.pat?`<b>${esc(prox.pat)}</b> · `:""}${esc(prox.destinos.map(d=>d.com).join(" · "))} · ${fCorta(prox.salida)}<br>${prox.id} · conductor ${esc(nom(prox.cond))}`,cta:"Ver orden de salida",orden:prox.id}
+                     :{v:"mis",ico:"car",t:"Tu próxima salida",d:"Aún no tienes salidas confirmadas. Cuando el encargado asigne el vehículo, aparecerá aquí.",cta:"Ver mis salidas"});
     return heroHTML("Desde aquí pides un vehículo para tus salidas a terreno y sigues cada solicitud hasta recibir la orden de salida.")+
-      `<div class="ini-2"><div><h2 class="sec-tit">${ico("flecha")}¿Qué necesitas hacer?</h2>`+accesosHTML(ACCESOS)+`</div>`+
-      (prox?`<div><h2 class="sec-tit">${ico("car")}Tu próxima salida</h2><section class="panel prox-sal"><div class="cuerpo"><div class="tarea">${prox.pat?placa(prox.pat):""}<div class="q">${esc(prox.destinos.map(d=>d.com).join(" · "))} · ${fCorta(prox.salida)}<small>${prox.id} · conductor ${esc(nom(prox.cond))}</small></div><button class="btn" type="button" data-orden="${prox.id}">Ver orden de salida</button></div></div></section></div>`:"")+`</div>`+
-      `<h2 class="sec-tit">${ico("ruta")}Cómo funciona</h2><div class="pasos"><div class="paso"><b>1</b><span><strong>Solicitas</strong>Destino, fechas, cometido y acompañantes.</span></div><div class="paso"><b>2</b><span><strong>Tu jefatura aprueba</strong>Y define con qué presupuesto se imputa el gasto.</span></div><div class="paso"><b>3</b><span><strong>Se asigna el vehículo</strong>El encargado elige vehículo y conductor habilitado.</span></div><div class="paso"><b>4</b><span><strong>Recibes la orden</strong>La orden de salida para presentar al retirar el vehículo.</span></div></div>`;
+      `<h2 class="sec-tit">${ico("flecha")}¿Qué necesitas hacer?</h2>`+accesosHTML(ACCESOS)+
+      `<p class="guia"><b>Cómo funciona:</b><span><i>1</i>Solicitas</span><span aria-hidden="true">→</span><span><i>2</i>Tu jefatura aprueba</span><span aria-hidden="true">→</span><span><i>3</i>Se asigna el vehículo</span><span aria-hidden="true">→</span><span><i>4</i>Recibes la orden de salida</span></p>`;
   }
   if(rol==="jefatura"){
     const pend=RES.filter(r=>r.est==="PEND_JEFE"&&r.jefe===yo), eq=RES.filter(r=>r.jefe===yo);
