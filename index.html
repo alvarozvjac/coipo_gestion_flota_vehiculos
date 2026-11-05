@@ -658,6 +658,9 @@ footer.pie-app span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;mi
 .cab-mis{display:flex;justify-content:space-between;align-items:center}
 @media (max-width:899.98px){ /* columna */ .mis-tabla th:nth-child(2),.mis-tabla td:nth-child(2),.mis-tabla th:nth-child(5),.mis-tabla td:nth-child(5){display:none} }
 @media (max-width:559.98px){ /* teléfono */ .mis-tabla th:nth-child(1),.mis-tabla td:nth-child(1),.mis-tabla th:nth-child(4),.mis-tabla td:nth-child(4){display:none} .mis-tabla td,.mis-tabla th{padding:8px} .cab-mis{flex-direction:row;align-items:center} }
+.cuenta-tit{display:inline-block;min-width:1.6em;padding:0 .45em;margin-left:var(--e-2);border-radius:var(--r-pill);background:var(--st-malo-bg);color:var(--st-malo);font-size:var(--f-s);vertical-align:middle;text-align:center}
+#decision{box-shadow:none}
+@media (max-width:899.98px){ /* columna */ .mis-tabla th:nth-child(6),.mis-tabla td:nth-child(6){display:none} }
 </style>
 
 </head><body>
@@ -1032,8 +1035,41 @@ function postExport(tipo){
 }
 const diasViaje = r=>Math.max(1,Math.ceil((F(r.regreso)-F(r.salida))/DIA));
 const distanciaTxt = r=>r.km?`<span class="num">${km(r.km)} km aprox. · ${km(r.km/diasViaje(r))} km por día en ${diasViaje(r)} ${diasViaje(r)===1?"día":"días"}</span>`:`<span class="tenue">Sin estimación del solicitante</span>`;
-/* «Mis salidas» en pestañas y filas: todo a la vista sin desplazar la página (05-11-2026) */
+/* Listas en filas paginadas que nunca obligan a desplazar la página (05-11-2026).
+   Las usan «Mis salidas», «Por aprobar» y «Salidas de mi equipo». */
 const EN_CURSO=["PEND_JEFE","OBSERVADA","APROBADA","CONFIRMADA","EN_TERRENO"];
+const PAG_VISTA={mis:"mis",bandeja:"ban",equipo:"eq"};
+function paginar(L,k,ayuda){
+  const N=sel[k+"N"]||8, pags=Math.max(1,Math.ceil(L.length/N)); sel[k+"Pag"]=Math.min(sel[k+"Pag"]||0,pags-1); const p=sel[k+"Pag"];
+  return {ver:L.slice(p*N,(p+1)*N), pie:`<div class="mis-pie"><span class="tenue peq">${ayuda}</span>${pags>1?`<span class="mis-pag"><button class="btn sec chico" type="button" data-pg="-1" ${p?"":"disabled"}>← Anterior</button><span class="peq">Página ${p+1} de ${pags}</span><button class="btn sec chico" type="button" data-pg="1" ${p<pags-1?"":"disabled"}>Siguiente →</button></span>`:""}</div>`};
+}
+function postPaginar(k){ // devuelve true si volvió a dibujar para ajustar las filas al alto de la ventana
+  const V=$("#vista");
+  V.querySelectorAll("[data-pg]").forEach(b=>b.onclick=()=>{sel[k+"Pag"]=(sel[k+"Pag"]||0)+ +b.dataset.pg; render()});
+  const tb=V.querySelector(".mis-tabla tbody"), f1=tb?.querySelector("tr"), pan=V.querySelector(".mis-panel");
+  if(f1&&(sel["aj_"+k]||0)<3){ const pie=document.querySelector("footer.pie-app"), main=document.querySelector("body>main");
+    const resto=(pie?.offsetHeight||0)+parseFloat(getComputedStyle(main).paddingBottom||0)+parseFloat(getComputedStyle(document.body).marginBottom||0);
+    const sobra=innerHeight-(pan.getBoundingClientRect().bottom+scrollY)-resto, alto=f1.getBoundingClientRect().height;
+    const n=Math.max(3,Math.min(12,tb.rows.length+Math.floor(sobra/alto)));
+    if(n!==(sel[k+"N"]||8)){ sel[k+"N"]=n; sel["aj_"+k]=(sel["aj_"+k]||0)+1; render(); return true; } }
+  sel["aj_"+k]=0;
+  if(!window.__pagRs){ window.__pagRs=1; let tm; addEventListener("resize",()=>{ clearTimeout(tm); tm=setTimeout(()=>{ const kk=PAG_VISTA[vista]; if(kk&&!$("#capa").innerHTML){ sel[kk+"N"]=12; render(); } },200); }); }
+  return false;
+}
+function filasClic(attr,fn){ $("#vista").querySelectorAll(`tr[${attr}]`).forEach(tr=>{ const id=tr.getAttribute(attr); tr.onclick=e=>{ if(e.target.closest("button")) return; fn(id); }; tr.onkeydown=e=>{ if(e.key==="Enter"&&e.target===tr) fn(id); }; }); }
+function excelTira(tipo){
+  const per=EXP.modo==="mes"?`${MESES[EXP.mes-1]} de ${EXP.anio}`:`año ${EXP.anio}`, R=salidasRealizadas(tipo);
+  return `<div class="mis-excel"><span class="tenue peq">Excel de salidas realizadas · ${per} · ${R.length} ${R.length===1?"salida":"salidas"}</span>
+     <div class="seg" role="group" aria-label="Periodo"><button type="button" data-em="mes" aria-pressed="${EXP.modo==="mes"}">Mensual</button><button type="button" data-em="anio" aria-pressed="${EXP.modo==="anio"}">Anual</button></div>
+     ${EXP.modo==="mes"?`<label class="sr" for="e-mes">Mes</label><select id="e-mes" style="width:auto">${MESES.map((m,i)=>`<option value="${i+1}" ${i+1===EXP.mes?"selected":""}>${m[0].toUpperCase()+m.slice(1)}</option>`).join("")}</select>`:""}
+     <label class="sr" for="e-anio">Año</label><select id="e-anio" style="width:auto"><option ${EXP.anio===2026?"selected":""}>2026</option><option ${EXP.anio===2025?"selected":""}>2025</option></select>
+     <button class="btn chico" type="button" id="btn-exp" ${R.length?"":"disabled"}>Descargar Excel</button></div>`;
+}
+const tablaFilas=(cab,filas)=>`<div class="tabla-env"><table class="mis-tabla"><thead><tr>${cab.map(c=>`<th>${c}</th>`).join("")}<th><span class="sr">Acciones</span></th></tr></thead><tbody>${filas}</tbody></table></div>`;
+const comCelda=r=>`<td class="mis-com" title="${esc(r.cometido)}"><span>${esc(r.cometido)}</span></td>`;
+const chev='<span class="chev" aria-hidden="true">›</span>';
+
+/* ----- Mis salidas (solicitante) ----- */
 function accionesMia(r){
   return `${["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)?`<button class="btn sec chico" type="button" data-orden="${r.id}">Ver orden de salida</button>`:""}${r.est==="OBSERVADA"?`<button class="btn chico" type="button" data-corregir="${r.id}">Corregir y reenviar</button>`:""}${["PEND_JEFE","APROBADA","OBSERVADA","CONFIRMADA"].includes(r.est)?`<button class="btn peligro chico" type="button" data-anular="${r.id}">Anular solicitud</button>`:""}`;
 }
@@ -1042,26 +1078,17 @@ function vMis(){
   const curso=mias.filter(r=>EN_CURSO.includes(r.est)).sort((a,b)=>a.salida.localeCompare(b.salida));
   const hist=mias.filter(r=>!EN_CURSO.includes(r.est)).sort((a,b)=>b.salida.localeCompare(a.salida));
   if(!sel.misTab) sel.misTab=curso.length?"curso":"hist";
-  const N=sel.misN||8, L=sel.misTab==="curso"?curso:hist, pags=Math.max(1,Math.ceil(L.length/N));
-  sel.misPag=Math.min(sel.misPag||0,pags-1); const ver=L.slice(sel.misPag*N,(sel.misPag+1)*N);
+  const L=sel.misTab==="curso"?curso:hist, {ver,pie}=paginar(L,"mis","Selecciona una fila para ver las etapas, los datos y las acciones de la salida.");
   const fila=r=>`<tr class="clic" data-mia="${r.id}" tabindex="0" aria-label="Ver detalle de ${r.id}">
-     <td class="mono">${r.id}</td><td class="mis-com" title="${esc(r.cometido)}"><span>${esc(r.cometido)}</span></td>
-     <td class="num">${fCorta(r.salida)}</td><td>${esc(r.destinos.map(d=>d.com).join(" · "))}</td>
+     <td class="mono">${r.id}</td>${comCelda(r)}<td class="num">${fCorta(r.salida)}</td><td>${esc(r.destinos.map(d=>d.com).join(" · "))}</td>
      <td>${r.pat?placa(r.pat):'<span class="tenue">—</span>'}</td><td>${chipR(r.est)}</td>
-     <td class="mis-acc">${["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)?`<button class="btn sec chico" type="button" data-orden="${r.id}">Orden</button>`:r.est==="OBSERVADA"?`<button class="btn chico" type="button" data-corregir="${r.id}">Corregir</button>`:""}<span class="chev" aria-hidden="true">›</span></td></tr>`;
-  const per=EXP.modo==="mes"?`${MESES[EXP.mes-1]} de ${EXP.anio}`:`año ${EXP.anio}`, R=salidasRealizadas("mis");
-  const excel=sel.misTab!=="hist"?"":`<div class="mis-excel"><span class="tenue peq">Excel de salidas realizadas · ${per} · ${R.length} ${R.length===1?"salida":"salidas"}</span>
-     <div class="seg" role="group" aria-label="Periodo"><button type="button" data-em="mes" aria-pressed="${EXP.modo==="mes"}">Mensual</button><button type="button" data-em="anio" aria-pressed="${EXP.modo==="anio"}">Anual</button></div>
-     ${EXP.modo==="mes"?`<label class="sr" for="e-mes">Mes</label><select id="e-mes" style="width:auto">${MESES.map((m,i)=>`<option value="${i+1}" ${i+1===EXP.mes?"selected":""}>${m[0].toUpperCase()+m.slice(1)}</option>`).join("")}</select>`:""}
-     <label class="sr" for="e-anio">Año</label><select id="e-anio" style="width:auto"><option ${EXP.anio===2026?"selected":""}>2026</option><option ${EXP.anio===2025?"selected":""}>2025</option></select>
-     <button class="btn chico" type="button" id="btn-exp" ${R.length?"":"disabled"}>Descargar Excel</button></div>`;
+     <td class="mis-acc">${["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)?`<button class="btn sec chico" type="button" data-orden="${r.id}">Orden</button>`:r.est==="OBSERVADA"?`<button class="btn chico" type="button" data-corregir="${r.id}">Corregir</button>`:""}${chev}</td></tr>`;
   return `<div class="cab-vista cab-compacta cab-mis"><h1>Mis salidas</h1><button class="btn chico" type="button" data-ir="nueva">+ Nueva solicitud</button></div>
    ${tabsHTML([["curso",`En curso (${curso.length})`],["hist",`Historial (${hist.length})`]],sel.misTab,"data-mt")}
-   <section class="panel mis-panel">${excel}
-   ${ver.length?`<div class="tabla-env"><table class="mis-tabla"><thead><tr><th>N° orden</th><th>Cometido</th><th>Salida</th><th>Destino</th><th>Patente</th><th>Estado</th><th><span class="sr">Acciones</span></th></tr></thead><tbody>${ver.map(fila).join("")}</tbody></table></div>`
+   <section class="panel mis-panel">${sel.misTab==="hist"?excelTira("mis"):""}
+   ${ver.length?tablaFilas(["N° orden","Cometido","Salida","Destino","Patente","Estado"],ver.map(fila).join(""))
      :vacio(sel.misTab==="curso"?"No tienes salidas en curso":"Aún no tienes salidas anteriores",sel.misTab==="curso"?"Cuando envíes una solicitud, la verás aquí con su etapa.":"Las salidas finalizadas, anuladas o rechazadas aparecerán aquí.")}
-   <div class="mis-pie"><span class="tenue peq">Selecciona una fila para ver las etapas, los datos y las acciones de la salida.</span>${pags>1?`<span class="mis-pag"><button class="btn sec chico" type="button" data-mp="-1" ${sel.misPag?"":"disabled"}>← Anterior</button><span class="peq">Página ${sel.misPag+1} de ${pags}</span><button class="btn sec chico" type="button" data-mp="1" ${sel.misPag<pags-1?"":"disabled"}>Siguiente →</button></span>`:""}</div>
-   </section>`;
+   ${pie}</section>`;
 }
 function abrirMia(id){
   const r=RES.find(x=>x.id===id); if(!r) return;
@@ -1071,25 +1098,15 @@ function abrirMia(id){
 post.mis = ()=>{
   const V=$("#vista"); postExport("mis");
   V.querySelectorAll("[data-mt]").forEach(b=>b.onclick=()=>{sel.misTab=b.dataset.mt; sel.misPag=0; render()});
-  V.querySelectorAll("[data-mp]").forEach(b=>b.onclick=()=>{sel.misPag=(sel.misPag||0)+ +b.dataset.mp; render()});
   V.querySelectorAll("[data-corregir]").forEach(bt=>bt.onclick=e=>{ e.stopPropagation(); borrador=borradorDesde(RES.find(x=>x.id===bt.dataset.corregir)); ir("nueva"); });
-  // Filas por página según el alto de la ventana: la página nunca necesita desplazarse.
-  const tb=V.querySelector(".mis-tabla tbody"), f1=tb?.querySelector("tr"), pan=V.querySelector(".mis-panel");
-  if(f1&&(sel.__misAj||0)<3){ const pie=document.querySelector("footer.pie-app"), main=document.querySelector("body>main");
-    const resto=(pie?.offsetHeight||0)+parseFloat(getComputedStyle(main).paddingBottom||0)+parseFloat(getComputedStyle(document.body).marginBottom||0);
-    const sobra=innerHeight-(pan.getBoundingClientRect().bottom+scrollY)-resto, alto=f1.getBoundingClientRect().height;
-    const n=Math.max(3,Math.min(12,tb.rows.length+Math.floor(sobra/alto)));
-    if(n!==(sel.misN||8)){ sel.misN=n; sel.__misAj=(sel.__misAj||0)+1; render(); return; } }
-  sel.__misAj=0;
-  if(!window.__misRs){ window.__misRs=1; let tm; addEventListener("resize",()=>{ clearTimeout(tm); tm=setTimeout(()=>{ if(vista==="mis"&&!$("#capa").innerHTML){ sel.misN=12; render(); } },200); }); }
-  V.querySelectorAll("tr[data-mia]").forEach(tr=>{ tr.onclick=e=>{ if(e.target.closest("button")) return; abrirMia(tr.dataset.mia); }; tr.onkeydown=e=>{ if(e.key==="Enter"&&e.target===tr) abrirMia(tr.dataset.mia); }; });
+  if(postPaginar("mis")) return;
+  filasClic("data-mia",abrirMia);
 };
 function borradorDesde(r){
   const provDe=(reg,com)=>(provinciasDe(reg).find(p=>p[1].includes(com))||[""])[0];
   const destinos=r.destinos.map(d=>{ const lista=(UNIDADES[d.reg]||[]); return {reg:d.reg,prov:d.prov||provDe(d.reg,d.com),com:d.com,lug:lista.includes(d.lug)?d.lug:OTRA,otro:lista.includes(d.lug)?"":(d.lug||"")}; });
   return {jefe:r.jefe,salida:r.salida,regreso:r.regreso,cometido:r.cometido,destinos,km:r.km||0,tipo:r.tipoReq||"Indistinto",t4:!!r.req?.t4,carga:!!r.req?.carga,reqCond:r.reqCond,cond:r.reqCond?"":(r.cond||""),pasList:r.pas.length?r.pas.map(id=>({rut:PX[id].rut,nom:PX[id].nom})):[{rut:"",nom:""}],externos:0,extJust:"",ejemplo:false,editId:r.id,obs:(r.obsLog||"").replace(/^Observación de jefatura: /,"")};
 }
-post.equipo = ()=>postExport("equipo");
 function vacio(t,d){return `<div class="vacio"><h3>${t}</h3><p>${d}</p></div>`}
 
 let borrador = null;
@@ -1285,13 +1302,19 @@ post.nueva = ()=>{
 
 /* ======================= JEFATURA ======================= */
 function vBandeja(){
-  const yo=ROLES[rol].quien, pend=RES.filter(r=>r.est==="PEND_JEFE"&&r.jefe===yo), res=RES.filter(r=>r.jefe===yo&&!["PEND_JEFE","BORRADOR"].includes(r.est));
-  if(!sel.bandeja||!pend.some(r=>r.id===sel.bandeja)) sel.bandeja=pend[0]?.id||null;
-  const r=RES.find(x=>x.id===sel.bandeja);
-  return cab("Bandeja de aprobación","Solicitudes de tu equipo directo. Revisa cometido, destino y ocupantes, y define la imputación presupuestaria antes de que pasen al encargado de vehículos.","ERS §3.2 · Perfil 3")+
-  `<div class="grid g-2"><div class="grid"><section class="panel"><header><h2>Pendientes</h2><span class="sub num">${pend.length} por revisar</span></header><div class="cuerpo lista">${pend.length?pend.map(x=>tarjetaSol(x,{seleccion:x.id===sel.bandeja})).join(""):vacio("Bandeja al día","No hay solicitudes de tu equipo esperando aprobación.")}</div></section>
-</div>
-  <aside class="panel" id="decision">${r?decisionHTML(r):`<div class="cuerpo">${vacio("Selecciona una solicitud","El detalle y la decisión aparecen aquí.")}</div>`}</aside></div>`;
+  const yo=ROLES[rol].quien, pend=RES.filter(r=>r.est==="PEND_JEFE"&&r.jefe===yo).sort((a,b)=>a.salida.localeCompare(b.salida));
+  const {ver,pie}=paginar(pend,"ban","Selecciona una fila para revisar la solicitud, definir la imputación y aprobar, observar o rechazar.");
+  const fila=r=>`<tr class="clic" data-ban="${r.id}" tabindex="0" aria-label="Revisar ${r.id}">
+     <td class="mono">${r.id}</td><td>${esc(nom(r.sol))}</td>${comCelda(r)}<td class="num">${fCorta(r.salida)}</td>
+     <td>${esc(r.destinos.map(d=>d.com).join(" · "))}</td><td class="num">${pasajeros(r)}</td>
+     <td class="mis-acc"><button class="btn chico" type="button" data-revisar="${r.id}">Revisar</button>${chev}</td></tr>`;
+  return `<div class="cab-vista cab-compacta cab-mis"><h1>Por aprobar <span class="cuenta-tit">${pend.length}</span></h1><button class="btn sec chico" type="button" data-ir="equipo">Salidas de mi equipo</button></div>
+   <section class="panel mis-panel">${pend.length?tablaFilas(["N° orden","Funcionario","Cometido","Salida","Destino","Personas"],ver.map(fila).join(""))
+     :vacio("Bandeja al día","No hay solicitudes de tu equipo esperando aprobación.")}${pend.length?pie:""}</section>`;
+}
+function abrirDecision(id){
+  const r=RES.find(x=>x.id===id); if(!r) return; sel.bandeja=id;
+  cajon(`<h2 id="t-cajon" style="font-size:var(--f-xl)" class="mono">${r.id}</h2>`, chipR(r.est), `<div class="panel" id="decision">${decisionHTML(r)}</div>`);
 }
 function decisionHTML(r){
   const cc=CCX[r.cc];
@@ -1308,18 +1331,20 @@ function decisionHTML(r){
   <p class="tenue peq">La aprobación queda registrada con fecha y hora.</p></div>`;
 }
 post.bandeja = ()=>{
-  $("#vista").addEventListener("click",e=>{
-    const s=e.target.closest("[data-sel]"); if(s){sel.bandeja=s.dataset.sel;render(); const dz=$("#decision"); if(dz&&dz.getBoundingClientRect().top>window.innerHeight*0.6) dz.scrollIntoView({behavior:"smooth",block:"start"}); return}
-    const d=e.target.closest("[data-dec]"); if(!d) return;
-    const r=RES.find(x=>x.id===sel.bandeja), com=$("#j-com").value.trim();
-    if(d.dataset.dec!=="APROBADA"&&!com){$("#j-com").setAttribute("aria-invalid","true");$("#j-com").focus();tostada("Escribe un comentario para observar o rechazar.");return}
-    if(d.dataset.dec==="APROBADA"){ const ccv=$("#j-cc").value; if(!ccv){$("#j-cc").setAttribute("aria-invalid","true");$("#j-cc").focus();tostada("Selecciona el folio de imputación para aprobar.");return} r.cc=ccv; }
-    const ant=EST[r.est][0]; r.est=d.dataset.dec; r.obsLog=com?(d.dataset.dec==="APROBADA"?"Jefatura: ":d.dataset.dec==="OBSERVADA"?"Observación de jefatura: ":"Rechazada: ")+com:"";
-    r.hist.push({t:iso(HOY),quien:ROLES[rol].quien,acc:EST[r.est][0]}); audit("Visación jefatura",r.id,ant,EST[r.est][0]);
-    tostada(`${r.id}: ${EST[r.est][0]}.`); sel.bandeja=null; render();
-  });
-  $("#vista").addEventListener("keydown",e=>{const s=e.target.closest("[data-sel]"); if(s&&(e.key==="Enter"||e.key===" ")){e.preventDefault();sel.bandeja=s.dataset.sel;render()}});
+  if(postPaginar("ban")) return;
+  filasClic("data-ban",abrirDecision);
+  $("#vista").querySelectorAll("[data-revisar]").forEach(b=>b.onclick=()=>abrirDecision(b.dataset.revisar));
 };
+// Decisión de la jefatura dentro del panel lateral
+document.addEventListener("click",e=>{
+  const d=e.target.closest("#decision [data-dec]"); if(!d) return;
+  const r=RES.find(x=>x.id===sel.bandeja), com=$("#j-com").value.trim();
+  if(d.dataset.dec!=="APROBADA"&&!com){$("#j-com").setAttribute("aria-invalid","true");$("#j-com").focus();tostada("Escribe un comentario para observar o rechazar.");return}
+  if(d.dataset.dec==="APROBADA"){ const ccv=$("#j-cc").value; if(!ccv){$("#j-cc").setAttribute("aria-invalid","true");$("#j-cc").focus();tostada("Selecciona el folio de imputación para aprobar.");return} r.cc=ccv; }
+  const ant=EST[r.est][0]; r.est=d.dataset.dec; r.obsLog=com?(d.dataset.dec==="APROBADA"?"Jefatura: ":d.dataset.dec==="OBSERVADA"?"Observación de jefatura: ":"Rechazada: ")+com:"";
+  r.hist.push({t:iso(HOY),quien:ROLES[rol].quien,acc:EST[r.est][0]}); audit("Visación jefatura",r.id,ant,EST[r.est][0]);
+  tostada(`${r.id}: ${EST[r.est][0]}.`); sel.bandeja=null; cerrarCapa(); render();
+});
 
 /* ======================= VISOR GANTT ======================= */
 function vVisor(){
@@ -2125,9 +2150,13 @@ post.reportes = ()=>{
 };
 
 /* ======================= JEFATURA: SALIDAS DEL EQUIPO ======================= */
+post.equipo = ()=>{ postExport("equipo"); if(postPaginar("eq")) return; };
 function vEquipo(){
   const yo=ROLES[rol].quien, lista=RES.filter(r=>r.jefe===yo).sort((a,b)=>b.salida.localeCompare(a.salida));
-  return cab("Salidas de mi equipo","Historial de las salidas que autorizaste.","Perfil 3")+exportHTML("equipo")+`<section class="panel"><div class="tabla-env">${lista.length?`<table><thead><tr><th>ID</th><th>Estado</th><th>Funcionario</th><th>Salida</th><th>Destino</th><th>Folio</th></tr></thead><tbody>${lista.map(r=>`<tr class="clic" data-sal="${r.id}"><td class="mono">${r.id}</td><td>${chipR(r.est)}</td><td>${esc(nom(r.sol))}</td><td class="num">${fCorta(r.salida)}</td><td>${esc(r.destinos.map(d=>d.com).join(", "))}</td><td class="mono">${r.cc||"Por definir"}</td></tr>`).join("")}</tbody></table>`:vacio("Sin salidas","")}</div></section>`;
+  const {ver,pie}=paginar(lista,"eq","Selecciona una fila para ver el detalle de la salida.");
+  const fila=r=>`<tr class="clic" data-sal="${r.id}" tabindex="0"><td class="mono">${r.id}</td><td>${esc(nom(r.sol))}</td>${comCelda(r)}<td class="num">${fCorta(r.salida)}</td><td>${esc(r.destinos.map(d=>d.com).join(" · "))}</td><td>${chipR(r.est)}</td><td class="mis-acc"><span class="mono peq">${r.cc||"Folio por definir"}</span>${chev}</td></tr>`;
+  return `<div class="cab-vista cab-compacta cab-mis"><h1>Salidas de mi equipo</h1><button class="btn sec chico" type="button" data-ir="bandeja">Por aprobar</button></div>
+   <section class="panel mis-panel">${excelTira("equipo")}${lista.length?tablaFilas(["N° orden","Funcionario","Cometido","Salida","Destino","Estado"],ver.map(fila).join("")):vacio("Sin salidas","Aquí aparecerán las salidas que autorices.")}${lista.length?pie:""}</section>`;
 }
 
 /* ======================= CONDUCTOR ======================= */
