@@ -712,6 +712,23 @@ footer.pie-app span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;mi
 #form-sol fieldset{padding-top:var(--e-3)}
 #form-sol fieldset>legend{float:left;width:100%;padding:0 0 var(--e-2);margin:0 0 var(--e-3);border-bottom:1px solid var(--linea);font-size:var(--f-m);line-height:1.3}
 #form-sol fieldset>legend+*{clear:both}
+.reasig{display:flex;align-items:center;justify-content:space-between;gap:var(--e-3);flex-wrap:wrap;margin-top:var(--e-3);padding:var(--e-3);border:1px dashed var(--linea-fuerte);border-radius:var(--r-m)} .reasig>div{display:flex;flex-direction:column}
+/* Vistas que eran largas: cabecera compacta (la descripción queda como texto de ayuda al pasar el mouse) */
+tr.pag-oculta{display:none}
+:is(#vista[data-v="conductores"],#vista[data-v="combustible"],#vista[data-v="reportes"],#vista[data-v="config"]) .cab-vista{margin-bottom:var(--e-3);align-items:center}
+:is(#vista[data-v="conductores"],#vista[data-v="combustible"],#vista[data-v="reportes"],#vista[data-v="config"]) .cab-vista h1{font-size:1.375rem}
+:is(#vista[data-v="conductores"],#vista[data-v="combustible"],#vista[data-v="reportes"],#vista[data-v="config"]) .cab-vista h1::after{display:none}
+:is(#vista[data-v="conductores"],#vista[data-v="combustible"],#vista[data-v="reportes"],#vista[data-v="config"]) .cab-vista p{display:none}
+:is(#vista[data-v="conductores"],#vista[data-v="combustible"],#vista[data-v="reportes"],#vista[data-v="config"]) .subtabs{margin-bottom:var(--e-3)}
+.rep-kpi{margin:0 0 var(--e-3)} .rep-3{grid-template-columns:repeat(3,minmax(0,1fr))} .rep-3 .barras .b{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) 70px}
+.barras.dos-col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--e-6)}
+#vista[data-v="reportes"] table td{white-space:nowrap;max-width:28ch;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:899.98px){ /* columna */ .rep-3,.barras.dos-col{grid-template-columns:minmax(0,1fr)} }
+#vista[data-v="combustible"] .contadores{margin-bottom:var(--e-3)}
+.rep-3 .cuerpo{padding-block:var(--e-3)} .rep-3 .barras{gap:6px} .rep-3 .panel>header{padding-block:var(--e-3)}
+.datos-2{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:var(--e-4);align-items:start}
+@media (max-width:1099.98px){ /* angosto */ .datos-2{grid-template-columns:minmax(0,1fr)} }
+.rep-kpi{padding-block:6px;margin-bottom:var(--e-2)}
 </style>
 
 </head><body>
@@ -1461,11 +1478,11 @@ function vReportesKm(){
   const maxP=Math.max(1,...porProg.map(x=>x[1])), maxV=Math.max(1,...porVeh.map(x=>x[1].n));
   const barra=`<section class="panel" style="margin-bottom:var(--e-4)"><header><div><h2>Kilómetros recorridos</h2><span class="sub">Salidas finalizadas · ${perTxt()}</span></div>${perCtl("km",viajes.length)}</header></section>`;
   if(!viajes.length) return barra+`<section class="panel">${vacio("Sin salidas finalizadas en el periodo","Elige otro mes o el reporte anual.")}</section>`;
-  return barra+`<div class="grid g-kpi" style="margin-bottom:var(--e-4)"><div class="kpi"><span class="k">Salidas finalizadas</span><span class="v">${viajes.length}</span></div><div class="kpi"><span class="k">Kilómetros recorridos</span><span class="v num">${km(tot)}</span></div><div class="kpi"><span class="k">Ocupación del pool</span><span class="v">${ocup}%</span><span class="d">días en uso / días disponibles</span></div><div class="kpi"><span class="k">Indisponibilidad por taller</span><span class="v">${indisp}%</span><span class="d">de la flota hoy</span></div></div>
-  <div class="grid g-2b"><section class="panel"><header><h2>Kilómetros por programa presupuestario</h2></header><div class="cuerpo barras">${porProg.map(([p,k])=>`<div class="b"><span class="eti">${PROGRAMAS[p]||p}</span><span class="pista"><span style="width:${k/maxP*100}%"></span></span><span class="num" style="text-align:right">${km(k)} km</span></div>`).join("")}</div></section>
-  <section class="panel"><header><h2>Salidas por vehículo</h2></header><div class="cuerpo barras">${porVeh.slice(0,8).map(([p,o])=>`<div class="b"><span class="eti">${placa(p)}</span><span class="pista"><span style="width:${o.n/maxV*100}%"></span></span><span class="num" style="text-align:right">${o.n} salida${o.n>1?"s":""}</span></div>`).join("")}</div></section></div>
-  <section class="panel" style="margin-top:var(--e-4)"><header><h2>Por centro de costo</h2></header><div class="tabla-env"><table><thead><tr><th>Folio</th><th>Imputación</th><th>Programa</th><th>Km</th><th>% del total</th></tr></thead><tbody>${porCC.map(([f,k])=>`<tr><td class="mono">${f}</td><td>${esc(CCX[f]?.t||"")}</td><td>${CCX[f]?.prog||""}</td><td class="d">${km(k)}</td><td class="d">${pct(k,tot)}%</td></tr>`).join("")}</tbody></table></div>
-  <div class="leyenda"><span class="tenue peq">El Excel trae cuatro hojas: centro de costo, programa, vehículo y detalle de cada salida. Datos: históricos de ejemplo más las salidas cerradas en la maqueta.</span></div></section>`;
+  return barra+`<p class="jef-mes rep-kpi"><span><b class="num">${viajes.length}</b> salidas finalizadas</span><span><b class="num">${km(tot)}</b> km recorridos</span><span><b class="num">${ocup}%</b> ocupación del pool <span class="tenue peq">(días en uso / días disponibles)</span></span><span><b class="num">${indisp}%</b> de la flota hoy en taller o fuera de servicio</span></p>
+  <div class="grid rep-3"><section class="panel"><header><h2>Km por programa presupuestario</h2></header><div class="cuerpo barras">${porProg.map(([p,k])=>`<div class="b"><span class="eti" title="${esc(PROGRAMAS[p]||p)}">${esc(PROGRAMAS[p]||p)}</span><span class="pista"><span style="width:${k/maxP*100}%"></span></span><span class="num" style="text-align:right">${km(k)} km</span></div>`).join("")}</div></section>
+  <section class="panel"><header><h2>Salidas por vehículo</h2></header><div class="cuerpo barras">${porVeh.slice(0,6).map(([p,o])=>`<div class="b"><span class="eti">${placa(p)}</span><span class="pista"><span style="width:${o.n/maxV*100}%"></span></span><span class="num" style="text-align:right">${o.n} salida${o.n>1?"s":""}</span></div>`).join("")}${porVeh.length>6?`<span class="tenue peq">y ${porVeh.length-6} vehículos más en el Excel.</span>`:""}</div></section>
+  <section class="panel"><header><h2>Por centro de costo</h2></header><div class="tabla-env"><table><thead><tr><th>Folio</th><th>Prog.</th><th>Km</th><th>%</th></tr></thead><tbody>${porCC.map(([f,k])=>`<tr title="${esc(CCX[f]?.t||"")}"><td class="mono">${f}</td><td>${CCX[f]?.prog||""}</td><td class="d">${km(k)}</td><td class="d">${pct(k,tot)}%</td></tr>`).join("")}</tbody></table></div></section></div>
+  <p class="tenue peq" style="margin-top:4px">El Excel trae cuatro hojas: centro de costo (con la imputación completa), programa, vehículo y detalle de cada salida. Datos: históricos de ejemplo más las salidas cerradas en la maqueta.</p>`;
 }
 const MESES=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
 /* Periodo común de los reportes (mensual o anual) */
@@ -1663,8 +1680,29 @@ function render(){
   const viejo=$("#vista"), nuevo=viejo.cloneNode(false); viejo.replaceWith(nuevo);
   const fn={taller:vTaller,inicio:vInicio,mis:vMis,nueva:vNueva,visor:vVisor,bandeja:vBandeja,equipo:vEquipo,calendario:vCalJefe,hoy:vHoy,salidas:vSalidas,flota:vFlota,conductores:vConductores,combustible:vCombustible,reportes:vReportes,config:vConfig}[vista];
   $("#vista").innerHTML=(ROLES[rol].menu&&vista!==HOME()&&!VISTAS_INICIO.includes(vista)?volverHTML():"")+fn();
+  $("#vista").dataset.v=vista;
   (post[vista]||(()=>{}))();
+  if(VISTAS_AUTOPAG.includes(vista)) requestAnimationFrame(autoPaginar);
 }
+/* Paginación automática de tablas largas (05-11-2026): en las vistas que aún eran largas, la tabla con más filas
+   muestra sólo las que caben en la ventana y agrega «Anterior / Siguiente». No cambia los datos ni los totales. */
+const VISTAS_AUTOPAG=["conductores","combustible","reportes","config"];
+function autoPaginar(){
+  const V=$("#vista"); if(!V||!VISTAS_AUTOPAG.includes(V.dataset.v)) return;
+  V.querySelectorAll(".pag-auto").forEach(x=>x.remove()); V.querySelectorAll("tbody tr.pag-oculta").forEach(x=>x.classList.remove("pag-oculta"));
+  const sobra=()=>innerHeight-document.documentElement.scrollHeight;
+  if(sobra()>=0) return;
+  const tablas=[...V.querySelectorAll("table")].filter(tb=>tb.tBodies[0]&&tb.tBodies[0].rows.length>3&&tb.offsetParent);
+  const P=tablas.map(tb=>{ const filas=[...tb.tBodies[0].rows], pie=document.createElement("div"); pie.className="mis-pie pag-auto"; pie.hidden=true; (tb.closest(".tabla-env")||tb).after(pie);
+    pie.innerHTML=`<span class="tenue peq"></span><span class="mis-pag"><button class="btn sec chico" type="button" data-pa="-1">← Anterior</button><span class="peq" data-pa-txt></span><button class="btn sec chico" type="button" data-pa="1">Siguiente →</button></span>`;
+    const o={filas,pie,n:filas.length,pag:0}; o.ver=pag=>{ const pags=Math.ceil(filas.length/o.n); o.pag=Math.max(0,Math.min(pag,pags-1)); filas.forEach((f,i)=>f.classList.toggle("pag-oculta",i<o.pag*o.n||i>=(o.pag+1)*o.n));
+      pie.hidden=pags<=1; pie.querySelector("[data-pa-txt]").textContent=`Página ${o.pag+1} de ${pags}`; pie.querySelector(".tenue").textContent=`${filas.length} registros · ${o.n} por página`;
+      pie.querySelector('[data-pa="-1"]').disabled=o.pag===0; pie.querySelector('[data-pa="1"]').disabled=o.pag>=pags-1; };
+    pie.querySelectorAll("[data-pa]").forEach(bt=>bt.onclick=()=>o.ver(o.pag+ +bt.dataset.pa)); return o; });
+  // reduce de a una fila la tabla con más filas visibles hasta que la página quepa (mínimo 3 por tabla)
+  for(let g=0; g<400 && sobra()<0; g++){ const t=P.filter(o=>o.n>3).sort((a,b)=>b.n-a.n)[0]; if(!t) break; t.n--; t.ver(0); }
+}
+addEventListener("resize",(()=>{let tm; return ()=>{clearTimeout(tm); tm=setTimeout(()=>{ if(VISTAS_AUTOPAG.includes(vista)&&!$("#capa").innerHTML) autoPaginar(); },200);};})());
 function cerrarCapa(){ $("#capa").innerHTML=""; paso={rid:null,conf:null,hecho:null,form:{},anular:false}; }
 function cajon(titulo, sub, cuerpo){
   $("#capa").innerHTML=`<div class="velo" id="velo"><div class="cajon" role="dialog" aria-modal="true" aria-labelledby="t-cajon"><header><div style="display:flex;gap:var(--e-3);align-items:center;flex-wrap:wrap;min-width:0">${titulo}${sub?`<span class="sub">${sub}</span>`:""}</div><button class="btn sec chico" type="button" id="cerrar">Cerrar</button></header><div class="cuerpo">${cuerpo}</div></div></div>`;
@@ -1852,7 +1890,7 @@ function abrirSalida(id){
   else if(gestor&&paso.conf) accion = confirmHTML(r);
   else if(gestor&&paso.anular) accion = anularHTML(r);
   else if(r.est==="APROBADA") accion = gestor?asignacionHTML(r):`<p class="nota">El encargado de vehículos está asignando vehículo y conductor.</p>`;
-  else if(r.est==="CONFIRMADA") accion = (gestor||cond)?(entregaAbierta(r)?despachoHTML(r):esperaHTML(r)):`<p class="nota">Vehículo ${r.pat} confirmado. Retíralo el ${fCorta(r.salida)}.</p>`;
+  else if(r.est==="CONFIRMADA") accion = (gestor||cond)?((entregaAbierta(r)?despachoHTML(r):esperaHTML(r))+(gestor?reasignarHTML(r):"")):`<p class="nota">Vehículo ${r.pat} confirmado. Retíralo el ${fCorta(r.salida)}.</p>`;
   else if(r.est==="EN_TERRENO") accion = (gestor||cond)?recepcionHTML(r):`<p class="nota">En terreno desde ${fCorta(r.bit.sal)}.</p>`;
   else if(r.est==="FINALIZADA") accion = cierreHTML(r);
   else if(r.est==="PEND_JEFE") accion = `<p class="nota">Esperando la visación de ${esc(nom(r.jefe))}.</p>`;
@@ -1885,6 +1923,17 @@ function pasosHTML(r){
    ["Regreso",idx>3?`${fCorta(b.reg)} · ${km(b.odoR-b.odoS)} km recorridos`:idx===3?"Registrar la recepción del vehículo":"Se habilita al registrar la salida"]];
   return `<ol class="pasos-sal" aria-label="Etapas de la salida">${P.map(([n,d],i)=>{ const st=i<idx?"hecho":(i===idx&&!(i===2&&!entregaAbierta(r))&&i!==0)?"actual":i===idx&&i===0?"espera":"bloq";
     return `<li class="${st}" ${st==="actual"?'aria-current="step"':""}><span class="marca" aria-hidden="true">${st==="hecho"?"✓":st==="bloq"?'<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>':i+1}</span><span class="txt"><b>${n}</b><span>${esc(d)}</span></span></li>`}).join("")}</ol>`;
+}
+/* Reasignar una salida confirmada: vuelve a «Aprobada · por asignar» sin perder la aprobación ni el folio (05-11-2026).
+   Resuelve el caso en que el vehículo o el conductor dejan de estar aptos después de asignar. */
+function reasignarHTML(r){
+  return `<div class="reasig"><div><b>¿Cambió algo desde la asignación?</b><span class="tenue peq">Libera ${esc(r.pat)}${r.reqCond&&r.cond?` y a ${esc(nom(r.cond))}`:""} y vuelve a «por asignar». La aprobación de la jefatura y el folio se mantienen.</span></div><button class="btn sec chico" type="button" id="x-reasig">Reasignar vehículo o conductor</button></div>`;
+}
+function reasignarSalida(r,motivo){
+  const ant=r.pat+(r.cond?" · "+nom(r.cond):"");
+  r.est="APROBADA"; r.pat=null; r.tarjeta=null; if(r.reqCond){ r.cond=null; r.relevo=null; }
+  r.obsLog="Logística: "+motivo; r.hist.push({t:iso(HOY),quien:ROLES[rol].quien,acc:"Reasignación"}); r._snaps=[];
+  audit("Reasigna salida · "+motivo,r.id,"Confirmada · "+ant,"Aprobada · por asignar");
 }
 function esperaHTML(r){
   return `<div class="regla inf"><span class="ico" aria-hidden="true">i</span><div><b>Nada que registrar todavía</b><span>Vehículo ${esc(r.pat)} asignado. La entrega se habilita el ${diaTxt(r.salida)} (salida programada ${fCorta(r.salida)}).</span></div></div>`;
@@ -1955,7 +2004,7 @@ function bloqueosEntrega(r){ const v=VX[r.pat], m=[];
   return m; }
 function despachoHTML(r){
   const v=VX[r.pat], bloq=bloqueosEntrega(r);
-  return `<h3>Entregar vehículo</h3>${bloq.length?`<div class="regla bl"><span class="ico">✕</span><div><b>No se puede entregar este vehículo</b><span>${bloq.join(" · ")}. Reasigne la salida o regularice el vehículo.</span></div></div>`:""}
+  return `<h3>Entregar vehículo</h3>${bloq.length?`<div class="regla bl"><span class="ico">✕</span><div><b>No se puede entregar este vehículo</b><span>${bloq.join(" · ")}. Use «Reasignar vehículo o conductor» o regularice el vehículo.</span></div></div>`:""}
   <div class="campos"><div class="campo"><label for="s-hora">Fecha y hora de salida</label><input type="datetime-local" id="s-hora" value="${paso.form.hora||iso(HOY)}" min="${r.salida.slice(0,10)}T00:00" max="${iso(HOY)}"><span class="ayuda">No puede ser posterior a ahora.</span></div><div class="campo"><label for="s-odo">Odómetro (km)</label><input type="number" id="s-odo" value="${v.km}" min="${v.km}"><span class="ayuda">Último registro: ${km(v.km)} km</span></div>
   <div class="campo"><label for="s-comb">Estanque</label><select id="s-comb">${["1/4","1/2","3/4","Lleno"].map(x=>`<option ${x==="Lleno"?"selected":""}>${x}</option>`).join("")}</select></div><div class="campo"><span class="lbl">Retira</span><span>${esc(nom(r.cond))}</span></div></div>
   <fieldset><legend>Documentación entregada</legend><span class="ayuda">Desmarca lo que no se entrega. Queda registrado en la bitácora.</span>${checklistHTML(r)}</fieldset>
@@ -1979,6 +2028,7 @@ function postSalida(r){
   const cok=$("#c-ok"); if(cok) cok.onclick=()=>{ aplicarPaso(r); tostada({asig:"Asignación confirmada.",sal:"Salida registrada.",reg:"Regreso registrado."}[paso.hecho.tipo]); abrirSalida(r.id); };
   const cbk=$("#c-back"); if(cbk) cbk.onclick=()=>{ paso.conf=null; abrirSalida(r.id); };
   const hu=$("#h-undo"); if(hu) hu.onclick=()=>{ if(Date.now()-paso.hecho.t>UNDO_MS){ tostada("Pasaron 10 minutos: pide al administrador nacional que lo anule."); abrirSalida(r.id); return; } const s=restaurarSalida(r); audit("Deshace "+NOMBRE_PASO[s.tipo],r.id,"—","Vuelve a "+EST[r.est][0]); paso.hecho=null; tostada("Registro deshecho."); abrirSalida(r.id); };
+  const xr=$("#x-reasig"); if(xr) xr.onclick=()=>{ if(!xr.dataset.conf){ xr.dataset.conf="1"; xr.textContent="Confirmar: liberar "+r.pat+" y reasignar"; xr.classList.add("peligro"); return; } reasignarSalida(r,"se reasigna vehículo o conductor."); asig={pat:null,cond:null,rel:null,tarj:null,rid:r.id}; paso={rid:r.id,conf:null,hecho:null,form:{},anular:false}; tostada(`${r.id}: vuelve a «por asignar». Elige otro vehículo${r.reqCond?" y conductor":""}.`); abrirSalida(r.id); };
   const xa=$("#x-anular"); if(xa) xa.onclick=()=>{ paso.anular=true; abrirSalida(r.id); };
   const xb=$("#x-back"); if(xb) xb.onclick=()=>{ paso.anular=false; abrirSalida(r.id); };
   const xo=$("#x-ok"); if(xo) xo.onclick=()=>{ const m=$("#x-mot").value.trim(); if(m.length<10){$("#x-mot").setAttribute("aria-invalid","true");$("#x-mot").focus();tostada("Indica el motivo (mín. 10 caracteres).");return} const s=restaurarSalida(r); audit("Anula "+NOMBRE_PASO[s.tipo]+" · "+m,r.id,"—","Vuelve a "+EST[r.est][0]); paso.anular=false; tostada("Registro anulado."); abrirSalida(r.id); };
@@ -2088,8 +2138,12 @@ function postTraspaso(pat, op){
   }
   const dv=$("#tr-dev"); if(dv) dv.onclick=()=>{ const x=traspActivo(v); x.dev=iso(HOY).slice(0,10); audit("Registra devolución de traspaso",pat,x.destino,x.origen); tostada(`${pat} vuelve a ${x.origen}.`); render(); abrirFicha(pat,"trasp"); };
 }
+function salidasComprometidas(pat){ return RES.filter(r=>r.pat===pat&&r.est==="CONFIRMADA"&&F(r.regreso)>=HOY).sort((a,b)=>a.salida.localeCompare(b.salida)); }
+function enTerrenoVeh(pat){ return RES.find(r=>r.pat===pat&&r.est==="EN_TERRENO"); }
 function otFormHTML(v,op){ const tipo=op.tipoOT||"Reparación";
-  return `<form class="seccion" id="f-ot" style="border:1px solid var(--linea);border-radius:var(--r-m);padding:var(--e-4)"><h3>Nueva orden de trabajo${op.desde?` · desde ${op.desde}`:""}</h3><div class="campos"><div class="campo"><label for="ot-tipo">Tipo</label><select id="ot-tipo">${Object.keys(TRABAJOS).map(t=>`<option ${t===tipo?"selected":""}>${t}</option>`).join("")}</select></div><div class="campo"><label for="ot-taller">Taller</label><select id="ot-taller">${TALLERES.map(t=>`<option>${t}</option>`).join("")}</select></div>
+  const ter=enTerrenoVeh(v.pat); if(ter) return `<div class="regla bl"><span class="ico">✕</span><div><b>${esc(v.pat)} está en terreno</b><span>Salida ${ter.id}, regresa ${fCorta(ter.regreso)}. La orden de trabajo se abre cuando el vehículo vuelva y se registre su regreso.</span></div></div>`;
+  const com=salidasComprometidas(v.pat);
+  return `${com.length?`<div class="regla av"><span class="ico">!</span><div><b>${esc(v.pat)} tiene ${com.length===1?"una salida confirmada":com.length+" salidas confirmadas"}</b><span>${com.map(r=>`${r.id} · ${fCorta(r.salida)} · ${esc(nom(r.sol))}`).join("<br>")}<br>Al abrir la orden, ${com.length===1?"esa salida vuelve":"esas salidas vuelven"} a «por asignar» para elegir otro vehículo. La aprobación y el folio se mantienen.</span></div></div>`:""}<form class="seccion" id="f-ot" style="border:1px solid var(--linea);border-radius:var(--r-m);padding:var(--e-4)"><h3>Nueva orden de trabajo${op.desde?` · desde ${op.desde}`:""}</h3><div class="campos"><div class="campo"><label for="ot-tipo">Tipo</label><select id="ot-tipo">${Object.keys(TRABAJOS).map(t=>`<option ${t===tipo?"selected":""}>${t}</option>`).join("")}</select></div><div class="campo"><label for="ot-taller">Taller</label><select id="ot-taller">${TALLERES.map(t=>`<option>${t}</option>`).join("")}</select></div>
   <div class="campo"><label for="ot-km">Kilometraje</label><input type="number" id="ot-km" value="${v.km}"></div><div class="campo"><label for="ot-fecha">Ingreso</label><input type="text" id="ot-fecha" value="${fF(HOY)}" readonly></div>
   <div class="campo ancho"><span class="lbl">Trabajos</span><div class="check-grid">${TRABAJOS[tipo].filter(x=>catActivo("trabajos",x)).map(t=>`<label><input type="checkbox" class="ot-tr" value="${esc(t)}"> ${esc(t)}</label>`).join("")}</div></div>
   <div class="campo ancho"><label for="ot-obs">Observación</label><input type="text" id="ot-obs" value="${esc(op.desde?RES.find(r=>r.id===op.desde)?.bit?.nov||"":"")}"></div></div>
@@ -2103,10 +2157,11 @@ function gastoFormHTML(pat){ const v=VX[pat];
 function bindOT(C,pat,op,rehacer){ // abrir y cerrar órdenes de trabajo: lo usan la ficha y «Taller y documentos»
   const v=VX[pat];
   const ft=$("#ot-tipo"); if(ft) ft.onchange=()=>rehacer({...op,nuevaOT:true,tipoOT:ft.value});
-  const fo=$("#f-ot"); if(fo) fo.onsubmit=e=>{e.preventDefault(); const tr=[...C.querySelectorAll(".ot-tr:checked")].map(i=>i.value); if(!tr.length){tostada("Marca al menos un trabajo.");return}
+  const fo=$("#f-ot"); if(fo) fo.onsubmit=e=>{e.preventDefault(); if(enTerrenoVeh(pat)){tostada(pat+" está en terreno: la orden se abre al registrar su regreso.");return} const tr=[...C.querySelectorAll(".ot-tr:checked")].map(i=>i.value); if(!tr.length){tostada("Marca al menos un trabajo.");return}
+    const com=salidasComprometidas(pat);
     const o={id:"OT-2026-00"+(nOT++),pat,fecha:iso(HOY).slice(0,10),km:+$("#ot-km").value,taller:$("#ot-taller").value,tipo:$("#ot-tipo").value,trabajos:tr,estado:"En taller",obs:$("#ot-obs").value};
     o.estadoPrevio=["TALL_P","TALL_C"].includes(v.estado)?(OT.find(x=>x.pat===pat&&x.estado==="En taller")?.estadoPrevio||"DISP"):v.estado; OT.unshift(o); v.estado=o.tipo==="Reparación"?"TALL_C":"TALL_P"; if(op.desde){const r=RES.find(x=>x.id===op.desde); if(r) r.bit.ot=o.id;}
-    audit("Abre orden de trabajo",o.id+" · "+pat,"Disponible",EST_V[v.estado][0]); tostada(`${o.id} abierta. ${pat} queda en taller y no se puede asignar.`); rehacer({}); };
+    audit("Abre orden de trabajo",o.id+" · "+pat,"Disponible",EST_V[v.estado][0]); com.forEach(r=>reasignarSalida(r,`${pat} entró a taller (${o.id}); reasignar.`)); tostada(`${o.id} abierta. ${pat} queda en taller y no se puede asignar.`+(com.length?` ${com.map(r=>r.id).join(", ")} ${com.length===1?"vuelve":"vuelven"} a «por asignar».`:"")); rehacer({}); };
   C.querySelectorAll("[data-cerrar-ot]").forEach(b=>b.onclick=()=>{ const o=OT.find(x=>x.id===b.dataset.cerrarOt);
     $("#cierre-ot").innerHTML=`<form class="seccion" id="f-cot" style="border:1px solid var(--linea);border-radius:var(--r-m);padding:var(--e-4)"><h3>Cerrar ${o.id}</h3><div class="campos"><div class="campo"><label for="co-n">N° de factura</label><input type="text" id="co-n" required></div><div class="campo"><label for="co-m">Monto ($)</label><input type="number" id="co-m" min="1" required></div></div><p class="tenue peq">Al cerrar, el vehículo vuelve al estado que tenía antes de entrar a taller y la factura queda registrada como gasto de mantención.</p><div class="acciones"><button class="btn" type="submit">Cerrar orden</button></div></form>`;
     $("#f-cot").onsubmit=e=>{e.preventDefault(); const n=$("#co-n").value.trim(), mo=+$("#co-m").value; if(!n||!mo){tostada("Ingresa número y monto de la factura.");return}
@@ -2200,7 +2255,7 @@ function vRendimiento(){
   const rs=rendimientos(), porV={}; rs.forEach(r=>{(porV[r.pat]=porV[r.pat]||[]).push(r.rend)});
   const filas=Object.entries(porV).map(([p,a])=>({p,prom:a.reduce((s,x)=>s+x,0)/a.length,min:Math.min(...a),n:a.length})).sort((a,b)=>a.prom-b.prom);
   const max=Math.max(...filas.map(f=>f.prom));
-  return `<section class="panel"><header><div><h2>Rendimiento de combustible</h2><span class="sub">km/L entre cargas consecutivas. Un tramo bajo 6 km/L se marca para revisar.</span></div></header><div class="cuerpo barras">${filas.map(f=>`<div class="b"><span class="eti">${placa(f.p)} ${f.min<6?chip("Revisar","c-pend","!"):""}</span><span class="pista"><span style="width:${f.prom/max*100}%"></span></span><span class="num" style="text-align:right">${f.prom.toFixed(1).replace(".",",")} km/L</span></div>`).join("")}</div></section>`;
+  return `<section class="panel"><header><div><h2>Rendimiento de combustible</h2><span class="sub">km/L entre cargas consecutivas. Un tramo bajo 6 km/L se marca para revisar.</span></div></header><div class="cuerpo barras dos-col">${filas.map(f=>`<div class="b"><span class="eti">${placa(f.p)} ${f.min<6?chip("Revisar","c-pend","!"):""}</span><span class="pista"><span style="width:${f.prom/max*100}%"></span></span><span class="num" style="text-align:right">${f.prom.toFixed(1).replace(".",",")} km/L</span></div>`).join("")}</div></section>`;
 }
 function resumenGastos(){
   const porV={}, suma=(pat,tipo,m)=>{const o=porV[pat]=porV[pat]||{t:0}; o[tipo]=(o[tipo]||0)+m; o.t+=m};
@@ -2301,12 +2356,13 @@ function vEquipo(){
 
 /* ======================= CONFIGURACIÓN (administrador) ======================= */
 function vConfig(){
-  const t=sel.cfgTab, tabs=[["catalogos","Catálogos"],["usuarios","Usuarios y accesos"],["cierre","Cierre mensual"],["datos","Datos y auditoría"]];
+  const t=sel.cfgTab, tabs=[["catalogos","Catálogos"],["usuarios","Usuarios y accesos"],["cierre","Cierre mensual"],["datos","Calidad de datos"],["auditoria","Auditoría"]];
   let c="";
   if(t==="catalogos") c=vCatalogos();
   if(t==="usuarios") c=`<section class="panel"><div class="tabla-env"><table><thead><tr><th>Usuario</th><th>Perfil</th><th>Jurisdicción</th><th>Estado</th></tr></thead><tbody>${[["p1","Administrador nacional","Nacional"],["p2","Encargado de vehículos","Oficina Central"],["p3","Jefatura directa","Depto. Abastecimiento"],["p5","Jefatura directa","GEPRIF · Análisis y Diagnóstico"],["p8","Jefatura directa","GEF · Fiscalización"],["p10","Jefatura directa","GEBCC · Viveros"]].map(([id,pf,j])=>`<tr><td>${esc(nom(id))}<br><span class="tenue peq">${PX[id].correo}</span></td><td>${pf}</td><td>${j}</td><td>${chip("Activo","c-disp","●")}</td></tr>`).join("")}</tbody></table></div><div class="leyenda"><span class="tenue peq">Todo funcionario de la nómina puede ingresar como solicitante con su RUT. Los encargados regionales sólo ven su región.</span></div></section>`;
   if(t==="cierre") c=`<section class="panel"><header><div><h2>Cierre mensual</h2><span class="sub">Al cerrar un mes ya no se pueden modificar cargas ni gastos de ese período. Reemplaza «Cerrar período» de GESAD.</span></div></header><div class="tabla-env"><table><thead><tr><th>Período</th><th>Estado</th><th>Cerrado por</th><th></th></tr></thead><tbody>${CIERRES.map(x=>`<tr><td>${MESES[+x.mes.slice(5)-1]} ${x.mes.slice(0,4)}</td><td>${x.estado==="Cerrado"?chip("Cerrado","c-neu","✓"):chip("Abierto","c-pend","◔")}</td><td class="peq">${x.por?esc(nom(x.por))+" · "+fF(x.fecha):"—"}</td><td>${x.estado==="Abierto"&&x.mes<iso(HOY).slice(0,7)?`<button class="btn sec chico" type="button" data-cerrar-mes="${x.mes}">Cerrar mes</button>`:""}</td></tr>`).join("")}</tbody></table></div></section>`;
-  if(t==="datos") c=vAdmin().replace(/^<div class="cab-vista">[\s\S]*?<\/span><\/div>/,"");
+  if(t==="datos"||t==="auditoria"){ const h=vAdmin().replace(/^<div class="cab-vista">[\s\S]*?<\/span><\/div>/,""), k=h.indexOf('<section class="panel" style="margin-top:var(--e-4)"><header><h2>Registro de auditoría');
+    c=t==="datos"?`<div class="datos-2">${h.slice(0,k).replace('<div style="margin-top:var(--e-4)">',"<div>")}</div>`:h.slice(k).replace('style="margin-top:var(--e-4)"',""); }
   return cab("Configuración","Catálogos, usuarios, cierre mensual y control de datos.","ERS §3.2 Perfil 1 · §7")+tabsHTML(tabs,t,"data-cfg")+c;
 }
 /* ---------- Catálogos (administrador nacional) ---------- */
