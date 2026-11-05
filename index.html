@@ -887,6 +887,7 @@ const $ = s=>document.querySelector(s);
 const esc = s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const DS = ["dom","lun","mar","mié","jue","vie","sáb"], MS=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
 const fF = d=>{d=typeof d==="string"?F(d):d; return d? String(d.getDate()).padStart(2,"0")+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+d.getFullYear():"—"};
+const fH = d=>{d=typeof d==="string"?F(d):d; return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")};
 const fFH = d=>{d=typeof d==="string"?F(d):d; return fF(d)+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")};
 const fCorta = d=>{d=typeof d==="string"?F(d):d; return DS[d.getDay()]+" "+d.getDate()+" "+MS[d.getMonth()]+" "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")};
 const km = n=>n==null?"—":Math.round(n).toLocaleString("es-CL");
@@ -1024,10 +1025,10 @@ function postExport(tipo){
   const bx=$("#btn-exp"); if(bx) bx.onclick=()=>{
     if(typeof XLSX==="undefined"){tostada("No se pudo cargar el generador de Excel. Revisa tu conexión.");return}
     const L=salidasRealizadas(tipo), p=PX[ROLES[rol].quien], per=EXP.modo==="mes"?MESES[EXP.mes-1]+" de "+EXP.anio:"año "+EXP.anio;
-    const cab_=[...(tipo==="equipo"?["Funcionario","RUT"]:[]),"ID salida","Salida real","Regreso real","Días","Destino","Cometido","Vehículo","Conductor","Personas","Km recorridos","Folio de imputación"];
-    const filas=L.map(r=>{const d=Math.max(1,Math.ceil((F(r.bit.reg||r.regreso)-F(r.bit.sal))/DIA)); return [...(tipo==="equipo"?[nom(r.sol),PX[r.sol]?.rut||""]:[]),r.id,fFH(r.bit.sal),r.bit.reg?fFH(r.bit.reg):"",d,r.destinos.map(x=>`${x.lug||x.otro||""}, ${x.com} (${x.reg})`).join(" · "),r.cometido,r.pat||"",nom(r.cond),pasajeros(r),r.bit.odoR?r.bit.odoR-r.bit.odoS:"",r.cc||""];});
+    const cab_=[...(tipo==="equipo"?["Funcionario","RUT"]:[]),"ID salida","Fecha de salida","Hora de salida","Fecha de regreso","Hora de regreso","Días","Destino","Cometido","Vehículo","Conductor","Personas","Km recorridos","Folio de imputación"];
+    const filas=L.map(r=>{const d=Math.max(1,Math.ceil((F(r.bit.reg||r.regreso)-F(r.bit.sal))/DIA)); return [...(tipo==="equipo"?[nom(r.sol),PX[r.sol]?.rut||""]:[]),r.id,fF(r.bit.sal),fH(r.bit.sal),r.bit.reg?fF(r.bit.reg):"",r.bit.reg?fH(r.bit.reg):"",d,r.destinos.map(x=>`${x.lug||x.otro||""}, ${x.com} (${x.reg})`).join(" · "),r.cometido,r.pat||"",nom(r.cond),pasajeros(r),r.bit.odoR?r.bit.odoR-r.bit.odoS:"",r.cc||""];});
     const aoa=[[tipo==="mis"?"Mis salidas realizadas · Sistema Nacional de Gestión de Flota · CONAF":"Salidas realizadas por mi equipo · Sistema Nacional de Gestión de Flota · CONAF"],[`Periodo: ${per}`,"",`${tipo==="mis"?"Funcionario":"Jefatura"}: ${p.nom}`,"","Emitido: "+fFH(HOY)],[],cab_,...filas];
-    const ws=XLSX.utils.aoa_to_sheet(aoa); ws["!cols"]=(tipo==="equipo"?[28,13]:[]).concat([16,17,17,6,48,50,10,26,9,13,12]).map(w=>({wch:w}));
+    const ws=XLSX.utils.aoa_to_sheet(aoa); ws["!cols"]=(tipo==="equipo"?[28,13]:[]).concat([16,14,13,15,14,6,48,50,10,26,9,13,12]).map(w=>({wch:w}));
     const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,"Salidas");
     const nombre=`${tipo==="mis"?"mis_salidas":"salidas_equipo"}_${EXP.anio}${EXP.modo==="mes"?"_"+String(EXP.mes).padStart(2,"0"):""}.xlsx`;
     try{ XLSX.writeFile(wb,nombre); audit("Descarga Excel de salidas realizadas",nombre,"—",filas.length+" filas"); tostada(`Excel generado: ${nombre} (${filas.length} ${filas.length===1?"salida":"salidas"}).`); }catch(e){ tostada("La descarga fue bloqueada en esta vista. Ábrela desde GitHub Pages."); }
