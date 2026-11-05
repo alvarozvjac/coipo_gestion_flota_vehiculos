@@ -635,6 +635,18 @@ footer.pie-app span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;mi
 #wiz button{padding:6px var(--e-3)} #wiz{margin-bottom:var(--e-2)}
 #form-sol legend{padding-block:0}
 .lbl-nota{font-weight:400;color:var(--tinta-3);font-size:var(--f-xs)}
+.acc-orden{display:flex;gap:var(--e-2);flex-wrap:wrap;justify-content:flex-end}
+/* Descarga de la orden de salida: se imprime sólo la orden (el navegador ofrece «Guardar como PDF») */
+@page{size:letter;margin:14mm}
+@media print{
+  body.imprime-orden>*:not(#capa2){display:none!important}
+  body.imprime-orden{display:block;margin:0;background:#fff}
+  body.imprime-orden #capa2 .velo{position:static;background:none;display:block}
+  body.imprime-orden #capa2 .cajon{position:static;width:auto;height:auto;overflow:visible;box-shadow:none;animation:none;background:#fff}
+  body.imprime-orden #capa2 .cajon>header,body.imprime-orden #capa2 .cuerpo>p.tenue{display:none}
+  body.imprime-orden #capa2 .cuerpo{padding:0}
+  body.imprime-orden .orden{border:none;max-width:none;padding:0}
+}
 </style>
 
 </head><body>
@@ -1207,10 +1219,10 @@ post.nueva = ()=>{
     if(b.editId){ const r=RES.find(x=>x.id===b.editId);
       Object.assign(r,{est:"PEND_JEFE",jefe:b.jefe,salida:b.salida,regreso:b.regreso,destinos,cometido:b.cometido,km:b.km,reqCond:b.reqCond,cond:b.cond||null,pas,req:{t4:b.t4,carga:b.carga},tipoReq:b.tipo,obsLog:""});
       r.hist.push({t:iso(HOY),quien:r.sol,acc:"Corregida y reenviada"}); audit("Corrige y reenvía solicitud",r.id,"Observada","Pendiente jefatura");
-      borrador=null; tostada(`Solicitud ${r.id} corregida y reenviada a ${nom(r.jefe)}.`); ir("mis"); return; }
+      borrador=null; tostada(`Solicitud ${r.id} corregida y reenviada a ${nom(r.jefe)}.`); ir(HOME()); return; }
     const r=R({id:nuevoId(),est:"PEND_JEFE",fSol:iso(HOY),sol:ROLES[rol].quien,jefe:b.jefe,salida:b.salida,regreso:b.regreso,destinos,cometido:b.cometido,km:b.km,cc:null,reqCond:b.reqCond,cond:b.cond||null,relevo,pas,externos:b.externos,req:{t4:b.t4,carga:b.carga},tipoReq:b.tipo});
     r.hist.push({t:r.fSol,quien:r.sol,acc:"Solicitud ingresada"}); RES.push(r); audit("Crea solicitud",r.id,"—","Pendiente jefatura");
-    borrador=null; tostada(`Solicitud ${r.id} enviada a ${nom(r.jefe)}.`); ir("mis");
+    borrador=null; tostada(`Solicitud ${r.id} enviada a ${nom(r.jefe)}.`); ir(HOME());
   });
 };
 
@@ -1364,7 +1376,7 @@ function vReportesTes(){
 /* ======================= ORDEN DE SALIDA ======================= */
 function abrirOrden(id){
   const r=RES.find(x=>x.id===id), v=VX[r.pat], cc=CCX[r.cc];
-  $("#capa2").innerHTML=`<div class="velo" id="velo2"><div class="cajon" role="dialog" aria-modal="true" aria-labelledby="t-orden"><header><h2 id="t-orden" style="font-size:var(--f-l)">Orden de salida · <span class="mono">${r.id}</span></h2><button class="btn sec chico" type="button" id="cerrar2">Cerrar</button></header><div class="cuerpo">
+  $("#capa2").innerHTML=`<div class="velo" id="velo2"><div class="cajon" role="dialog" aria-modal="true" aria-labelledby="t-orden"><header><h2 id="t-orden" style="font-size:var(--f-l)">Orden de salida · <span class="mono">${r.id}</span></h2><span class="acc-orden"><button class="btn chico" type="button" id="bajar-orden" title="Abre el diálogo de impresión: elige «Guardar como PDF»">Descargar PDF</button><button class="btn sec chico" type="button" id="cerrar2">Cerrar</button></span></header><div class="cuerpo">
   <div class="orden"><div class="enc"><div><b>Corporación Nacional Forestal</b><br>Gerencia de Finanzas y Administración · Unidad de Vehículos<h3>Orden de salida de vehículo fiscal</h3><span class="mono">N° ${r.id}</span> · emitida ${fFH(HOY)}</div></div>
   <table><tbody>
    <tr><td>Solicitado por</td><td>${esc(nom(r.sol))} · ${esc(PX[r.sol].ger)}</td></tr>
@@ -1385,6 +1397,7 @@ function abrirOrden(id){
   <div class="pie"><div>Firma conductor</div><div>V°B° Unidad de Vehículos</div><div>Recepción conforme</div></div></div>
   <p class="tenue peq">Formato basado en el comprobante «Salida Vehículo» de GESAD. La póliza indicada es ficticia.</p></div></div></div>`;
   const cerrar=()=>{$("#capa2").innerHTML="";document.removeEventListener("keydown",esc_)}; const esc_=e=>{if(e.key==="Escape")cerrar()};
+  $("#bajar-orden").onclick=()=>{ const t0=document.title; document.title=`Orden de salida ${r.id}`; document.body.classList.add("imprime-orden"); const fin=()=>{document.body.classList.remove("imprime-orden"); document.title=t0; removeEventListener("afterprint",fin)}; addEventListener("afterprint",fin); try{ window.print(); }catch(e){ tostada("La descarga no está disponible en esta vista previa: ábrela desde GitHub Pages."); fin(); } };
   $("#cerrar2").onclick=cerrar; $("#velo2").onclick=e=>{if(e.target.id==="velo2")cerrar()}; document.addEventListener("keydown",esc_); $("#cerrar2").focus();
 }
 
