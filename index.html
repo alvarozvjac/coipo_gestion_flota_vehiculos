@@ -586,6 +586,13 @@ main{padding-top:var(--e-4)}
 @media (max-width:1399.98px){ /* ancho */ .accesos.acc-5{grid-template-columns:repeat(5,minmax(0,1fr))} }
 @media (max-width:899.98px){ /* columna */ .accesos.acc-n{grid-template-columns:repeat(2,minmax(0,1fr))} .accesos.acc-5{grid-template-columns:repeat(2,minmax(0,1fr))} .ini-2{grid-template-columns:minmax(0,1fr);gap:0} }
 @media (max-width:559.98px){ /* teléfono */ .accesos.acc-n,.accesos.acc-5{grid-template-columns:minmax(0,1fr)} }
+
+/* Pie de página angosto y al fondo de la ventana en todos los perfiles (05-11-2026) */
+body{min-height:calc(100vh - 16px);min-height:calc(100dvh - 16px);display:flex;flex-direction:column} /* 16px = margen del body */
+body>main{flex:1 0 auto;width:100%;padding-bottom:var(--e-4)}
+footer.pie-app{padding-block:6px;border-top-width:2px;font-size:11px;line-height:1.4;gap:var(--e-3)}
+footer.pie-app span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+@media (max-width:559.98px){ /* teléfono */ footer.pie-app{flex-direction:column;gap:2px} footer.pie-app span{white-space:normal} }
 </style>
 
 </head><body>
