@@ -519,7 +519,7 @@ body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{d
   .quien .qtxt{display:none}
   #btn-salir{min-width:44px;min-height:44px;padding:0;justify-content:center}
   #btn-salir .txt-salir{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  .nav{display:none} /* el único botón era «Inicio»: lo cubren el nombre de la aplicación y «Volver al inicio» */
+  .nav button{min-height:44px} /* la pestaña «Inicio» queda visible también en teléfono */
   .hero{padding:var(--e-4)}
   .hero h1{font-size:var(--f-xl)}
   .hero p{font-size:var(--f-s);margin-bottom:0}
@@ -1405,7 +1405,7 @@ function vHoy(){
   return heroHTML("Lo que requiere tu atención en la flota de Oficina Central: solicitudes por asignar, vehículos por entregar o recibir y vencimientos.")+
   `<h2 class="sec-tit">${ico("flecha")}¿Qué necesitas hacer?</h2>`+accesosHTML(accesosGestion());
 }
-const volverHTML=()=>`<div class="acciones" style="margin-bottom:var(--e-4)"><button class="btn sec chico" type="button" data-ir="${HOME()}">${ico("home")}Volver al inicio</button></div>`;
+const volverHTML=()=>""; // «Volver al inicio» se retiró: la pestaña «Inicio» del menú cumple esa función (decisión del 05-11-2026)
 function novedadesPend(){ return RES.filter(r=>r.bit?.nov&&r.bit.nov!=="Sin novedades"&&!r.bit.ot).sort((x,y)=>(y.bit.reg||"").localeCompare(x.bit.reg||"")); }
 function vNovedades(){
   const L=novedadesPend();
