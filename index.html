@@ -1131,7 +1131,7 @@ function vVisor(){
   const filaPend=`<div class="g-fila"><div class="g-et"><div class="txt"><b class="peq">Sin patente asignada</b><span>${sinPat.length} solicitudes en curso</span></div></div><div class="g-pista">${fondo}${sinPat.map((r,i)=>{const p=pos(r.salida,r.regreso);return p?barra(r,p).replace('style="','style="top:'+(4+i%2*18)+'px;bottom:auto;height:18px;'):""}).join("")}</div></div>`;
   const det=RES.find(r=>r.id===sel.ganttSel);
   return cab("Visor de disponibilidad","Carta Gantt del pool. Selecciona una barra para ver el detalle. El sistema impide reservar la misma patente o el mismo conductor en horarios superpuestos.","ERS §4.4 · Prototipo V7 «Visor Disponibilidad»")+
-  `<section class="panel"><header><div class="gantt-ctl"><div class="seg" role="group" aria-label="Escala">${[[7,"Semana"],[14,"2 semanas"],[30,"Mes"]].map(([d,t])=>`<button type="button" data-dias="${d}" aria-pressed="${g.dias===d}">${t}</button>`).join("")}</div>
+  `<section class="panel"><header><div class="gantt-ctl"><div class="seg" role="group" aria-label="Escala">${[[7,"Semana"],[30,"Mes"]].map(([d,t])=>`<button type="button" data-dias="${d}" aria-pressed="${g.dias===d}">${t}</button>`).join("")}</div>
    <div class="acciones"><button class="btn sec chico" type="button" data-mov="-1" aria-label="Periodo anterior">← Anterior</button><button class="btn sec chico" type="button" data-mov="0">Hoy</button><button class="btn sec chico" type="button" data-mov="1" aria-label="Periodo siguiente">Siguiente →</button></div>
    <label class="opciones peq"><span><input type="checkbox" id="g-pool" ${sel.gantt.f==="pool"?"checked":""}> Sólo pool</span></label></div><span class="sub num">${fF(ini)} al ${fF(new Date(fin.getTime()-DIA))}</span></header>
   <div class="g-cuerpo"><div class="gantt-env"><div class="gantt"><div class="g-fila cab"><div class="g-et"><b class="peq">Vehículo</b></div><div class="g-dias" style="${cols}">${dias.map(d=>`<div class="g-dia ${esFin(d)?"fin":""} ${iso(d).slice(0,10)===iso(HOY).slice(0,10)?"hoy":""}">${DS[d.getDay()]}<b>${d.getDate()}</b>${g.dias<=14?MS[d.getMonth()]:""}</div>`).join("")}</div></div>
@@ -1348,7 +1348,7 @@ const iniciales=n=>String(n||"").split(/\s+/).filter(Boolean).slice(0,2).map(x=>
 
 /* ---------- Estado de vista ---------- */
 let rol = "encargado", vista = "hoy";
-let sel = {cat:"tipos", catAdd:false, repTab:"km", tes:{modo:"mes",mes:10,anio:2026}, bandeja:null, gantt:{ini:F("2026-10-19"),dias:14}, ganttSel:null,
+let sel = {cat:"tipos", catAdd:false, repTab:"km", tes:{modo:"mes",mes:10,anio:2026}, bandeja:null, gantt:{ini:F("2026-10-19"),dias:7}, ganttSel:null,
   salFiltro:"asignar", salModo:"lista", salQ:"", flotaFiltro:"todos", flotaQ:"", condFiltro:"todos", combTab:"cargas", cfgTab:"catalogos"};
 
 function cuentas(){
