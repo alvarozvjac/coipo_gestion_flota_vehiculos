@@ -647,6 +647,17 @@ footer.pie-app span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;mi
   body.imprime-orden #capa2 .cuerpo{padding:0}
   body.imprime-orden .orden{border:none;max-width:none;padding:0}
 }
+/* Mis salidas: pestañas y filas */
+.mis-panel{padding:0;overflow:hidden}
+.mis-excel{display:flex;flex-wrap:wrap;align-items:center;gap:var(--e-2) var(--e-3);padding:var(--e-2) var(--e-4);border-bottom:1px solid var(--linea);background:var(--sup-2)} .mis-excel>.tenue{margin-right:auto}
+.mis-tabla td,.mis-tabla th{padding:8px 12px;vertical-align:middle;white-space:nowrap}
+.mis-tabla .mis-com span{display:block;max-width:40ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mis-tabla .mis-acc{text-align:right} .mis-tabla .chev{color:var(--tinta-3);font-size:1.25rem;margin-left:var(--e-2);vertical-align:middle}
+.mis-pie{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--e-2);padding:6px var(--e-4);border-top:1px solid var(--linea)}
+.mis-pag{display:flex;align-items:center;gap:var(--e-2)}
+.cab-mis{display:flex;justify-content:space-between;align-items:center}
+@media (max-width:899.98px){ /* columna */ .mis-tabla th:nth-child(2),.mis-tabla td:nth-child(2),.mis-tabla th:nth-child(5),.mis-tabla td:nth-child(5){display:none} }
+@media (max-width:559.98px){ /* teléfono */ .mis-tabla th:nth-child(1),.mis-tabla td:nth-child(1),.mis-tabla th:nth-child(4),.mis-tabla td:nth-child(4){display:none} .mis-tabla td,.mis-tabla th{padding:8px} .cab-mis{flex-direction:row;align-items:center} }
 </style>
 
 </head><body>
@@ -1021,12 +1032,58 @@ function postExport(tipo){
 }
 const diasViaje = r=>Math.max(1,Math.ceil((F(r.regreso)-F(r.salida))/DIA));
 const distanciaTxt = r=>r.km?`<span class="num">${km(r.km)} km aprox. · ${km(r.km/diasViaje(r))} km por día en ${diasViaje(r)} ${diasViaje(r)===1?"día":"días"}</span>`:`<span class="tenue">Sin estimación del solicitante</span>`;
-function vMis(){
-  const yo=ROLES[rol].quien, mias=RES.filter(r=>r.sol===yo).sort((a,b)=>b.fSol.localeCompare(a.fSol));
-  return cab("Mis salidas","Estado en tiempo real de tus reservas. Cuando el encargado asigna el vehículo, puedes ver y compartir la orden de salida.","ERS §4.3 · Perfil 4")+exportHTML("mis")+
-  `<div class="lista">${mias.length?mias.map(r=>tarjetaSol(r,{boton:`<div class="acciones">${["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)?`<button class="btn sec chico" type="button" data-orden="${r.id}">Ver orden de salida</button>`:""}${r.est==="OBSERVADA"?`<button class="btn chico" type="button" data-corregir="${r.id}">Corregir y reenviar</button>`:""}${["PEND_JEFE","APROBADA","OBSERVADA","CONFIRMADA"].includes(r.est)?`<button class="btn peligro chico" type="button" data-anular="${r.id}">Anular solicitud</button>`:""}</div>`})).join(""):vacio("Aún no tienes solicitudes","Ingresa tu primera solicitud de vehículo para una salida a terreno.")}</div>`;
+/* «Mis salidas» en pestañas y filas: todo a la vista sin desplazar la página (05-11-2026) */
+const EN_CURSO=["PEND_JEFE","OBSERVADA","APROBADA","CONFIRMADA","EN_TERRENO"];
+function accionesMia(r){
+  return `${["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)?`<button class="btn sec chico" type="button" data-orden="${r.id}">Ver orden de salida</button>`:""}${r.est==="OBSERVADA"?`<button class="btn chico" type="button" data-corregir="${r.id}">Corregir y reenviar</button>`:""}${["PEND_JEFE","APROBADA","OBSERVADA","CONFIRMADA"].includes(r.est)?`<button class="btn peligro chico" type="button" data-anular="${r.id}">Anular solicitud</button>`:""}`;
 }
-post.mis = ()=>{ postExport("mis"); $("#vista").querySelectorAll("[data-corregir]").forEach(bt=>bt.onclick=()=>{ borrador=borradorDesde(RES.find(x=>x.id===bt.dataset.corregir)); ir("nueva"); }); };
+function vMis(){
+  const yo=ROLES[rol].quien, mias=RES.filter(r=>r.sol===yo);
+  const curso=mias.filter(r=>EN_CURSO.includes(r.est)).sort((a,b)=>a.salida.localeCompare(b.salida));
+  const hist=mias.filter(r=>!EN_CURSO.includes(r.est)).sort((a,b)=>b.salida.localeCompare(a.salida));
+  if(!sel.misTab) sel.misTab=curso.length?"curso":"hist";
+  const N=sel.misN||8, L=sel.misTab==="curso"?curso:hist, pags=Math.max(1,Math.ceil(L.length/N));
+  sel.misPag=Math.min(sel.misPag||0,pags-1); const ver=L.slice(sel.misPag*N,(sel.misPag+1)*N);
+  const fila=r=>`<tr class="clic" data-mia="${r.id}" tabindex="0" aria-label="Ver detalle de ${r.id}">
+     <td class="mono">${r.id}</td><td class="mis-com" title="${esc(r.cometido)}"><span>${esc(r.cometido)}</span></td>
+     <td class="num">${fCorta(r.salida)}</td><td>${esc(r.destinos.map(d=>d.com).join(" · "))}</td>
+     <td>${r.pat?placa(r.pat):'<span class="tenue">—</span>'}</td><td>${chipR(r.est)}</td>
+     <td class="mis-acc">${["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)?`<button class="btn sec chico" type="button" data-orden="${r.id}">Orden</button>`:r.est==="OBSERVADA"?`<button class="btn chico" type="button" data-corregir="${r.id}">Corregir</button>`:""}<span class="chev" aria-hidden="true">›</span></td></tr>`;
+  const per=EXP.modo==="mes"?`${MESES[EXP.mes-1]} de ${EXP.anio}`:`año ${EXP.anio}`, R=salidasRealizadas("mis");
+  const excel=sel.misTab!=="hist"?"":`<div class="mis-excel"><span class="tenue peq">Excel de salidas realizadas · ${per} · ${R.length} ${R.length===1?"salida":"salidas"}</span>
+     <div class="seg" role="group" aria-label="Periodo"><button type="button" data-em="mes" aria-pressed="${EXP.modo==="mes"}">Mensual</button><button type="button" data-em="anio" aria-pressed="${EXP.modo==="anio"}">Anual</button></div>
+     ${EXP.modo==="mes"?`<label class="sr" for="e-mes">Mes</label><select id="e-mes" style="width:auto">${MESES.map((m,i)=>`<option value="${i+1}" ${i+1===EXP.mes?"selected":""}>${m[0].toUpperCase()+m.slice(1)}</option>`).join("")}</select>`:""}
+     <label class="sr" for="e-anio">Año</label><select id="e-anio" style="width:auto"><option ${EXP.anio===2026?"selected":""}>2026</option><option ${EXP.anio===2025?"selected":""}>2025</option></select>
+     <button class="btn chico" type="button" id="btn-exp" ${R.length?"":"disabled"}>Descargar Excel</button></div>`;
+  return `<div class="cab-vista cab-compacta cab-mis"><h1>Mis salidas</h1><button class="btn chico" type="button" data-ir="nueva">+ Nueva solicitud</button></div>
+   ${tabsHTML([["curso",`En curso (${curso.length})`],["hist",`Historial (${hist.length})`]],sel.misTab,"data-mt")}
+   <section class="panel mis-panel">${excel}
+   ${ver.length?`<div class="tabla-env"><table class="mis-tabla"><thead><tr><th>N° orden</th><th>Cometido</th><th>Salida</th><th>Destino</th><th>Patente</th><th>Estado</th><th><span class="sr">Acciones</span></th></tr></thead><tbody>${ver.map(fila).join("")}</tbody></table></div>`
+     :vacio(sel.misTab==="curso"?"No tienes salidas en curso":"Aún no tienes salidas anteriores",sel.misTab==="curso"?"Cuando envíes una solicitud, la verás aquí con su etapa.":"Las salidas finalizadas, anuladas o rechazadas aparecerán aquí.")}
+   <div class="mis-pie"><span class="tenue peq">Selecciona una fila para ver las etapas, los datos y las acciones de la salida.</span>${pags>1?`<span class="mis-pag"><button class="btn sec chico" type="button" data-mp="-1" ${sel.misPag?"":"disabled"}>← Anterior</button><span class="peq">Página ${sel.misPag+1} de ${pags}</span><button class="btn sec chico" type="button" data-mp="1" ${sel.misPag<pags-1?"":"disabled"}>Siguiente →</button></span>`:""}</div>
+   </section>`;
+}
+function abrirMia(id){
+  const r=RES.find(x=>x.id===id); if(!r) return;
+  cajon(`<h2 id="t-cajon" style="font-size:var(--f-xl)" class="mono">${r.id}</h2>`, chipR(r.est), tarjetaSol(r,{boton:`<div class="acciones">${accionesMia(r)}</div>`}));
+  $("#capa").querySelectorAll("[data-corregir]").forEach(bt=>bt.onclick=()=>{ cerrarCapa(); borrador=borradorDesde(r); ir("nueva"); });
+}
+post.mis = ()=>{
+  const V=$("#vista"); postExport("mis");
+  V.querySelectorAll("[data-mt]").forEach(b=>b.onclick=()=>{sel.misTab=b.dataset.mt; sel.misPag=0; render()});
+  V.querySelectorAll("[data-mp]").forEach(b=>b.onclick=()=>{sel.misPag=(sel.misPag||0)+ +b.dataset.mp; render()});
+  V.querySelectorAll("[data-corregir]").forEach(bt=>bt.onclick=e=>{ e.stopPropagation(); borrador=borradorDesde(RES.find(x=>x.id===bt.dataset.corregir)); ir("nueva"); });
+  // Filas por página según el alto de la ventana: la página nunca necesita desplazarse.
+  const tb=V.querySelector(".mis-tabla tbody"), f1=tb?.querySelector("tr"), pan=V.querySelector(".mis-panel");
+  if(f1&&(sel.__misAj||0)<3){ const pie=document.querySelector("footer.pie-app"), main=document.querySelector("body>main");
+    const resto=(pie?.offsetHeight||0)+parseFloat(getComputedStyle(main).paddingBottom||0)+parseFloat(getComputedStyle(document.body).marginBottom||0);
+    const sobra=innerHeight-(pan.getBoundingClientRect().bottom+scrollY)-resto, alto=f1.getBoundingClientRect().height;
+    const n=Math.max(3,Math.min(12,tb.rows.length+Math.floor(sobra/alto)));
+    if(n!==(sel.misN||8)){ sel.misN=n; sel.__misAj=(sel.__misAj||0)+1; render(); return; } }
+  sel.__misAj=0;
+  if(!window.__misRs){ window.__misRs=1; let tm; addEventListener("resize",()=>{ clearTimeout(tm); tm=setTimeout(()=>{ if(vista==="mis"&&!$("#capa").innerHTML){ sel.misN=12; render(); } },200); }); }
+  V.querySelectorAll("tr[data-mia]").forEach(tr=>{ tr.onclick=e=>{ if(e.target.closest("button")) return; abrirMia(tr.dataset.mia); }; tr.onkeydown=e=>{ if(e.key==="Enter"&&e.target===tr) abrirMia(tr.dataset.mia); }; });
+};
 function borradorDesde(r){
   const provDe=(reg,com)=>(provinciasDe(reg).find(p=>p[1].includes(com))||[""])[0];
   const destinos=r.destinos.map(d=>{ const lista=(UNIDADES[d.reg]||[]); return {reg:d.reg,prov:d.prov||provDe(d.reg,d.com),com:d.com,lug:lista.includes(d.lug)?d.lug:OTRA,otro:lista.includes(d.lug)?"":(d.lug||"")}; });
@@ -2144,7 +2201,7 @@ document.addEventListener("click",e=>{
   const v=e.target.closest("[data-veh]"); if(v){fichaTab="resumen";abrirFicha(v.dataset.veh);return}
   const a=e.target.closest("[data-asig]"); if(a){abrirSalida(a.dataset.asig);return}
   const i=e.target.closest("[data-ir]"); if(i){cerrarCapa();ir(i.dataset.ir);return}
-  const an=e.target.closest("[data-anular]"); if(an){const r=RES.find(x=>x.id===an.dataset.anular); if(an.dataset.conf){const ant=EST[r.est][0]; r.est="ANULADA"; r.obsLog="Anulada por el solicitante."; audit("Anula solicitud",r.id,ant,"Anulada"); tostada(`${r.id} anulada.`); render();} else {an.dataset.conf="1"; an.textContent="Confirmar anulación";} return}
+  const an=e.target.closest("[data-anular]"); if(an){const r=RES.find(x=>x.id===an.dataset.anular); if(an.dataset.conf){const ant=EST[r.est][0]; r.est="ANULADA"; r.obsLog="Anulada por el solicitante."; audit("Anula solicitud",r.id,ant,"Anulada"); tostada(`${r.id} anulada.`); if($("#capa").innerHTML) cerrarCapa(); render();} else {an.dataset.conf="1"; an.textContent="Confirmar anulación";} return}
 });
 
 /* ======================= ALTAS (sólo administrador nacional) ======================= */
