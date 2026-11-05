@@ -656,11 +656,9 @@ footer.pie-app span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;mi
 .mis-pie{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--e-2);padding:6px var(--e-4);border-top:1px solid var(--linea)}
 .mis-pag{display:flex;align-items:center;gap:var(--e-2)}
 .cab-mis{display:flex;justify-content:space-between;align-items:center}
-@media (max-width:899.98px){ /* columna */ .mis-tabla th:nth-child(2),.mis-tabla td:nth-child(2),.mis-tabla th:nth-child(5),.mis-tabla td:nth-child(5){display:none} }
-@media (max-width:559.98px){ /* teléfono */ .mis-tabla th:nth-child(1),.mis-tabla td:nth-child(1),.mis-tabla th:nth-child(4),.mis-tabla td:nth-child(4){display:none} .mis-tabla td,.mis-tabla th{padding:8px} .cab-mis{flex-direction:row;align-items:center} }
+@media (max-width:559.98px){ /* teléfono */ .mis-tabla td,.mis-tabla th{padding:8px} .cab-mis{flex-direction:row;align-items:center} }
 .cuenta-tit{display:inline-block;min-width:1.6em;padding:0 .45em;margin-left:var(--e-2);border-radius:var(--r-pill);background:var(--st-malo-bg);color:var(--st-malo);font-size:var(--f-s);vertical-align:middle;text-align:center}
 #decision{box-shadow:none}
-@media (max-width:899.98px){ /* columna */ .mis-tabla th:nth-child(6),.mis-tabla td:nth-child(6){display:none} }
 /* Inicio de la jefatura: panel de mando */
 .jef-2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--e-4);margin-top:var(--e-4)}
 .jef-2 .panel>header{padding-block:var(--e-2)}
@@ -698,6 +696,15 @@ footer.pie-app span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;mi
 .cal-md.hoy{outline:2px solid var(--boton);outline-offset:-2px}
 @media (max-width:899.98px){ /* columna */ .cal-anio{grid-template-columns:repeat(3,minmax(0,1fr))} }
 @media (max-width:559.98px){ /* teléfono */ .cal-anio{grid-template-columns:repeat(2,minmax(0,1fr))} .cal-mes{height:auto;min-height:0;grid-template-rows:auto} .cal-ev{font-size:10px;padding:0 3px} .cal-ev b{display:none} .cab-mis{flex-wrap:wrap} }
+/* Taller y documentos */
+.accesos.acc-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:899.98px){ /* columna */ .accesos.acc-3{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:559.98px){ /* teléfono */ .accesos.acc-3{grid-template-columns:minmax(0,1fr)} }
+.tal-que{white-space:normal!important;max-width:46ch} .tal-i{display:block;font-size:var(--f-s);white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .tal-i.alta{color:var(--st-malo);font-weight:600}
+.tal-dot{width:10px;height:10px;border-radius:50%;background:var(--linea-fuerte);align-self:center} .tal-dot.alta{background:var(--st-malo)} .tal-dot.media{background:var(--st-pend)} .tal-dot.taller{background:var(--st-tall)}
+/* Columnas que cada lista oculta en pantallas angostas (tablaFilas) */
+@media (max-width:899.98px){ /* columna */ .oc-c1 :is(th,td):nth-child(1),.oc-c2 :is(th,td):nth-child(2),.oc-c3 :is(th,td):nth-child(3),.oc-c4 :is(th,td):nth-child(4),.oc-c5 :is(th,td):nth-child(5),.oc-c6 :is(th,td):nth-child(6),.oc-c7 :is(th,td):nth-child(7){display:none} }
+@media (max-width:559.98px){ /* teléfono */ .oc-t1 :is(th,td):nth-child(1),.oc-t2 :is(th,td):nth-child(2),.oc-t3 :is(th,td):nth-child(3),.oc-t4 :is(th,td):nth-child(4),.oc-t5 :is(th,td):nth-child(5),.oc-t6 :is(th,td):nth-child(6),.oc-t7 :is(th,td):nth-child(7){display:none} }
 </style>
 
 </head><body>
@@ -1076,7 +1083,7 @@ const distanciaTxt = r=>r.km?`<span class="num">${km(r.km)} km aprox. · ${km(r.
 /* Listas en filas paginadas que nunca obligan a desplazar la página (05-11-2026).
    Las usan «Mis salidas», «Por aprobar» y «Salidas de mi equipo». */
 const EN_CURSO=["PEND_JEFE","OBSERVADA","APROBADA","CONFIRMADA","EN_TERRENO"];
-const PAG_VISTA={mis:"mis",bandeja:"ban",equipo:"eq"};
+const PAG_VISTA={mis:"mis",bandeja:"ban",equipo:"eq",taller:"tal",flota:"flo"};
 function paginar(L,k,ayuda){
   const N=sel[k+"N"]||8, pags=Math.max(1,Math.ceil(L.length/N)); sel[k+"Pag"]=Math.min(sel[k+"Pag"]||0,pags-1); const p=sel[k+"Pag"];
   return {ver:L.slice(p*N,(p+1)*N), pie:`<div class="mis-pie"><span class="tenue peq">${ayuda}</span>${pags>1?`<span class="mis-pag"><button class="btn sec chico" type="button" data-pg="-1" ${p?"":"disabled"}>← Anterior</button><span class="peq">Página ${p+1} de ${pags}</span><button class="btn sec chico" type="button" data-pg="1" ${p<pags-1?"":"disabled"}>Siguiente →</button></span>`:""}</div>`};
@@ -1103,7 +1110,7 @@ function excelTira(tipo){
      <label class="sr" for="e-anio">Año</label><select id="e-anio" style="width:auto"><option ${EXP.anio===2026?"selected":""}>2026</option><option ${EXP.anio===2025?"selected":""}>2025</option></select>
      <button class="btn chico" type="button" id="btn-exp" ${R.length?"":"disabled"}>Descargar Excel</button></div>`;
 }
-const tablaFilas=(cab,filas)=>`<div class="tabla-env"><table class="mis-tabla"><thead><tr>${cab.map(c=>`<th>${c}</th>`).join("")}<th><span class="sr">Acciones</span></th></tr></thead><tbody>${filas}</tbody></table></div>`;
+const tablaFilas=(cab,filas,oc=[],ot=[])=>`<div class="tabla-env"><table class="mis-tabla ${oc.map(n=>"oc-c"+n).join(" ")} ${[...new Set([...oc,...ot])].map(n=>"oc-t"+n).join(" ")}"><thead><tr>${cab.map(c=>`<th>${c}</th>`).join("")}<th><span class="sr">Acciones</span></th></tr></thead><tbody>${filas}</tbody></table></div>`;
 const comCelda=r=>`<td class="mis-com" title="${esc(r.cometido)}"><span>${esc(r.cometido)}</span></td>`;
 const chev='<span class="chev" aria-hidden="true">›</span>';
 
@@ -1124,7 +1131,7 @@ function vMis(){
   return `<div class="cab-vista cab-compacta cab-mis"><h1>Mis salidas</h1><button class="btn chico" type="button" data-ir="nueva">+ Nueva solicitud</button></div>
    ${tabsHTML([["curso",`En curso (${curso.length})`],["hist",`Historial (${hist.length})`]],sel.misTab,"data-mt")}
    <section class="panel mis-panel">${sel.misTab==="hist"?excelTira("mis"):""}
-   ${ver.length?tablaFilas(["N° orden","Cometido","Salida","Destino","Patente","Estado"],ver.map(fila).join(""))
+   ${ver.length?tablaFilas(["N° orden","Cometido","Salida","Destino","Patente","Estado"],ver.map(fila).join(""),[2,5],[1,4])
      :vacio(sel.misTab==="curso"?"No tienes salidas en curso":"Aún no tienes salidas anteriores",sel.misTab==="curso"?"Cuando envíes una solicitud, la verás aquí con su etapa.":"Las salidas finalizadas, anuladas o rechazadas aparecerán aquí.")}
    ${pie}</section>`;
 }
@@ -1347,7 +1354,7 @@ function vBandeja(){
      <td>${esc(r.destinos.map(d=>d.com).join(" · "))}</td><td class="num">${pasajeros(r)}</td>
      <td class="mis-acc"><button class="btn chico" type="button" data-revisar="${r.id}">Revisar</button>${chev}</td></tr>`;
   return `<div class="cab-vista cab-compacta cab-mis"><h1>Por aprobar <span class="cuenta-tit">${pend.length}</span></h1><button class="btn sec chico" type="button" data-ir="equipo">Salidas de mi equipo</button></div>
-   <section class="panel mis-panel">${pend.length?tablaFilas(["N° orden","Funcionario","Cometido","Salida","Destino","Personas"],ver.map(fila).join(""))
+   <section class="panel mis-panel">${pend.length?tablaFilas(["N° orden","Funcionario","Cometido","Salida","Destino","Personas"],ver.map(fila).join(""),[3,6],[1,5])
      :vacio("Bandeja al día","No hay solicitudes de tu equipo esperando aprobación.")}${pend.length?pie:""}</section>`;
 }
 function abrirDecision(id){
@@ -1615,7 +1622,7 @@ ROLES.encargado.nav=[["hoy","Inicio"],["salidas","Salidas"],["flota","Flota"],["
 delete ROLES.conductor; // el conductor no usa la plataforma: la salida y el regreso los registra el encargado
 ROLES.super.nav=[...ROLES.encargado.nav,["config","Configuración"]];
 const puedeGestionar = ()=>["encargado","super"].includes(rol);
-const VISTAS_INICIO=["novedades","vencimientos","mantenciones"];
+const VISTAS_INICIO=["taller"];
 /* Encargado y administrador: el menú sólo muestra «Inicio»; el resto se abre desde las tarjetas */
 ROLES.encargado.menu=[["hoy","Inicio"]]; ROLES.super.menu=[["hoy","Inicio"]]; ROLES.solicitante.menu=[["inicio","Inicio"]]; ROLES.jefatura.menu=[["inicio","Inicio"]];
 const HOME=()=>ROLES[rol].nav[0][0];
@@ -1647,7 +1654,7 @@ function render(){
   if(!ROLES[rol].nav.some(n=>n[0]===vista) && !(puedeGestionar()&&VISTAS_INICIO.includes(vista))) vista=ROLES[rol].nav[0][0];
   pintarBarra();
   const viejo=$("#vista"), nuevo=viejo.cloneNode(false); viejo.replaceWith(nuevo);
-  const fn={mantenciones:vMantenciones,novedades:vNovedades,vencimientos:vVencimientos,inicio:vInicio,mis:vMis,nueva:vNueva,visor:vVisor,bandeja:vBandeja,equipo:vEquipo,calendario:vCalJefe,hoy:vHoy,salidas:vSalidas,flota:vFlota,conductores:vConductores,combustible:vCombustible,reportes:vReportes,config:vConfig}[vista];
+  const fn={taller:vTaller,inicio:vInicio,mis:vMis,nueva:vNueva,visor:vVisor,bandeja:vBandeja,equipo:vEquipo,calendario:vCalJefe,hoy:vHoy,salidas:vSalidas,flota:vFlota,conductores:vConductores,combustible:vCombustible,reportes:vReportes,config:vConfig}[vista];
   $("#vista").innerHTML=(ROLES[rol].menu&&vista!==HOME()&&!VISTAS_INICIO.includes(vista)?volverHTML():"")+fn();
   (post[vista]||(()=>{}))();
 }
@@ -1684,32 +1691,62 @@ function vHoy(){
 }
 const volverHTML=()=>""; // «Volver al inicio» se retiró: la pestaña «Inicio» del menú cumple esa función (decisión del 05-11-2026)
 function novedadesPend(){ return RES.filter(r=>r.bit?.nov&&r.bit.nov!=="Sin novedades"&&!r.bit.ot).sort((x,y)=>(y.bit.reg||"").localeCompare(x.bit.reg||"")); }
-function vNovedades(){
-  const L=novedadesPend();
-  return volverHTML()+cab("Novedades mecánicas","Desperfectos reportados al recibir los vehículos. Cree la orden de trabajo para enviarlos a taller.","")+
-  `<section class="panel"><header><h2>Por atender</h2><span class="sub num">${L.length}</span></header><div class="cuerpo">${L.length?L.map(r=>`<div class="tarea">${placa(r.pat)}<div class="q">${esc(r.bit.nov)}<small>${r.id} · reportada al regreso ${r.bit.reg?fFH(r.bit.reg):""} · ${esc(nom(r.cond))}</small></div><button class="btn chico" type="button" data-nov="${r.id}">Crear orden</button></div>`).join(""):`<p class="vacio-chico">No hay novedades mecánicas pendientes.</p>`}</div></section>`;
+/* ======================= TALLER Y DOCUMENTOS (05-11-2026) =======================
+   Reemplaza «Mantenciones», «Novedades mecánicas» y «Próximos vencimientos»: una fila por vehículo con todo
+   lo que tiene pendiente, y la acción (abrir o cerrar la orden de trabajo) en el panel lateral, sin pasar por la ficha. */
+const PRE_OT="Preventiva (cada 10.000 km)";
+function pendTaller(v){
+  const it=[], ot=OT.find(o=>o.pat===v.pat&&o.estado==="En taller");
+  novedadesPend().filter(r=>r.pat===v.pat).forEach(r=>it.push({k:"nov",urg:3,txt:"Novedad: "+r.bit.nov,sub:`${r.id} · reportada al regreso ${r.bit.reg?fFH(r.bit.reg):""}`,rid:r.id}));
+  if(ot) it.push({k:"ot",urg:0,txt:`En taller: ${ot.tipo.replace(/ \(.*\)/,"").toLowerCase()} · ${ot.taller}`,sub:`${ot.id} · desde ${fF(ot.fecha)} · ${ot.trabajos.join(", ")}`,ot});
+  else if(v.estado!=="BAJA"){ const m=mant(v); if(m.est!=="OK") it.push({k:"mant",urg:m.est==="VENC"?3:2,txt:m.est==="VENC"?`Mantención vencida hace ${km(-m.resta)} km`:`Mantención en ${km(m.resta)} km`,sub:`Kilometraje ${km(v.km)} · próxima a los ${km(v.proxMant)} km`}); }
+  [["rt","Revisión técnica"],["soap","SOAP"],["perm","Permiso de circulación"],["gases","Revisión de gases"]].forEach(([k,n])=>{const e=docEstado(v[k]); if(e==="VENC"||e==="POR") it.push({k:"doc",urg:e==="VENC"?3:1,txt:`${n} ${e==="VENC"?"vencida":"vence"} ${v[k]?fF(v[k]):""}`,sub:"Documento del vehículo",doc:k});});
+  return it.sort((a,b)=>((b.k==="ot")-(a.k==="ot"))||(b.urg-a.urg)); // la orden abierta va primero: es el estado actual del vehículo
 }
-function mantStats(){ const ab=OT.filter(o=>o.estado==="En taller"), s=new Set(ab.map(o=>o.pat)), L=VEH.filter(v=>!s.has(v.pat)&&v.estado!=="BAJA"); return {ot:ab.length,venc:L.filter(v=>mant(v).est==="VENC").length,prox:L.filter(v=>mant(v).est==="PROX").length}; }
-function vMantenciones(){
-  const abiertas=OT.filter(o=>o.estado==="En taller"), enTaller=new Set(abiertas.map(o=>o.pat));
-  const porMant=VEH.filter(v=>!enTaller.has(v.pat)&&v.estado!=="BAJA"&&mant(v).est!=="OK").sort((a,b)=>mant(a).resta-mant(b).resta);
-  const nv=porMant.filter(v=>mant(v).est==="VENC").length;
-  return volverHTML()+cab("Mantenciones","Órdenes de trabajo en taller y vehículos con la mantención preventiva vencida o próxima (cada 10.000 km).","")+
-  `<div class="contadores"><div class="contador"><b>${abiertas.length}</b><span>órdenes de trabajo<br>en taller</span></div><div class="contador ${nv?"alerta":""}"><b>${nv}</b><span>mantenciones<br>vencidas</span></div><div class="contador"><b>${porMant.length-nv}</b><span>próximas<br>(menos de 1.000 km)</span></div></div>
-  <section class="panel" style="margin-bottom:var(--e-5)"><header><h2>En taller</h2><span class="sub num">${abiertas.length}</span></header><div class="cuerpo">${abiertas.length?abiertas.map(o=>`<div class="tarea">${placa(o.pat)}<div class="q">${esc(o.tipo)} · ${esc(o.taller)}<small>${o.id} · desde ${fF(o.fecha)} · ${esc(o.trabajos.join(", "))}</small></div><button class="btn chico" type="button" data-mcot="${o.id}">Cerrar con factura</button></div>`).join(""):`<p class="vacio-chico">No hay vehículos en taller.</p>`}</div></section>
-  <section class="panel"><header><h2>Mantención vencida o próxima</h2><span class="sub num">${porMant.length}</span></header><div class="tabla-env"><table><thead><tr><th>Patente</th><th>Vehículo</th><th>Kilometraje</th><th>Próxima mantención</th><th>Estado</th><th></th></tr></thead><tbody>${porMant.map(v=>`<tr><td>${placa(v.pat)}</td><td>${esc(v.marca)} ${esc(v.modelo)}</td><td class="d">${km(v.km)}</td><td class="d">${km(v.proxMant)}</td><td>${chipMant(v)}</td><td class="d"><button class="btn sec chico" type="button" data-mot="${v.pat}">Crear orden</button></td></tr>`).join("")||`<tr><td colspan="6" class="tenue">Toda la flota tiene su mantención al día.</td></tr>`}</tbody></table></div></section>`;
+const TALLER_FILTROS=[["todo","Todo"],["nov","Novedades"],["mant","Mantención"],["ot","En taller"],["doc","Documentos"]];
+function tallerLista(){ return VEH.filter(v=>!traspActivo(v)||rol==="super").map(v=>({v,it:pendTaller(v)})).filter(x=>x.it.length); }
+function vTaller(){
+  const T=tallerLista(), f=sel.talF||"todo", cnt=k=>k==="todo"?T.length:T.filter(x=>x.it.some(i=>i.k===k)).length;
+  const U=x=>Math.max(...x.it.map(i=>i.urg)), L=T.filter(x=>f==="todo"||x.it.some(i=>i.k===f)).sort((a,b)=>(U(b)-U(a))||a.v.pat.localeCompare(b.v.pat));
+  const {ver,pie}=paginar(L,"tal","Selecciona una fila para ver todo lo pendiente del vehículo y abrir o cerrar la orden de trabajo.");
+  const urg=x=>{const u=Math.max(...x.it.map(i=>i.urg)); return x.it.some(i=>i.k==="ot")&&u<3?chip("En taller","c-tall","⚙"):u>=3?chip("Alta","c-malo","!"):u===2?chip("Media","c-pend","!"):chip("Baja","c-neu","·");};
+  const acc=x=>{const ot=x.it.find(i=>i.k==="ot"), cr=x.it.find(i=>i.k==="nov"||i.k==="mant"), d=x.it.find(i=>i.k==="doc");
+    return ot?`<button class="btn chico" type="button" data-tal="${x.v.pat}" data-op="cerrar">Cerrar con factura</button>`:cr?`<button class="btn chico" type="button" data-tal="${x.v.pat}" data-op="ot">Crear orden</button>`:`<button class="btn sec chico" type="button" data-tal="${x.v.pat}" data-op="doc" data-doc-k="${d.doc}">Actualizar documento</button>`;};
+  const fila=x=>`<tr class="clic" data-talv="${x.v.pat}" tabindex="0"><td>${placa(x.v.pat)}</td><td class="mis-com"><span><b>${esc(x.v.marca)} ${esc(x.v.modelo)}</b></span></td>
+     <td class="tal-que">${x.it.slice(0,2).map(i=>`<span class="tal-i ${i.urg>=3?"alta":""}">${esc(i.txt)}</span>`).join("")}${x.it.length>2?`<span class="tenue peq">+${x.it.length-2} más</span>`:""}</td>
+     <td>${urg(x)}</td><td class="mis-acc">${acc(x)}${chev}</td></tr>`;
+  return `<div class="cab-vista cab-compacta cab-mis"><h1>Taller y documentos</h1><button class="btn sec chico" type="button" data-ir="flota">Ver flota</button></div>
+   ${tabsHTML(TALLER_FILTROS.map(([k,n])=>[k,`${n} (${cnt(k)})`]),f,"data-talf")}
+   <section class="panel mis-panel">${ver.length?tablaFilas(["Patente","Vehículo","Qué tiene","Urgencia"],ver.map(fila).join(""),[2],[4]):vacio("Nada pendiente","Ningún vehículo tiene pendientes en esta categoría.")}${ver.length?pie:""}</section>`;
 }
-post.mantenciones = ()=>{ const V=$("#vista");
-  V.querySelectorAll("[data-mot]").forEach(b=>b.onclick=()=>abrirFicha(b.dataset.mot,"mant",{nuevaOT:true}));
-  V.querySelectorAll("[data-mcot]").forEach(b=>b.onclick=()=>{ const o=OT.find(x=>x.id===b.dataset.mcot); abrirFicha(o.pat,"mant"); const c=document.querySelector(`[data-cerrar-ot="${o.id}"]`); if(c){ c.click(); document.getElementById("co-n")?.focus(); } });
+function abrirTaller(pat, op={}){
+  const v=VX[pat], it=pendTaller(v), ot=it.find(i=>i.k==="ot")?.ot, nov=it.find(i=>i.k==="nov");
+  if(op.nuevaOT&&!op.tipoOT&&!op.desde) op.tipoOT=nov?"Reparación":PRE_OT;
+  if(op.nuevaOT&&!op.desde&&nov) op.desde=nov.rid;
+  const btn=i=>i.k==="ot"?`<button class="btn chico" type="button" data-cerrar-ot="${i.ot.id}">Cerrar con factura</button>`:(i.k==="nov"||i.k==="mant")&&!ot?`<button class="btn chico ${op.nuevaOT?"sec":""}" type="button" data-tal-ot="${i.k==="nov"?i.rid:""}">Crear orden</button>`:i.k==="doc"?`<button class="btn sec chico" type="button" data-tal-doc="${i.doc}">Actualizar</button>`:"";
+  cajon(`${placa(v.pat)}<h2 id="t-cajon" style="font-size:var(--f-xl)">${esc(v.marca)} ${esc(v.modelo)}</h2>`, chipV(v),
+   `<div class="grid" style="gap:var(--e-4)">
+    <section class="panel"><header><h2>Pendientes del vehículo</h2><span class="sub">${it.length?`${it.length} ${it.length===1?"asunto":"asuntos"}`:"Sin pendientes"}</span></header>
+     ${it.length?`<ul class="mini-lista">${it.map(i=>`<li class="mini-fila"><div class="mini-dato" style="cursor:default"><span class="tal-dot ${i.urg>=3?"alta":i.urg===2?"media":i.k==="ot"?"taller":""}" aria-hidden="true"></span><b>${esc(i.txt)}</b><span class="tenue peq">${esc(i.sub)}</span></div>${btn(i)}</li>`).join("")}</ul>`:`<p class="mini-vacio">Este vehículo no tiene pendientes de taller ni documentos.</p>`}
+    </section>
+    ${op.nuevaOT&&!ot?otFormHTML(v,op):""}<div id="cierre-ot"></div>
+    <p class="tenue peq">Kilometraje ${km(v.km)} · última mantención a los ${km(v.ultMant)} km. <button class="link-edit" type="button" data-tal-ficha>Ver hoja de vida completa</button></p></div>`);
+  const C=$("#capa");
+  bindOT(C,pat,op,o=>abrirTaller(pat,o));
+  C.querySelectorAll("[data-tal-ot]").forEach(b=>b.onclick=()=>abrirTaller(pat,{nuevaOT:true,desde:b.dataset.talOt||undefined,tipoOT:b.dataset.talOt?"Reparación":PRE_OT}));
+  C.querySelectorAll("[data-op2]").forEach(b=>b.onclick=()=>abrirTaller(pat,{}));
+  C.querySelectorAll("[data-tal-doc]").forEach(b=>b.onclick=()=>abrirFicha(pat,"docs",{docEdit:b.dataset.talDoc}));
+  const fi=C.querySelector("[data-tal-ficha]"); if(fi) fi.onclick=()=>abrirFicha(pat,"resumen");
+  if(op.cerrar&&ot){ C.querySelector(`[data-cerrar-ot="${ot.id}"]`)?.click(); $("#co-n")?.focus(); }
+  else if(op.nuevaOT) $("#ot-taller")?.focus();
+}
+post.taller = ()=>{
+  const V=$("#vista");
+  V.querySelectorAll("[data-talf]").forEach(b=>b.onclick=()=>{sel.talF=b.dataset.talf; sel.talPag=0; render()});
+  if(postPaginar("tal")) return;
+  V.querySelectorAll("[data-tal]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); const k=b.dataset.op; if(k==="doc") abrirFicha(b.dataset.tal,"docs",{docEdit:b.dataset.docK}); else abrirTaller(b.dataset.tal,k==="ot"?{nuevaOT:true}:{cerrar:true}); });
+  filasClic("data-talv",pat=>abrirTaller(pat));
 };
-post.novedades = ()=>{ $("#vista").querySelectorAll("[data-nov]").forEach(b=>b.onclick=()=>{const r=RES.find(x=>x.id===b.dataset.nov); abrirFicha(r.pat,"mant",{nuevaOT:true,desde:r.id});}); };
-function vVencimientos(){
-  const ven=vencimientos(), nv=ven.filter(a=>a.e==="VENC").length;
-  return volverHTML()+cab("Próximos vencimientos","Documentos de los vehículos vencidos o que vencen en los próximos 30 días.","")+
-  `<div class="contadores"><div class="contador ${nv?"alerta":""}"><b>${nv}</b><span>vencidos</span></div><div class="contador"><b>${ven.length-nv}</b><span>vencen en<br>30 días</span></div></div>
-  <section class="panel"><div class="tabla-env"><table><thead><tr><th>Patente</th><th>Documento</th><th>Vencimiento</th><th>Estado</th></tr></thead><tbody>${ven.map(a=>`<tr class="clic" data-veh="${a.pat}" tabindex="0"><td>${placa(a.pat)}</td><td>${a.t}</td><td class="num">${a.f?fF(a.f):"Sin fecha registrada"}</td><td>${a.e==="VENC"?chip("Vencido","c-malo","✕"):a.e==="SIN"?chip("Sin dato","c-malo","?"):chip("Por vencer","c-pend","!")}</td></tr>`).join("")||`<tr><td colspan="4" class="tenue">Sin vencimientos en los próximos 30 días.</td></tr>`}</tbody></table></div></section>`;
-}
 
 /* ======================= INICIO POR PERFIL ======================= */
 function heroHTML(txt){
@@ -1717,21 +1754,19 @@ function heroHTML(txt){
   return `<section class="hero"><div style="position:relative;z-index:1"><span class="eyebrow">${ico("escudo")}${esc(ROLES[rol].nombre)} · ${esc(p.cargo)}</span><h1>Hola, ${esc(nombre)}</h1><p>${txt}</p></div><span class="fecha">${ico("calendario")}${DS[HOY.getDay()]} ${fF(HOY)}</span></section>`;
 }
 function accesosHTML(lista){
-  return `<div class="accesos ${lista===ACCESOS&&rol==="encargado"?"acc-4":lista===ACCESOS&&rol==="super"?"acc-4 acc-5":lista===ACCESOS&&rol==="solicitante"?"acc-n":""}" style="--n:${Math.min(lista.length,4)}">${lista.map((a,i)=>`<button type="button" class="acceso ${a.principal?"principal":""} ${a.ancho?"ancho":""} ${a.banda?"banda":""}" data-acc="${i}">${a.n&&!a.stats?`<span class="a-cuenta num ${a.aviso?"aviso":""}" aria-label="${a.n} ${esc(a.nl||"pendientes")}">${a.n}</span>`:""}<span class="a-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-${a.ico}"/></svg></span><h3>${a.t}</h3><p>${a.d}</p>${a.stats?`<span class="a-stats">${a.stats.map(([k,l])=>`<span class="${k?"con":""}"><b class="num">${k}</b>${l}</span>`).join("")}</span>`:""}<span class="a-pie">${a.cta}${ico("flecha")}</span></button>`).join("")}</div>`;
+  return `<div class="accesos ${lista===ACCESOS&&rol==="encargado"?"acc-4 acc-3":lista===ACCESOS&&rol==="super"?"acc-4":lista===ACCESOS&&rol==="solicitante"?"acc-n":""}" style="--n:${Math.min(lista.length,4)}">${lista.map((a,i)=>`<button type="button" class="acceso ${a.principal?"principal":""} ${a.ancho?"ancho":""} ${a.banda?"banda":""}" data-acc="${i}">${a.n&&!a.stats?`<span class="a-cuenta num ${a.aviso?"aviso":""}" aria-label="${a.n} ${esc(a.nl||"pendientes")}">${a.n}</span>`:""}<span class="a-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-${a.ico}"/></svg></span><h3>${a.t}</h3><p>${a.d}</p>${a.stats?`<span class="a-stats">${a.stats.map(([k,l])=>`<span class="${k?"con":""}"><b class="num">${k}</b>${l}</span>`).join("")}</span>`:""}<span class="a-pie">${a.cta}${ico("flecha")}</span></button>`).join("")}</div>`;
 }
 let ACCESOS=[];
 function postAccesos(){ $("#vista").querySelectorAll("[data-acc]").forEach(b=>b.onclick=()=>{const a=ACCESOS[+b.dataset.acc]; if(a.orden){abrirOrden(a.orden);return} if(a.pre) a.pre(); ir(a.v);}); }
 function accesosGestion(){
-  const n=e=>RES.filter(r=>r.est===e).length, alertas=VEH.filter(v=>alertasVeh(v)>0).length;
+  const n=e=>RES.filter(r=>r.est===e).length;
   const cond=COND.map(c=>estCond(c).est), porVencer=cond.filter(e=>e==="POR"||e==="BLOQ").length;
-  const est=VEH.map(estadoHoy), ne=k=>est.filter(e=>e===k).length, ven=vencimientos(), nov=novedadesPend().length, venc=ven.filter(a=>a.e==="VENC").length;
+  const est=VEH.map(estadoHoy), ne=k=>est.filter(e=>e===k).length;
   ACCESOS=[
    {v:"salidas",ico:"aprobar",t:"Salidas a terreno",d:`${n("APROBADA")} por asignar, ${n("CONFIRMADA")} por entregar y ${n("EN_TERRENO")} en terreno por recibir. Incluye el calendario de la flota.`,cta:"Ir a salidas",n:n("APROBADA")+n("CONFIRMADA")+n("EN_TERRENO"),nl:"salidas por gestionar",aviso:n("APROBADA")+n("CONFIRMADA")+n("EN_TERRENO")>0,principal:true,
     pre:()=>{sel.salModo="lista"; sel.salFiltro=n("APROBADA")?"asignar":"entregar"}},
-   {v:"flota",ico:"car",t:"Flota",d:`Hoy: ${ne("DISP")} disponibles de ${VEH.length}, ${ne("TERR")} en terreno, ${ne("TALL_P")+ne("TALL_C")} en taller y ${ne("MALO")+ne("EXCL")+ne("BAJA")} fuera de servicio o exclusivos.`,cta:"Ver vehículos",n:alertas,nl:"con alertas",aviso:alertas>0},
-   {v:"mantenciones",ico:"medidor",t:"Mantenciones",d:(()=>{const s=mantStats(); return `${s.venc} ${s.venc===1?"vencida":"vencidas"}, ${s.prox} ${s.prox===1?"próxima":"próximas"} y ${s.ot} ${s.ot===1?"vehículo":"vehículos"} en taller. Crea y cierra órdenes de trabajo.`;})(),cta:"Ver mantenciones",n:mantStats().venc+mantStats().prox+mantStats().ot,nl:"mantenciones por atender",aviso:mantStats().venc>0},
-   {v:"novedades",ico:"taller",t:"Novedades mecánicas",d:"Desperfectos reportados al recibir los vehículos, para crear la orden de trabajo.",cta:"Ver novedades",n:nov,nl:"novedades por atender",aviso:nov>0},
-   {v:"vencimientos",ico:"alerta",t:"Próximos vencimientos",d:`Revisión técnica, gases, SOAP, permiso de circulación y póliza. ${venc} vencidos y ${ven.length-venc} por vencer en 30 días.`,cta:"Ver vencimientos",n:ven.length,nl:"vencimientos",aviso:venc>0},
+   {v:"flota",ico:"car",t:"Flota",d:`Hoy: ${ne("DISP")} disponibles de ${VEH.length}, ${ne("TERR")} en terreno, ${ne("TALL_P")+ne("TALL_C")} en taller y ${ne("MALO")+ne("EXCL")+ne("BAJA")} fuera de servicio o exclusivos.`,cta:"Ver vehículos"},
+   {v:"taller",ico:"taller",t:"Taller y documentos",d:(()=>{const T=tallerLista(), c=k=>T.filter(x=>x.it.some(i=>i.k===k)).length; return `${c("nov")} con novedad, ${c("mant")} con mantención, ${c("ot")} en taller y ${c("doc")} con documentos por renovar.`;})(),cta:"Atender pendientes",n:tallerLista().length,nl:"vehículos con pendientes",aviso:tallerLista().some(x=>x.it.some(i=>i.urg>=3))},
    {v:"conductores",ico:"licencia",t:"Conductores",d:"Caución y licencia de cada conductor. Los bloqueados no se pueden asignar.",cta:"Ver padrón",n:porVencer,nl:"por vencer o bloqueados",aviso:porVencer>0},
    {v:"combustible",ico:"combustible",t:"Combustible y gastos",d:"Cargas, archivo COPEC, compras a granel y gastos por factura o boleta.",cta:"Ver combustible y gastos"},
    {v:"reportes",ico:"grafico",t:"Reportes",d:"Excel mensual o anual de kilómetros y costos, Tesorería y gastos por vehículo; operatividad y rendimiento.",cta:"Ver reportes"}];
@@ -1979,16 +2014,19 @@ function postSalida(r){
 function alertasVeh(v){ return ["rt","soap","perm","gases"].filter(k=>docEstado(v[k])!=="OK").length+(mant(v).est!=="OK"?1:0); }
 function vFlota(){
   const f=sel.flotaFiltro, q=sel.flotaQ.toLowerCase();
-  const cnt=k=>VEH.filter(v=>filtroFlota(v,k)).length;
+  const cnt=k=>VEH.filter(v=>(rol==="super"||!traspActivo(v))&&filtroFlota(v,k)).length;
   const lista=VEH.filter(v=>(rol==="super"||!traspActivo(v))&&filtroFlota(v,f)&&(!q||(v.pat+" "+v.marca+" "+v.modelo+" "+v.tipo).toLowerCase().includes(q)));
-  return cab("Flota","Una hoja de vida por vehículo: documentos, mantenciones, combustible, gastos, recinto de guarda y salidas.","ERS §4.1 · GESAD «Vehículos»")+(rol==="super"?`<div class="acciones" style="margin-bottom:var(--e-4)"><button class="btn" type="button" id="btn-alta-veh">${ico("plus")}Agregar vehículo</button></div>`:"")+
-  `<div class="barra-herr">${filtrosHTML([["todos","Todos",VEH.length],["DISP","Disponibles",cnt("DISP")],["TERR","En terreno",cnt("TERR")],["TALLER","Taller o fuera de servicio",cnt("TALLER")],["alerta","Con alertas",cnt("alerta")]],f,"data-ff")}<div><label class="sr" for="f-q">Buscar</label><input type="search" id="f-q" placeholder="Patente, marca o modelo" value="${esc(sel.flotaQ)}"></div></div>
-  <section class="panel"><div class="tabla-env"><table><thead><tr><th>Patente</th><th>Vehículo</th><th>Estado</th><th>Kilometraje</th><th>Próxima mantención</th><th>Alertas</th></tr></thead><tbody>${lista.map(v=>{const m=mant(v), a=alertasVeh(v), p=Math.max(3,Math.min(100,(v.km-(v.proxMant-10000))/10000*100));
-    return `<tr class="clic" data-veh="${v.pat}" tabindex="0"><td>${placa(v.pat)}</td><td><b>${esc(v.marca)} ${esc(v.modelo)}</b><br><span class="tenue peq">${esc(v.tipo)} · ${v.anio} · ${v.trac} · ${v.cap} plazas</span></td><td>${chipV(v)}${traspActivo(v)?`<br><span class="chip c-excl" style="margin-top:4px"><i aria-hidden="true">⇄</i>En ${esc(traspActivo(v).destino)}</span>`:""}</td><td class="d">${km(v.km)}</td><td><div class="mini-barra"><span class="medidor"><span style="width:${p}%;background:var(${m.est==="VENC"?"--st-malo":m.est==="PROX"?"--st-pend":"--st-disp"})"></span></span><span class="num">${m.resta<0?"vencida":km(m.resta)+" km"}</span></div></td><td>${a?chip(a+(a===1?" alerta":" alertas"),"c-pend","!"):`<span class="tenue">—</span>`}</td></tr>`}).join("")}</tbody></table></div></section>`;
+  const {ver,pie}=paginar(lista,"flo","Selecciona un vehículo para ver su hoja de vida: documentos, mantenciones, combustible, gastos, salidas y traspasos.");
+  const fila=v=>{const enT=RES.find(r=>r.pat===v.pat&&r.est==="EN_TERRENO");
+    return `<tr class="clic" data-veh="${v.pat}" tabindex="0"><td>${placa(v.pat)}</td><td class="mis-com"><span><b>${esc(v.marca)} ${esc(v.modelo)}</b> <span class="tenue peq">${esc(v.tipo)} · ${v.anio} · ${v.cap} plazas</span></span></td><td>${chipV(v)}${traspActivo(v)?`<br><span class="chip c-excl" style="margin-top:4px"><i aria-hidden="true">⇄</i>En ${esc(traspActivo(v).destino)}</span>`:""}</td><td class="d">${km(v.km)}</td><td class="peq">${esc(v.guarda||v.unidad||"—")}</td><td class="peq">${enT?`${esc(enT.destinos.map(d=>d.com).join(", "))} · regresa ${fCorta(enT.regreso)}`:`<span class="tenue">—</span>`}</td><td class="mis-acc">${chev}</td></tr>`;};
+  return `<div class="cab-vista cab-compacta cab-mis"><h1>Flota</h1><div class="acciones" style="margin:0">${rol==="super"?`<button class="btn chico" type="button" id="btn-alta-veh">${ico("plus")}Agregar vehículo</button>`:""}<button class="btn sec chico" type="button" data-ir="taller">Taller y documentos</button></div></div>
+   <section class="panel mis-panel"><div class="mis-excel">${filtrosHTML([["todos","Todos",cnt("todos")],["DISP","Disponibles",cnt("DISP")],["TERR","En terreno",cnt("TERR")],["TALLER","Taller o fuera de servicio",cnt("TALLER")]],f,"data-ff")}<div style="margin-left:auto"><label class="sr" for="f-q">Buscar</label><input type="search" id="f-q" placeholder="Patente, marca o modelo" value="${esc(sel.flotaQ)}"></div></div>
+   ${ver.length?tablaFilas(["Patente","Vehículo","Estado hoy","Kilometraje","Lugar de guarda","Salida en curso"],ver.map(fila).join(""),[5,6],[2,4]):vacio("Sin vehículos","Ningún vehículo coincide con el filtro o la búsqueda.")}${ver.length?pie:""}</section>`;
 }
 function filtroFlota(v,k){ const e=estadoHoy(v); return k==="todos"||(k==="DISP"&&e==="DISP")||(k==="TERR"&&e==="TERR")||(k==="TALLER"&&["TALL_P","TALL_C","MALO"].includes(e))||(k==="alerta"&&alertasVeh(v)>0); }
-post.flota = ()=>{ const V=$("#vista"); const ba=$("#btn-alta-veh"); if(ba) ba.onclick=abrirAltaVehiculo; V.querySelectorAll("[data-ff]").forEach(b=>b.onclick=()=>{sel.flotaFiltro=b.dataset.ff;render()});
-  const q=$("#f-q"); q.oninput=()=>{sel.flotaQ=q.value; const pos=q.selectionStart; render(); const n=$("#f-q"); n.focus(); n.setSelectionRange(pos,pos);};
+post.flota = ()=>{ const V=$("#vista"); const ba=$("#btn-alta-veh"); if(ba) ba.onclick=abrirAltaVehiculo; V.querySelectorAll("[data-ff]").forEach(b=>b.onclick=()=>{sel.flotaFiltro=b.dataset.ff; sel.floPag=0; render()});
+  const q=$("#f-q"); q.oninput=()=>{sel.flotaQ=q.value; sel.floPag=0; const pos=q.selectionStart; render(); const n=$("#f-q"); n.focus(); n.setSelectionRange(pos,pos);};
+  if(postPaginar("flo")) return;
   V.addEventListener("keydown",e=>{const t=e.target.closest("tr[data-veh]"); if(t&&e.key==="Enter") abrirFicha(t.dataset.veh)}); };
 
 let fichaTab="resumen";
@@ -2064,6 +2102,20 @@ function gastoFormHTML(pat){ const v=VX[pat];
   <div class="campo"><label for="ga-monto">Monto ($)</label><input type="number" id="ga-monto" min="1"></div><div class="campo"><label for="ga-km">Kilometraje</label><input type="number" id="ga-km" value="${v.km}"></div>
   <div class="campo"><label for="ga-folio">Folio de imputación</label><select id="ga-folio">${CC.map(c=>`<option value="${c.folio}" ${c.folio==="P01-601"?"selected":""}>${c.folio} · ${esc(c.t.slice(0,48))}</option>`).join("")}</select></div><div class="campo"><label for="ga-fecha">Fecha</label><input type="text" id="ga-fecha" value="${fF(HOY)}" readonly></div></div>
   <div class="acciones"><button class="btn" type="submit">Guardar gasto</button><button class="btn sec" type="button" data-op2="">Cancelar</button></div></form>`; }
+function bindOT(C,pat,op,rehacer){ // abrir y cerrar órdenes de trabajo: lo usan la ficha y «Taller y documentos»
+  const v=VX[pat];
+  const ft=$("#ot-tipo"); if(ft) ft.onchange=()=>rehacer({...op,nuevaOT:true,tipoOT:ft.value});
+  const fo=$("#f-ot"); if(fo) fo.onsubmit=e=>{e.preventDefault(); const tr=[...C.querySelectorAll(".ot-tr:checked")].map(i=>i.value); if(!tr.length){tostada("Marca al menos un trabajo.");return}
+    const o={id:"OT-2026-00"+(nOT++),pat,fecha:iso(HOY).slice(0,10),km:+$("#ot-km").value,taller:$("#ot-taller").value,tipo:$("#ot-tipo").value,trabajos:tr,estado:"En taller",obs:$("#ot-obs").value};
+    o.estadoPrevio=["TALL_P","TALL_C"].includes(v.estado)?(OT.find(x=>x.pat===pat&&x.estado==="En taller")?.estadoPrevio||"DISP"):v.estado; OT.unshift(o); v.estado=o.tipo==="Reparación"?"TALL_C":"TALL_P"; if(op.desde){const r=RES.find(x=>x.id===op.desde); if(r) r.bit.ot=o.id;}
+    audit("Abre orden de trabajo",o.id+" · "+pat,"Disponible",EST_V[v.estado][0]); tostada(`${o.id} abierta. ${pat} queda en taller y no se puede asignar.`); rehacer({}); };
+  C.querySelectorAll("[data-cerrar-ot]").forEach(b=>b.onclick=()=>{ const o=OT.find(x=>x.id===b.dataset.cerrarOt);
+    $("#cierre-ot").innerHTML=`<form class="seccion" id="f-cot" style="border:1px solid var(--linea);border-radius:var(--r-m);padding:var(--e-4)"><h3>Cerrar ${o.id}</h3><div class="campos"><div class="campo"><label for="co-n">N° de factura</label><input type="text" id="co-n" required></div><div class="campo"><label for="co-m">Monto ($)</label><input type="number" id="co-m" min="1" required></div></div><p class="tenue peq">Al cerrar, el vehículo vuelve al estado que tenía antes de entrar a taller y la factura queda registrada como gasto de mantención.</p><div class="acciones"><button class="btn" type="submit">Cerrar orden</button></div></form>`;
+    $("#f-cot").onsubmit=e=>{e.preventDefault(); const n=$("#co-n").value.trim(), mo=+$("#co-m").value; if(!n||!mo){tostada("Ingresa número y monto de la factura.");return}
+      o.estado="Cerrada"; o.factura={n,monto:mo}; const otraAbierta=OT.find(x=>x.pat===pat&&x.estado==="En taller"); v.estado=otraAbierta?(otraAbierta.tipo==="Reparación"?"TALL_C":"TALL_P"):(o.estadoPrevio&&!["TALL_P","TALL_C"].includes(o.estadoPrevio)?o.estadoPrevio:"DISP"); if(o.tipo!=="Reparación"){v.ultMant=v.km; v.proxMant=v.km+10000;}
+      GASTOS.unshift({id:nGasto++,fecha:iso(HOY).slice(0,10),pat,doc:"Factura",n,prov:o.taller,tipo:"MR",monto:mo,km:v.km,folio:"P01-601",ot:o.id});
+      audit("Cierra orden de trabajo",o.id,"En taller","Cerrada · "+clp(mo)); tostada(`${o.id} cerrada. ${pat}: ${EST_V[v.estado][0].toLowerCase()}.`); rehacer({}); }; });
+}
 function postFicha(pat, op){
   const C=$("#capa"), v=VX[pat];
   postTraspaso(pat, op);
@@ -2076,17 +2128,7 @@ function postFicha(pat, op){
     audit("Actualiza documento: "+nomDoc+(n?" · "+n:""),pat,ant?fF(ant):"—",fF(f)); tostada(`${nomDoc} de ${pat} actualizado: vence ${fF(f)}.`); abrirFicha(pat,"docs"); };
   C.querySelectorAll("[data-ftab]").forEach(b=>b.onclick=()=>{ const o={}; if(b.dataset.op==="ot") o.nuevaOT=true; if(b.dataset.op==="gasto") o.nuevoGasto=true; if(b.dataset.op==="trasp") o.nuevoTrasp=true; abrirFicha(pat,b.dataset.ftab,o); });
   C.querySelectorAll("[data-op2]").forEach(b=>b.onclick=()=>{ const k=b.dataset.op2; abrirFicha(pat,fichaTab,k==="ot"?{nuevaOT:true}:k==="gasto"?{nuevoGasto:true}:k==="trasp"?{nuevoTrasp:true}:{}); });
-  const ft=$("#ot-tipo"); if(ft) ft.onchange=()=>abrirFicha(pat,"mant",{...op,nuevaOT:true,tipoOT:ft.value});
-  const fo=$("#f-ot"); if(fo) fo.onsubmit=e=>{e.preventDefault(); const tr=[...C.querySelectorAll(".ot-tr:checked")].map(i=>i.value); if(!tr.length){tostada("Marca al menos un trabajo.");return}
-    const o={id:"OT-2026-00"+(nOT++),pat,fecha:iso(HOY).slice(0,10),km:+$("#ot-km").value,taller:$("#ot-taller").value,tipo:$("#ot-tipo").value,trabajos:tr,estado:"En taller",obs:$("#ot-obs").value};
-    o.estadoPrevio=["TALL_P","TALL_C"].includes(v.estado)?(OT.find(x=>x.pat===pat&&x.estado==="En taller")?.estadoPrevio||"DISP"):v.estado; OT.unshift(o); v.estado=o.tipo==="Reparación"?"TALL_C":"TALL_P"; if(op.desde){const r=RES.find(x=>x.id===op.desde); if(r) r.bit.ot=o.id;}
-    audit("Abre orden de trabajo",o.id+" · "+pat,"Disponible",EST_V[v.estado][0]); tostada(`${o.id} abierta. ${pat} queda en taller y no se puede asignar.`); abrirFicha(pat,"mant"); };
-  C.querySelectorAll("[data-cerrar-ot]").forEach(b=>b.onclick=()=>{ const o=OT.find(x=>x.id===b.dataset.cerrarOt);
-    $("#cierre-ot").innerHTML=`<form class="seccion" id="f-cot" style="border:1px solid var(--linea);border-radius:var(--r-m);padding:var(--e-4)"><h3>Cerrar ${o.id}</h3><div class="campos"><div class="campo"><label for="co-n">N° de factura</label><input type="text" id="co-n" required></div><div class="campo"><label for="co-m">Monto ($)</label><input type="number" id="co-m" min="1" required></div></div><p class="tenue peq">Al cerrar, el vehículo vuelve al estado que tenía antes de entrar a taller y la factura queda registrada como gasto de mantención.</p><div class="acciones"><button class="btn" type="submit">Cerrar orden</button></div></form>`;
-    $("#f-cot").onsubmit=e=>{e.preventDefault(); const n=$("#co-n").value.trim(), mo=+$("#co-m").value; if(!n||!mo){tostada("Ingresa número y monto de la factura.");return}
-      o.estado="Cerrada"; o.factura={n,monto:mo}; const otraAbierta=OT.find(x=>x.pat===pat&&x.estado==="En taller"); v.estado=otraAbierta?(otraAbierta.tipo==="Reparación"?"TALL_C":"TALL_P"):(o.estadoPrevio&&!["TALL_P","TALL_C"].includes(o.estadoPrevio)?o.estadoPrevio:"DISP"); if(o.tipo!=="Reparación"){v.ultMant=v.km; v.proxMant=v.km+10000;}
-      GASTOS.unshift({id:nGasto++,fecha:iso(HOY).slice(0,10),pat,doc:"Factura",n,prov:o.taller,tipo:"MR",monto:mo,km:v.km,folio:"P01-601",ot:o.id});
-      audit("Cierra orden de trabajo",o.id,"En taller","Cerrada · "+clp(mo)); tostada(`${o.id} cerrada. ${pat}: ${EST_V[v.estado][0].toLowerCase()}.`); abrirFicha(pat,"mant"); }; });
+  bindOT(C,pat,op,o=>abrirFicha(pat,"mant",o));
   const fg=$("#f-gasto"); if(fg) fg.onsubmit=e=>{e.preventDefault(); const mo=+$("#ga-monto").value, n=$("#ga-n").value.trim(); if(!mo||!n){tostada("Ingresa número de documento y monto.");return}
     if(mesCerrado(iso(HOY))){tostada("El período está cerrado.");return}
     GASTOS.unshift({id:nGasto++,fecha:iso(HOY).slice(0,10),pat,doc:$("#ga-doc").value,n,prov:$("#ga-prov").value||"—",tipo:$("#ga-tipo").value,monto:mo,km:+$("#ga-km").value,folio:$("#ga-folio").value});
@@ -2254,7 +2296,7 @@ function vEquipo(){
   const {ver,pie}=paginar(lista,"eq","Selecciona una fila para ver el detalle de la salida.");
   const fila=r=>`<tr class="clic" data-sal="${r.id}" tabindex="0"><td class="mono">${r.id}</td><td>${esc(nom(r.sol))}</td>${comCelda(r)}<td class="num">${fCorta(r.salida)}</td><td>${esc(r.destinos.map(d=>d.com).join(" · "))}</td><td>${chipR(r.est)}</td><td class="mis-acc"><span class="mono peq">${r.cc||"Folio por definir"}</span>${chev}</td></tr>`;
   return `<div class="cab-vista cab-compacta cab-mis"><h1>Salidas de mi equipo</h1><button class="btn sec chico" type="button" data-ir="bandeja">Por aprobar</button></div>
-   <section class="panel mis-panel">${excelTira("equipo")}${lista.length?tablaFilas(["N° orden","Funcionario","Cometido","Salida","Destino","Estado"],ver.map(fila).join("")):vacio("Sin salidas","Aquí aparecerán las salidas que autorices.")}${lista.length?pie:""}</section>`;
+   <section class="panel mis-panel">${excelTira("equipo")}${lista.length?tablaFilas(["N° orden","Funcionario","Cometido","Salida","Destino","Estado"],ver.map(fila).join(""),[3,5],[1,7]):vacio("Sin salidas","Aquí aparecerán las salidas que autorices.")}${lista.length?pie:""}</section>`;
 }
 
 /* ======================= CONDUCTOR ======================= */
