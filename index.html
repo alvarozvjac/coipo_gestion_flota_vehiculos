@@ -1096,7 +1096,7 @@ function postExport(tipo){
     const L=salidasRealizadas(tipo), p=PX[ROLES[rol].quien], per=EXP.modo==="mes"?MESES[EXP.mes-1]+" de "+EXP.anio:"año "+EXP.anio;
     const cab_=[...(tipo==="equipo"?["Funcionario","RUT"]:[]),"ID salida","Fecha de salida","Hora de salida","Fecha de regreso","Hora de regreso","Días","Destino","Cometido","Vehículo","Conductor","Personas","Km recorridos","Folio de imputación"];
     const filas=L.map(r=>{const d=Math.max(1,Math.ceil((F(r.bit.reg||r.regreso)-F(r.bit.sal))/DIA)); return [...(tipo==="equipo"?[nom(r.sol),PX[r.sol]?.rut||""]:[]),r.id,fF(r.bit.sal),fH(r.bit.sal),r.bit.reg?fF(r.bit.reg):"",r.bit.reg?fH(r.bit.reg):"",d,r.destinos.map(x=>`${x.lug||x.otro||""}, ${x.com} (${x.reg})`).join(" · "),r.cometido,r.pat||"",nom(r.cond),pasajeros(r),r.bit.odoR?r.bit.odoR-r.bit.odoS:"",r.cc||""];});
-    const aoa=[[tipo==="mis"?"Mis salidas realizadas · Sistema Nacional de Gestión de Flota · CONAF":"Salidas realizadas por mi equipo · Sistema Nacional de Gestión de Flota · CONAF"],[`Periodo: ${per}`,"",`${tipo==="mis"?"Funcionario":"Jefatura"}: ${p.nom}`,"","Emitido: "+fFH(HOY)],[],cab_,...filas];
+    const aoa=[[tipo==="mis"?"Mis salidas realizadas · Sistema Nacional de Gestión de Flota · CONAF":"Salidas realizadas por mi equipo · Sistema Nacional de Gestión de Flota · CONAF"],[`Periodo: ${per}`,"",`${tipo==="mis"?"Funcionario":"Jefatura"}: ${p.nom}`,"","Fecha de emisión: "+fF(HOY),"Hora de emisión: "+fH(HOY)],[],cab_,...filas];
     const ws=XLSX.utils.aoa_to_sheet(aoa); ws["!cols"]=(tipo==="equipo"?[28,13]:[]).concat([16,14,13,15,14,6,48,50,10,26,9,13,12]).map(w=>({wch:w}));
     const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,"Salidas");
     const nombre=`${tipo==="mis"?"mis_salidas":"salidas_equipo"}_${EXP.anio}${EXP.modo==="mes"?"_"+String(EXP.mes).padStart(2,"0"):""}.xlsx`;
@@ -1462,7 +1462,7 @@ post.visor = ()=>{
 
 /* ======================= REPORTES ======================= */
 function viajesPer(){
-  return [...RES.filter(r=>r.est==="FINALIZADA"&&r.bit?.odoR&&enPer(r.bit.sal)).map(r=>({id:r.id,fecha:r.bit.sal.slice(0,10),pat:r.pat,cc:r.cc,km:r.bit.odoR-r.bit.odoS})),
+  return [...RES.filter(r=>r.est==="FINALIZADA"&&r.bit?.odoR&&enPer(r.bit.sal)).map(r=>({id:r.id,fecha:r.bit.sal.slice(0,10),sal:r.bit.sal,reg:r.bit.reg,pat:r.pat,cc:r.cc,km:r.bit.odoR-r.bit.odoS})),
     ...HIST.filter(h=>enPer(h[3])).map(([pat,cc,k,f])=>({id:"Histórico",fecha:f,pat,cc,km:k}))].sort((a,b)=>a.fecha.localeCompare(b.fecha));
 }
 function resumenKm(){
@@ -1499,7 +1499,7 @@ function perCtl(xid,hay){const t=sel.tes;
 function bajarXlsx(base,titulo,hojas,n){
   if(typeof XLSX==="undefined"){tostada("No se pudo cargar el generador de Excel. Revisa tu conexión.");return}
   const wb=XLSX.utils.book_new();
-  hojas.forEach(([nom,enc,filas,anchos])=>{ const ws=XLSX.utils.aoa_to_sheet([[titulo+" · CONAF · Unidad de Vehículos"],[`Periodo: ${perTxt()}`,"","Emitido: "+fFH(HOY),"","Emisor: Encargado de Vehículos Oficina Central"],[],enc,...filas]); ws["!cols"]=anchos.map(w=>({wch:w})); XLSX.utils.book_append_sheet(wb,ws,nom); });
+  hojas.forEach(([nom,enc,filas,anchos])=>{ const ws=XLSX.utils.aoa_to_sheet([[titulo+" · CONAF · Unidad de Vehículos"],[`Periodo: ${perTxt()}`,"","Fecha de emisión: "+fF(HOY),"Hora de emisión: "+fH(HOY),"Emisor: Encargado de Vehículos Oficina Central"],[],enc,...filas]); ws["!cols"]=anchos.map(w=>({wch:w})); XLSX.utils.book_append_sheet(wb,ws,nom); });
   const nombre=`${base}_${perSufijo()}.xlsx`;
   try{ XLSX.writeFile(wb,nombre); audit("Emite reporte "+titulo.toLowerCase(),nombre,"—",n+" filas"); tostada(`Excel generado: ${nombre} (${n} filas).`); }catch(e){ tostada("La descarga fue bloqueada en esta vista. Ábrela desde GitHub Pages."); }
 }
@@ -2292,7 +2292,7 @@ post.reportes = ()=>{
         ["Centro de costo",["Folio","Imputación","Programa","Km","% del total"],[...porCC.map(([f,k])=>[f,CCX[f]?.t||"",PROGRAMAS[CCX[f]?.prog]||CCX[f]?.prog||"",k,pc(k)]),["Total","","",tot,100]],[12,48,36,10,12]],
         ["Programa",["Programa presupuestario","Km","% del total"],[...porProg.map(([p,k])=>[PROGRAMAS[p]||p,k,pc(k)]),["Total",tot,100]],[44,10,12]],
         ["Vehículo",["Patente","Marca y modelo","Salidas","Km"],porVeh.map(([p,o])=>[p,VX[p]?`${VX[p].marca} ${VX[p].modelo}`:"",o.n,o.km]),[12,34,10,10]],
-        ["Detalle de salidas",["Fecha de salida","ID salida","Patente","Folio","Km"],viajes.map(v=>[fF(F(v.fecha)),v.id,v.pat,v.cc,v.km]),[16,18,12,12,10]]],viajes.length); }
+        ["Detalle de salidas",["Fecha de salida","Hora de salida","Fecha de regreso","Hora de regreso","ID salida","Patente","Folio","Km"],viajes.map(v=>[fF(F(v.fecha)),v.sal?fH(v.sal):"",v.reg?fF(v.reg):"",v.reg?fH(v.reg):"",v.id,v.pat,v.cc,v.km]),[16,13,16,13,18,12,12,10]]],viajes.length); }
     if(x==="gastos"){ const {filas,tipos,tot}=resumenGastos();
       bajarXlsx("gastos_por_vehiculo","Reporte de gastos por vehículo",[["Gastos por vehículo",["Patente","Marca y modelo",...tipos.map(k=>TGX[k]+" ($)"),"Total ($)"],[...filas.map(([p,o])=>[p,VX[p]?`${VX[p].marca} ${VX[p].modelo}`:"",...tipos.map(k=>o[k]||0),o.t]),["Total","",...tipos.map(k=>tot[k]),tot.t]],[12,34,...tipos.map(()=>22),14]],
         ["Detalle",["Fecha","Patente","Tipo","Documento","Proveedor o estación","Monto ($)"],[...GASTOS.filter(g=>enPer(g.fecha)).map(g=>[g.fecha,g.pat,TGX[g.tipo],`${g.doc} ${g.n}`,g.prov,g.monto]),...CARGAS.filter(c=>enPer(c.fecha)&&c.monto).map(c=>[c.fecha,c.pat,"Combustible",c.origen,c.est,c.monto])].sort((a,b)=>a[0].localeCompare(b[0])).map(r=>[fF(r[0]),...r.slice(1)]),[12,12,24,18,32,12]]],filas.length); }
