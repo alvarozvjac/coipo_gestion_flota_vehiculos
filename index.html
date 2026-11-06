@@ -1522,13 +1522,13 @@ function vReportesTes(){
    ${perCtl("tes",filas.length)}</header>
    <div class="cuerpo grid" style="gap:var(--e-2)"><div class="meta"><span>Emite: <b>Encargado de Vehículos · Oficina Central</b> (en regiones, cada encargado regional emite el de su jurisdicción)</span><span>Salidas: <b>${salidas}</b></span><span>Personas: <b>${personas}</b></span><span>Filas: <b>${filas.length}</b></span><span>Folios: <b>${new Set(filas.map(f=>f.folio)).size}</b></span></div>
    <p class="nota">El folio presupuestario es el que seleccionó la jefatura al autorizar la salida. Incluye solicitante, conductores y acompañantes. El Excel se envía a Tesorería. Días: calendario, entre la salida y el regreso reales. RUT y nombres ficticios.</p></div>
-   <div class="tabla-env">${filas.length?`<table class="t-com"><thead><tr><th>ID salida</th><th>Folio presupuestario</th><th>Jefatura que autorizó</th><th>Funcionario</th><th>RUT</th><th>Rol</th><th>Salida</th><th>Regreso</th><th>Días</th><th>Destino</th><th>Cometido</th><th>Gerencia</th></tr></thead><tbody>${filas.map(f=>`<tr><td class="mono">${f.id}</td><td class="folio-c" title="${esc(f.folioTxt)}"><b class="mono">${esc(f.folio)}</b><span class="tenue peq">${esc(f.prog)} · ${esc(f.folioTxt)}</span></td><td class="peq">${esc(f.jefe)}</td><td>${esc(f.nom)}</td><td class="mono peq">${f.rut}</td><td class="peq">${f.rol}</td><td class="num">${fFH(f.sal)}</td><td class="num">${fFH(f.reg)}</td><td class="d">${f.dias}</td><td class="peq">${esc(f.destino)}</td><td class="peq">${esc(f.cometido)}</td><td class="peq">${esc(f.ger.split(" · ")[0])}</td></tr>`).join("")}</tbody></table>`:vacio("Sin salidas finalizadas en el periodo","Elige otro mes o el reporte anual.")}</div></section>`;
+   <div class="tabla-env">${filas.length?`<table class="t-com"><thead><tr><th>ID salida</th><th>Folio presupuestario</th><th>Jefatura que autorizó</th><th>Funcionario</th><th>RUT</th><th>Rol</th><th>Fecha de salida</th><th>Hora de salida</th><th>Fecha de regreso</th><th>Hora de regreso</th><th>Días</th><th>Destino</th><th>Cometido</th><th>Gerencia</th></tr></thead><tbody>${filas.map(f=>`<tr><td class="mono">${f.id}</td><td class="folio-c" title="${esc(f.folioTxt)}"><b class="mono">${esc(f.folio)}</b><span class="tenue peq">${esc(f.prog)} · ${esc(f.folioTxt)}</span></td><td class="peq">${esc(f.jefe)}</td><td>${esc(f.nom)}</td><td class="mono peq">${f.rut}</td><td class="peq">${f.rol}</td><td class="num">${fF(f.sal)}</td><td class="num">${fH(f.sal)}</td><td class="num">${fF(f.reg)}</td><td class="num">${fH(f.reg)}</td><td class="d">${f.dias}</td><td class="peq">${esc(f.destino)}</td><td class="peq">${esc(f.cometido)}</td><td class="peq">${esc(f.ger.split(" · ")[0])}</td></tr>`).join("")}</tbody></table>`:vacio("Sin salidas finalizadas en el periodo","Elige otro mes o el reporte anual.")}</div></section>`;
 }
 /* ======================= ORDEN DE SALIDA ======================= */
 function abrirOrden(id){
   const r=RES.find(x=>x.id===id), v=VX[r.pat], cc=CCX[r.cc];
   $("#capa2").innerHTML=`<div class="velo" id="velo2"><div class="cajon" role="dialog" aria-modal="true" aria-labelledby="t-orden"><header><h2 id="t-orden" style="font-size:var(--f-l)">Orden de salida · <span class="mono">${r.id}</span></h2><span class="acc-orden"><button class="btn chico" type="button" id="bajar-orden" title="Abre el diálogo de impresión: elige «Guardar como PDF»">Descargar PDF</button><button class="btn sec chico" type="button" id="cerrar2">Cerrar</button></span></header><div class="cuerpo">
-  <div class="orden"><div class="enc"><div><b>Corporación Nacional Forestal</b><br>Gerencia de Finanzas y Administración · Unidad de Vehículos<h3>Orden de salida de vehículo fiscal</h3><span class="mono">N° ${r.id}</span> · emitida ${fFH(HOY)}</div></div>
+  <div class="orden"><div class="enc"><div><b>Corporación Nacional Forestal</b><br>Gerencia de Finanzas y Administración · Unidad de Vehículos<h3>Orden de salida de vehículo fiscal</h3><span class="mono">N° ${r.id}</span> · fecha de emisión ${fF(HOY)} · hora de emisión ${fH(HOY)}</div></div>
   <table><tbody>
    <tr><td>Solicitado por</td><td>${esc(nom(r.sol))} · ${esc(PX[r.sol].ger)}</td></tr>
    <tr><td>Autorizado por</td><td>${esc(nom(r.jefe))} · ${esc(PX[r.jefe].cargo)}</td></tr>
@@ -1537,7 +1537,11 @@ function abrirOrden(id){
    <tr><td>Imputación</td><td>${esc(r.cc)} · ${esc(cc?.t||"")}</td></tr>
    <tr><td>Vehículo</td><td><b>${esc(r.pat)}</b> · ${esc(v.tipo)} ${esc(v.marca)} ${esc(v.modelo)} ${v.anio}</td></tr>
    <tr><td>Conductor</td><td>${esc(nom(r.cond))} · RUT ${PX[r.cond]?.rut||""} · caución ${CX[r.cond]?.polCau||"—"}${r.relevo?`<br>Relevo: ${esc(nom(r.relevo))}`:""}</td></tr>
-   <tr><td>Salida / regreso</td><td>${fFH(r.salida)} → ${fFH(r.regreso)} · ${Math.max(1,Math.ceil((F(r.regreso)-F(r.salida))/DIA))} día(s) · ${pasajeros(r)} personas</td></tr>
+   <tr><td>Fecha de salida</td><td>${fF(r.salida)}</td></tr>
+   <tr><td>Hora de salida</td><td>${fH(r.salida)}</td></tr>
+   <tr><td>Fecha de regreso</td><td>${fF(r.regreso)}</td></tr>
+   <tr><td>Hora de regreso</td><td>${fH(r.regreso)}</td></tr>
+   <tr><td>Duración y ocupantes</td><td>${Math.max(1,Math.ceil((F(r.regreso)-F(r.salida))/DIA))} día(s) · ${pasajeros(r)} personas</td></tr>
    <tr><td>Acompañantes</td><td>${r.pas.map(nom).map(esc).join(", ")||"—"}</td></tr>
    ${r.km?`<tr><td>Km aproximados</td><td>${km(r.km)}</td></tr>`:""}
    <tr><td>Lugar de guarda</td><td>${esc(v.guarda||v.unidad)}</td></tr>
