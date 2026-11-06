@@ -2090,7 +2090,7 @@ function abrirFicha(pat, tab, op={}){
   const ots=OT.filter(o=>o.pat===pat), gs=GASTOS.filter(x=>x.pat===pat).sort((a,b)=>b.fecha.localeCompare(a.fecha)), cs=CARGAS.filter(c=>c.pat===pat).sort((a,b)=>a.km-b.km), sal=RES.filter(r=>r.pat===pat).sort((a,b)=>b.salida.localeCompare(a.salida));
   const m=mant(v);
   let c="";
-  if(fichaTab==="resumen") c=`<div class="grid g-2b"><dl class="ficha"><dt>Patente</dt><dd>${placa(v.pat)}</dd><dt>Vehículo</dt><dd>${esc(v.tipo)} ${esc(v.marca)} ${esc(v.modelo)} ${v.anio}</dd><dt>Motor / chasis</dt><dd class="mono peq">${esc(v.motor||"—")} / ${esc(v.chasis||"—")}</dd>${v.color?`<dt>Color</dt><dd>${esc(v.color)}</dd>`:""}<dt>Capacidad</dt><dd>${v.cap} plazas · ${km(v.cargaKg)} kg${v.cargaM3?` · ${String(v.cargaM3).replace(".",",")} m³`:""} · ${v.trac} · ${v.comb}</dd><dt>Modalidad</dt><dd>${esc(v.modalidad)}</dd><dt>Tenencia</dt><dd>${esc(v.tenencia)}</dd><dt>Destinación</dt><dd>${esc(v.unidad)}</dd><dt>Recinto de guarda</dt><dd>${esc(v.guarda||"—")}<br><span class="tenue peq">Guarda nocturna y de fines de semana</span></dd><dt>Programa</dt><dd>${esc(v.programa)}</dd></dl>
+  if(fichaTab==="resumen") c=`<div class="grid g-2b"><dl class="ficha"><dt>Patente</dt><dd>${placa(v.pat)}</dd><dt>Vehículo</dt><dd>${esc(v.tipo)} ${esc(v.marca)} ${esc(v.modelo)} ${v.anio}</dd><dt>Motor / chasis</dt><dd class="mono peq">${esc(v.motor||"—")} / ${esc(v.chasis||"—")}</dd>${v.color?`<dt>Color</dt><dd>${esc(v.color)}</dd>`:""}<dt>Capacidad</dt><dd>${v.cap} plazas · ${km(v.cargaKg)} kg${v.cargaM3?` · ${String(v.cargaM3).replace(".",",")} m³`:""} · ${v.trac} · ${v.comb}</dd><dt>Modalidad</dt><dd>${esc(v.modalidad)}</dd><dt>Tenencia</dt><dd>${esc(v.tenencia)}</dd><dt>Destinación</dt><dd>${esc(v.unidad)}</dd><dt>Recinto de guarda</dt><dd>${esc(v.guarda||"—")}<br><span class="tenue peq">Guarda nocturna y de fines de semana</span></dd><dt>Programa</dt><dd>${v.programa?esc(v.programa):`<span class="tenue">Sin programa fijo: la imputación la define la jefatura en cada salida</span>`}</dd></dl>
     <dl class="ficha"><dt>Estado hoy</dt><dd>${chipV(v)}</dd><dt>Kilometraje</dt><dd class="num">${km(v.km)} km</dd><dt>Mantención</dt><dd>${chipMant(v)}</dd><dt>Seguro</dt><dd><span class="mono">${esc(v.poliza)}</span>${v.aseguradora?` · ${esc(v.aseguradora)}`:""}${v.deducibleUF?` · deducible ${esc(v.deducibleUF)} UF`:""} · vence ${fF(v.polizaVence)}${v.asistencia?`<br><span class="tenue peq">Asistencia en ruta: ${esc(v.asistencia)}</span>`:""}</dd><dt>Tarjeta</dt><dd class="mono">${esc(v.tarjeta)} · ${esc(v.tarjetaEstado)}</dd><dt>Alertas</dt><dd>${alertasVeh(v)||"Sin alertas"}</dd></dl></div>
     `; // Resumen: sólo información; las acciones están en su pestaña (Mantención, Gastos, Traspasos)
   if(fichaTab==="resumen"&&traspActivo(v)) c=traspAvisoHTML(v)+c;
@@ -2465,7 +2465,7 @@ function abrirAltaVehiculo(){
     ${campoA("av-pat","Patente",`<input type="text" id="av-pat" class="mono" maxlength="8" placeholder="BBBB-10 o BB-1000" autocomplete="off">`,"Formato chileno; se guarda en mayúsculas, con guion y sin espacios.")}
     ${campoA("av-tipo","Tipo de vehículo",`<select id="av-tipo">${opts(TIPOS_VEH.filter(x=>catActivo("tipos",x)),"","— Seleccionar —")}</select>`)}
     ${campoA("av-marca","Marca",`<select id="av-marca">${opts(marcas,"","— Seleccionar —")}</select>`)}
-    ${campoA("av-modelo","Modelo",`<select id="av-modelo" disabled><option value="">— Elija la marca —</option></select>`,"Marcas y modelos desde el catálogo nacional.")}
+    ${campoA("av-modelo","Modelo",`<input type="text" id="av-modelo" maxlength="60" placeholder="Ej.: Hilux 2.4 DX 4x4" autocomplete="off">`,"Escríbalo tal como figura en el padrón del vehículo.")}
     ${campoA("av-anio","Año de fabricación",`<input type="number" id="av-anio" min="1990" max="2027" placeholder="2024">`)}
     ${campoA("av-color","Color",`<input type="text" id="av-color" placeholder="Blanco">`)}
     ${campoA("av-motor","Número de motor",`<input type="text" id="av-motor" class="mono">`)}
@@ -2478,13 +2478,12 @@ function abrirAltaVehiculo(){
     ${campoA("av-kg","Carga útil (kg)",`<input type="number" id="av-kg" min="0" placeholder="1000">`)}
     ${campoA("av-m3","Volumen de carga (m³)",`<input type="number" id="av-m3" min="0" step="0.1" placeholder="1.2">`)}
    </div></fieldset>
-   <fieldset><legend><span class="seccion-num">3</span>Adscripción y programa presupuestario</legend><div class="campos">
+   <fieldset><legend><span class="seccion-num">3</span>Adscripción</legend><div class="campos">
     ${campoA("av-ten","Tenencia",`<select id="av-ten">${opts(TENENCIAS,TENENCIAS[0])}</select>`)}
     ${campoA("av-mod","Modalidad de uso",`<select id="av-mod">${opts(MODALIDADES,MODALIDADES[0])}</select>`)}
     ${campoA("av-reg","Región",`<select id="av-reg">${opts(REGIONES_ALTA,"Oficina Central")}</select>`)}
     ${campoA("av-uni","Unidad de destinación",`<select id="av-uni">${opts(unidadesDe("Oficina Central"),"")}</select>`)}
     ${campoA("av-guarda","Recinto de guarda nocturna y de fines de semana",`<input type="text" id="av-guarda" placeholder="Dirección del estacionamiento fiscal">`,"",true)}
-    ${campoA("av-prog","Programa presupuestario",`<select id="av-prog">${opts(Object.values(PROGRAMAS),"","— Seleccionar —")}</select>`,"",true)}
    </div></fieldset>
    <fieldset><legend><span class="seccion-num">4</span>Seguro, combustible y telepeaje</legend><div class="campos">
     ${campoA("av-pol","N° de póliza",`<input type="text" id="av-pol" class="mono">`)}
@@ -2514,7 +2513,6 @@ function abrirAltaVehiculo(){
   const F_=s=>$("#"+s);
   F_("av-pat").addEventListener("blur",e=>{const n=patenteNorm(e.target.value); if(n) e.target.value=n;});
   F_("av-chasis").addEventListener("input",e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,"");});
-  F_("av-marca").onchange=e=>{const m=e.target.value, s=F_("av-modelo"); s.disabled=!m; s.innerHTML=m?opts([...MARCAS[m]].sort(),"","— Seleccionar —"):`<option value="">— Elija la marca —</option>`;};
   F_("av-reg").onchange=e=>{F_("av-uni").innerHTML=opts(unidadesDe(e.target.value),"","— Seleccionar —");};
   F_("av-cancel").onclick=()=>{cerrarCapa();render();};
   F_("f-alta-veh").addEventListener("submit",e=>{
@@ -2523,13 +2521,12 @@ function abrirAltaVehiculo(){
     const pat=patenteNorm(val("av-pat"));
     if(!pat) err.push(["av-pat","Patente con formato inválido (BBBB-10 o BB-1000)"]); else if(VX[pat]) err.push(["av-pat",`La patente ${pat} ya existe en el catastro`]);
     if(!val("av-tipo")) err.push(["av-tipo","Falta el tipo de vehículo"]);
-    if(!val("av-marca")) err.push(["av-marca","Falta la marca"]); else if(!val("av-modelo")) err.push(["av-modelo","Falta el modelo"]);
+    if(!val("av-marca")) err.push(["av-marca","Falta la marca"]); if(val("av-modelo").trim().length<2) err.push(["av-modelo","Falta el modelo"]);
     const anio=+val("av-anio"); if(!(anio>=1990&&anio<=2027)) err.push(["av-anio","Año entre 1990 y 2027"]);
     const vin=val("av-chasis"); if(!/^[A-HJ-NPR-Z0-9]{17}$/.test(vin)) err.push(["av-chasis","El VIN debe tener 17 caracteres válidos"]);
     if(!val("av-motor")) err.push(["av-motor","Falta el número de motor"]);
     const cap=+val("av-cap"); if(!(Number.isInteger(cap)&&cap>=1&&cap<=60)) err.push(["av-cap","Capacidad de pasajeros obligatoria (1 a 60)"]);
     if(!val("av-uni")) err.push(["av-uni","Falta la unidad de destinación"]);
-    if(!val("av-prog")) err.push(["av-prog","Falta el programa presupuestario"]);
     if(!val("av-guarda")) err.push(["av-guarda","Falta el recinto de guarda"]);
     if(val("av-pin")&&!/^\d{4}$/.test(val("av-pin"))) err.push(["av-pin","El PIN tiene 4 dígitos"]);
     if(val("av-pold")&&val("av-polh")&&val("av-polh")<=val("av-pold")) err.push(["av-polh","El vencimiento del seguro debe ser posterior al inicio"]);
@@ -2539,7 +2536,7 @@ function abrirAltaVehiculo(){
     if(err.length){ F_(err[0][0]).focus(); F_("av-err").scrollIntoView({block:"nearest"}); return; }
     const tarj=val("av-tarj").replace(/\D/g,"");
     const v={raw:pat,pat,anio,marca:val("av-marca"),modelo:val("av-modelo"),mm:val("av-marca")+" "+val("av-modelo"),tipo:val("av-tipo"),color:val("av-color"),motor:val("av-motor"),chasis:vin,
-      trac:val("av-trac"),comb:val("av-comb"),cap,cargaKg:+val("av-kg")||0,cargaM3:+val("av-m3")||0,tenencia:val("av-ten"),modalidad:val("av-mod"),region:val("av-reg"),unidad:val("av-uni"),guarda:val("av-guarda"),programa:val("av-prog"),
+      trac:val("av-trac"),comb:val("av-comb"),cap,cargaKg:+val("av-kg")||0,cargaM3:+val("av-m3")||0,tenencia:val("av-ten"),modalidad:val("av-mod"),region:val("av-reg"),unidad:val("av-uni"),guarda:val("av-guarda"),programa:"",
       poliza:val("av-pol")||"—",aseguradora:val("av-aseg"),deducibleUF:val("av-ded"),asistencia:val("av-asis"),polizaDesde:val("av-pold")||null,polizaVence:val("av-polh")||null,
       tarjeta:tarj?val("av-temi")+" ···· "+tarj.slice(-4):"Sin tarjeta",tarjetaEstado:val("av-test"),pin:val("av-pin"),cupo:val("av-cupo"),tag:val("av-tag")?"TAG "+val("av-tag"):"",
       rt:val("av-rt")||null,gases:val("av-gases")||null,perm:val("av-perm")||null,soap:val("av-soap")||null,km:kmA,ultMant:ult,proxMant:ult+10000,estado:val("av-est"),
