@@ -729,6 +729,7 @@ tr.pag-oculta{display:none}
 .datos-2{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:var(--e-4);align-items:start}
 @media (max-width:1099.98px){ /* angosto */ .datos-2{grid-template-columns:minmax(0,1fr)} }
 .rep-kpi{padding-block:6px;margin-bottom:var(--e-2)}
+.t-com td.folio-c{white-space:normal;max-width:34ch} .t-com td.folio-c span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:34ch}
 </style>
 
 </head><body>
@@ -1510,19 +1511,18 @@ function filasTesoreria(){
     const personas=[[r.sol,"Solicitante"],[r.cond,"Conductor"],[r.relevo,"Conductor de relevo"],...r.pas.map(x=>[x,"Acompañante"])].filter(x=>x[0]);
     const vistos=new Set();
     personas.forEach(([id,rolv])=>{ if(vistos.has(id)) return; vistos.add(id); const p=PX[id];
-      out.push({id:r.id,rut:p.rut,nom:p.nom,rol:rolv,sal:r.bit.sal,reg:r.bit.reg,dias,destino:r.destinos.map(d=>`${d.lug}, ${d.com} (${d.reg})`).join(" · "),cometido:r.cometido,folio:r.cc,ger:gerenciaFolio(r.cc),jefe:nom(r.jefe)}); });
+      out.push({id:r.id,rut:p.rut,nom:p.nom,rol:rolv,sal:r.bit.sal,reg:r.bit.reg,dias,destino:r.destinos.map(d=>`${d.lug}, ${d.com} (${d.reg})`).join(" · "),cometido:r.cometido,folio:r.cc,folioTxt:CCX[r.cc]?.t||"",prog:CCX[r.cc]?.prog||"",ger:gerenciaFolio(r.cc),jefe:nom(r.jefe)}); });
   });
   return out.sort((a,b)=>a.sal.localeCompare(b.sal)||a.nom.localeCompare(b.nom));
 }
 function vReportesTes(){
   const t=sel.tes, filas=filasTesoreria(), salidas=new Set(filas.map(f=>f.id)).size, personas=new Set(filas.map(f=>f.rut)).size;
   const per=perTxt();
-  return `<section class="panel"><header><div><h2>Reporte de cometidos para Tesorería</h2><span class="sub">Una fila por persona y salida finalizada · ${per}</span></div>
+  return `<section class="panel"><header><div><h2>Reporte de cometidos</h2><span class="sub">Una fila por persona y salida finalizada · ${per}</span></div>
    ${perCtl("tes",filas.length)}</header>
-   <div class="cuerpo grid" style="gap:var(--e-2)"><div class="meta"><span>Emite: <b>Encargado de Vehículos · Oficina Central</b> (en regiones, cada encargado regional emite el de su jurisdicción)</span><span>Salidas: <b>${salidas}</b></span><span>Personas: <b>${personas}</b></span><span>Filas: <b>${filas.length}</b></span></div>
-   <p class="nota">Sin conexión con el sistema de pagos: el Excel se envía a Tesorería. La gerencia se deduce del folio de imputación registrado en la salida. Incluye al solicitante, los conductores y los acompañantes.</p></div>
-   <div class="tabla-env">${filas.length?`<table><thead><tr><th>ID salida</th><th>RUT</th><th>Funcionario</th><th>Rol</th><th>Salida</th><th>Regreso</th><th>Días</th><th>Destino</th><th>Cometido</th><th>Folio</th><th>Gerencia</th><th>Jefatura que autorizó</th></tr></thead><tbody>${filas.map(f=>`<tr><td class="mono">${f.id}</td><td class="mono peq">${f.rut}</td><td>${esc(f.nom)}</td><td class="peq">${f.rol}</td><td class="num">${fFH(f.sal)}</td><td class="num">${fFH(f.reg)}</td><td class="d">${f.dias}</td><td class="peq">${esc(f.destino)}</td><td class="peq">${esc(f.cometido)}</td><td class="mono">${esc(f.folio)}</td><td class="peq">${esc(f.ger.split(" · ")[0])}</td><td class="peq">${esc(f.jefe)}</td></tr>`).join("")}</tbody></table>`:vacio("Sin salidas finalizadas en el periodo","Elige otro mes o el reporte anual.")}</div>
-   <div class="leyenda"><span class="tenue peq">Días: días calendario entre la salida y el regreso reales registrados en la bitácora. Si la descarga no se inicia en esta vista previa, ábrela desde GitHub Pages. RUT y nombres ficticios.</span></div></section>`;
+   <div class="cuerpo grid" style="gap:var(--e-2)"><div class="meta"><span>Emite: <b>Encargado de Vehículos · Oficina Central</b> (en regiones, cada encargado regional emite el de su jurisdicción)</span><span>Salidas: <b>${salidas}</b></span><span>Personas: <b>${personas}</b></span><span>Filas: <b>${filas.length}</b></span><span>Folios: <b>${new Set(filas.map(f=>f.folio)).size}</b></span></div>
+   <p class="nota">El folio presupuestario es el que seleccionó la jefatura al autorizar la salida. Incluye solicitante, conductores y acompañantes. El Excel se envía a Tesorería. Días: calendario, entre la salida y el regreso reales. RUT y nombres ficticios.</p></div>
+   <div class="tabla-env">${filas.length?`<table class="t-com"><thead><tr><th>ID salida</th><th>Folio presupuestario</th><th>Jefatura que autorizó</th><th>Funcionario</th><th>RUT</th><th>Rol</th><th>Salida</th><th>Regreso</th><th>Días</th><th>Destino</th><th>Cometido</th><th>Gerencia</th></tr></thead><tbody>${filas.map(f=>`<tr><td class="mono">${f.id}</td><td class="folio-c" title="${esc(f.folioTxt)}"><b class="mono">${esc(f.folio)}</b><span class="tenue peq">${esc(f.prog)} · ${esc(f.folioTxt)}</span></td><td class="peq">${esc(f.jefe)}</td><td>${esc(f.nom)}</td><td class="mono peq">${f.rut}</td><td class="peq">${f.rol}</td><td class="num">${fFH(f.sal)}</td><td class="num">${fFH(f.reg)}</td><td class="d">${f.dias}</td><td class="peq">${esc(f.destino)}</td><td class="peq">${esc(f.cometido)}</td><td class="peq">${esc(f.ger.split(" · ")[0])}</td></tr>`).join("")}</tbody></table>`:vacio("Sin salidas finalizadas en el periodo","Elige otro mes o el reporte anual.")}</div></section>`;
 }
 /* ======================= ORDEN DE SALIDA ======================= */
 function abrirOrden(id){
@@ -1814,7 +1814,7 @@ function accesosGestion(){
    {v:"taller",ico:"taller",t:"Taller y documentos",d:(()=>{const T=tallerLista(), c=k=>T.filter(x=>x.it.some(i=>i.k===k)).length; return `${c("nov")} con novedad, ${c("mant")} con mantención, ${c("ot")} en taller y ${c("doc")} con documentos por renovar.`;})(),cta:"Atender pendientes",n:tallerLista().length,nl:"vehículos con pendientes",aviso:tallerLista().some(x=>x.it.some(i=>i.urg>=3))},
    {v:"conductores",ico:"licencia",t:"Conductores",d:"Caución y licencia de cada conductor. Los bloqueados no se pueden asignar.",cta:"Ver padrón",n:porVencer,nl:"por vencer o bloqueados",aviso:porVencer>0},
    {v:"combustible",ico:"combustible",t:"Combustible y gastos",d:"Cargas, archivo COPEC, compras a granel y gastos por factura o boleta.",cta:"Ver combustible y gastos"},
-   {v:"reportes",ico:"grafico",t:"Reportes",d:"Excel mensual o anual de kilómetros y costos, Tesorería y gastos por vehículo; operatividad y rendimiento.",cta:"Ver reportes"}];
+   {v:"reportes",ico:"grafico",t:"Reportes",d:"Excel mensual o anual de kilómetros y costos, cometidos y gastos por vehículo; operatividad y rendimiento.",cta:"Ver reportes"}];
   if(rol==="super") ACCESOS.push({v:"config",ico:"config",t:"Configuración",d:"Catálogos, usuarios y accesos, cierre mensual y auditoría.",cta:"Configurar"});
   return ACCESOS;
 }
@@ -2273,8 +2273,8 @@ function vGastosVeh(){
   <div class="leyenda"><span class="tenue peq">Montos en pesos. Combustible: cargas con tarjeta, en efectivo e informadas al regreso; el granel se valoriza en la compra. Selecciona una patente para ver su hoja de vida.</span></div></section>`;
 }
 function vReportes(){
-  const t=sel.repTab, tabs=[["km","Kilómetros y costos"],["tes","Tesorería"],["oper","Operatividad mensual"],["rend","Rendimiento"],["gastos","Gastos por vehículo"]];
-  const d={km:"Kilómetros por programa y centro de costo, para distribuir el costo operacional entre programas.",tes:"Cometidos realizados por cada funcionario, con su imputación presupuestaria, para enviar a Tesorería en forma mensual o anual.",oper:"Días en que cada vehículo estuvo disponible, en terreno o en taller. Reemplaza «Operatividad mensual del vehículo» de GESAD.",rend:"Rendimiento real de cada vehículo para detectar sobreconsumo o usos anómalos de la tarjeta.",gastos:"Gasto acumulado por vehículo y tipo."}[t];
+  const t=sel.repTab, tabs=[["km","Kilómetros y costos"],["tes","Cometidos"],["oper","Operatividad mensual"],["rend","Rendimiento"],["gastos","Gastos por vehículo"]];
+  const d={km:"Kilómetros por programa y centro de costo, para distribuir el costo operacional entre programas.",tes:"Cometidos realizados por cada funcionario, con el folio presupuestario que definió la jefatura al autorizar, para enviar a Tesorería en forma mensual o anual.",oper:"Días en que cada vehículo estuvo disponible, en terreno o en taller. Reemplaza «Operatividad mensual del vehículo» de GESAD.",rend:"Rendimiento real de cada vehículo para detectar sobreconsumo o usos anómalos de la tarjeta.",gastos:"Gasto acumulado por vehículo y tipo."}[t];
   return cab("Reportes",d,"ERS §4.4-B · GESAD «Reportes»")+tabsHTML(tabs,t,"data-rt")+({km:vReportesKm,tes:vReportesTes,oper:vOperatividad,rend:vRendimiento,gastos:vGastosVeh}[t])();
 }
 post.reportes = ()=>{
@@ -2286,7 +2286,7 @@ post.reportes = ()=>{
   V.querySelectorAll("[data-xlsx]").forEach(b=>b.onclick=()=>{
     const x=b.dataset.xlsx;
     if(x==="tes"){ const filas=filasTesoreria();
-      bajarXlsx("cometidos_tesoreria","Reporte de cometidos para Tesorería",[["Cometidos",["ID salida","RUT","Funcionario","Rol en el viaje","Fecha y hora de salida","Fecha y hora de regreso","Días","Destino","Cometido","Folio de imputación","Gerencia","Jefatura que autorizó"],filas.map(f=>[f.id,f.rut,f.nom,f.rol,fFH(f.sal),fFH(f.reg),f.dias,f.destino,f.cometido,f.folio,f.ger,f.jefe]),[16,13,28,18,17,17,6,44,50,12,46,28]]],filas.length); }
+      bajarXlsx("cometidos","Reporte de cometidos",[["Cometidos",["ID salida","Folio presupuestario","Descripción del folio","Programa","Jefatura que autorizó","RUT","Funcionario","Rol en el viaje","Fecha de salida","Hora de salida","Fecha de regreso","Hora de regreso","Días","Destino","Cometido","Gerencia"],filas.map(f=>[f.id,f.folio,f.folioTxt,f.prog,f.jefe,f.rut,f.nom,f.rol,fF(f.sal),fH(f.sal),fF(f.reg),fH(f.reg),f.dias,f.destino,f.cometido,f.ger]),[16,14,46,9,28,13,28,18,12,9,12,9,6,44,50,46]]],filas.length); }
     if(x==="km"){ const {viajes,tot,porCC,porProg,porVeh}=resumenKm(), pc=k=>tot?Math.round(k/tot*1000)/10:0;
       bajarXlsx("kilometros_costos","Reporte de kilómetros y costos",[
         ["Centro de costo",["Folio","Imputación","Programa","Km","% del total"],[...porCC.map(([f,k])=>[f,CCX[f]?.t||"",PROGRAMAS[CCX[f]?.prog]||CCX[f]?.prog||"",k,pc(k)]),["Total","","",tot,100]],[12,48,36,10,12]],
