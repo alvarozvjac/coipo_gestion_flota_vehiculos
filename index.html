@@ -248,6 +248,18 @@ legend{font-family:var(--ff-titulo);font-weight:600;font-size:var(--f-m);padding
 .pasos-sal li.bloq{opacity:.75;background:var(--sup-2)} .pasos-sal li.espera .marca{border-style:dashed}
 @media (max-width:767.98px){ /* tableta */ .pasos-sal{grid-template-columns:minmax(0,1fr) minmax(0,1fr)} }
 .confirma{border:2px solid var(--boton);border-radius:var(--r-m);padding:var(--e-4);background:var(--sup);display:grid;gap:var(--e-3)}
+.correo{border:1px solid var(--linea);border-radius:var(--r-m);background:var(--sup);font-size:var(--f-s);margin-top:var(--e-3)}
+.correo>summary{cursor:pointer;padding:var(--e-2) var(--e-3);display:flex;flex-wrap:wrap;gap:var(--e-1) var(--e-3);align-items:baseline;list-style:none}
+.correo>summary::-webkit-details-marker{display:none}
+.correo>summary b{font-size:var(--f-s)} .correo>summary .tenue{font-size:var(--f-xs)}
+.correo>summary::after{content:"Ver correo ›";margin-left:auto;font-size:var(--f-xs);color:var(--acento,var(--tinta-2))}
+.correo[open]>summary::after{content:"Ocultar ‹"}
+.correo-cab{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px var(--e-3);padding:var(--e-2) var(--e-3);border-top:1px solid var(--linea);font-size:var(--f-xs)}
+.correo-cab dt{color:var(--tinta-2)} .correo-cab dd{margin:0;overflow-wrap:anywhere}
+.correo-cuerpo{padding:var(--e-3);border-top:1px solid var(--linea);line-height:1.5}
+.correo-cuerpo p{margin:0 0 var(--e-2)} .correo-cuerpo dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px var(--e-3);margin:0 0 var(--e-2)}
+.correo-cuerpo dt{color:var(--tinta-2)} .correo-cuerpo dd{margin:0} .correo-cuerpo .pie-correo{font-size:var(--f-xs);color:var(--tinta-2);margin:0}
+.correos-sol{margin-top:var(--e-3)} .correos-sol>b{font-size:var(--f-s)}
 .hecho-paso{display:flex;gap:var(--e-3);align-items:flex-start;border:1px solid var(--st-disp);background:var(--st-disp-bg);border-radius:var(--r-m);padding:var(--e-4)}
 .hecho-paso .ok{flex:none;width:32px;height:32px;border-radius:50%;background:var(--st-disp);color:var(--sup);display:grid;place-items:center;font-weight:700}
 .pie-cajon{position:sticky;bottom:0;margin:0 calc(-1 * var(--e-4)) calc(-1 * var(--e-6));padding:var(--e-3) var(--e-4) calc(var(--e-3) + env(safe-area-inset-bottom,0px));background:var(--sup);border-top:1px solid var(--linea)}
@@ -1052,6 +1064,29 @@ function vehApto(v, r){
 }
 const pasajeros = r=>(r.sol&&r.sol!==r.cond?1:0)+(r.cond||r.reqCond?1:0)+(r.relevo?1:0)+r.pas.filter(x=>x!==r.sol&&x!==r.cond).length;
 function tostada(t){const c=$("#tostadas"); while(c.children.length>=2) c.firstChild.remove(); const d=document.createElement("div");d.className="tostada";d.textContent=t;$("#tostadas").appendChild(d);setTimeout(()=>d.remove(),4200)}
+/* Correo automático al solicitante y a la jefatura cuando la Unidad confirma o cambia la asignación (simulado en la maqueta) */
+const horaDe=x=>fFH(x).slice(-5);
+function enviarCorreoSalida(r,previa){
+  const v=VX[r.pat]||{}, cambio=!!previa;
+  const c={t:iso(new Date(HOY.getTime()+((r.correos||[]).length+1)*60000)),de:"flota@conaf.cl",para:[r.sol,r.jefe].filter((x,i,a)=>x&&a.indexOf(x)===i),por:ROLES[rol].quien,cambio,previa:previa||"",
+    asunto:(cambio?"Cambio en la asignación de su salida a terreno ":"Salida a terreno confirmada ")+r.id,
+    datos:[["N° de orden",r.id],["Cometido",r.cometido],["Destino",r.destinos.map(d=>(d.lug?d.lug+", ":"")+d.com+" ("+d.reg+")").join(" · ")],
+      ["Fecha de salida",fF(r.salida)],["Hora de salida",horaDe(r.salida)],["Fecha de regreso",fF(r.regreso)],["Hora de regreso",horaDe(r.regreso)],
+      ["Vehículo",r.pat+(v.marca?" · "+v.marca+" "+(v.modelo||""):"")],["Conductor",r.cond?nom(r.cond):"—"]].concat(r.relevo?[["Conductor de relevo",nom(r.relevo)]]:[])};
+  (r.correos=r.correos||[]).push(c);
+  audit("Envía correo automático: "+(cambio?"cambio de asignación":"salida confirmada"),r.id,"—",c.para.map(nom).join(" y "));
+  return c;
+}
+function correoHTML(c,abierto){
+  const para=c.para.map(id=>`${esc(nom(id))} &lt;${esc(PX[id]?.correo||"")}&gt;`).join(", ");
+  return `<details class="correo"${abierto?" open":""}><summary><b>✉ ${esc(c.asunto)}</b><span class="tenue">Enviado el ${fF(c.t)} a las ${horaDe(c.t)} · a ${esc(c.para.map(nom).join(" y "))}</span></summary>
+   <dl class="correo-cab"><dt>De</dt><dd>Sistema Nacional de Gestión de Flota &lt;${c.de}&gt;</dd><dt>Para</dt><dd>${para}</dd><dt>Asunto</dt><dd>${esc(c.asunto)}</dd></dl>
+   <div class="correo-cuerpo"><p>Junto con saludar, le informamos que ${c.cambio?`la Unidad de Vehículos <b>cambió el vehículo o el conductor</b> de la salida a terreno ${esc(c.para.length>1?"de "+nom(c.para[0]):"")}. Asignación anterior: ${esc(c.previa)}.`:`la salida a terreno ${esc(c.para.length>1?"de "+nom(c.para[0])+", autorizada por "+nom(c.para[1])+",":"")} fue <b>confirmada</b> por la Unidad de Vehículos.`}</p>
+   <dl>${c.datos.map(([k,x])=>`<dt>${k}</dt><dd>${esc(x)}</dd>`).join("")}</dl>
+   <p>La orden de salida está disponible en «Mis salidas». Asignado por ${esc(nom(c.por))}.</p>
+   <p class="pie-correo">Correo automático del Sistema Nacional de Gestión de Flota. No responda este mensaje.</p></div></details>`;
+}
+function correosSalidaHTML(r){ const L=r.correos||[]; return L.length?`<div class="correos-sol"><b>Avisos por correo (${L.length})</b>${L.slice().reverse().map(c=>correoHTML(c,false)).join("")}</div>`:""; }
 function audit(acc,obj,ant,nue){AUD.unshift({t:iso(new Date(HOY.getTime()+(AUD.length%50)*60000)),u:ROLES[rol].quien,acc,obj,ant,nue,ip:"10.20.4."+(10+AUD.length%40)})}
 let corr=415; const nuevoId=()=>"OC-2026-"+String(corr++).padStart(6,"0");
 const post = {};
@@ -1070,6 +1105,7 @@ function tarjetaSol(r,{boton,seleccion}={}){
    <div class="meta"><span>Solicita: <b>${esc(nom(r.sol))}</b></span><span>Imputación: ${r.cc?`<b class="mono">${esc(r.cc)}</b> ${cc?esc(cc.prog):""}`:"<b>por definir (jefatura)</b>"}</span></div>
    ${flujoHTML(r.est)}
    ${r.obsLog?`<p class="nota">${esc(r.obsLog)}</p>`:""}
+   ${seleccion===undefined?correosSalidaHTML(r):""}
    ${boton||""}
   </article>`;
 }
@@ -1918,10 +1954,11 @@ function pasosHTML(r){
 /* Reasignar una salida confirmada: vuelve a «Aprobada · por asignar» sin perder la aprobación ni el folio (05-11-2026).
    Resuelve el caso en que el vehículo o el conductor dejan de estar aptos después de asignar. */
 function reasignarHTML(r){
-  return `<div class="reasig"><div><b>¿Cambió algo desde la asignación?</b><span class="tenue peq">Libera ${esc(r.pat)}${r.reqCond&&r.cond?` y a ${esc(nom(r.cond))}`:""} y vuelve a «por asignar». La aprobación de la jefatura y el folio se mantienen.</span></div><button class="btn sec chico" type="button" id="x-reasig">Reasignar vehículo o conductor</button></div>`;
+  return `<div class="reasig"><div><b>¿Cambió algo desde la asignación?</b><span class="tenue peq">Libera ${esc(r.pat)}${r.reqCond&&r.cond?` y a ${esc(nom(r.cond))}`:""} y vuelve a «por asignar». La aprobación de la jefatura y el folio se mantienen; al asignar de nuevo se avisa el cambio por correo al solicitante y a la jefatura.</span></div><button class="btn sec chico" type="button" id="x-reasig">Reasignar vehículo o conductor</button></div>`;
 }
 function reasignarSalida(r,motivo){
   const ant=r.pat+(r.cond?" · "+nom(r.cond):"");
+  r._previa=r.pat+(r.cond?" con "+nom(r.cond):"");
   r.est="APROBADA"; r.pat=null; r.tarjeta=null; if(r.reqCond){ r.cond=null; r.relevo=null; }
   r.obsLog="Logística: "+motivo; r.hist.push({t:iso(HOY),quien:ROLES[rol].quien,acc:"Reasignación"}); r._snaps=[];
   audit("Reasigna salida · "+motivo,r.id,"Confirmada · "+ant,"Aprobada · por asignar");
@@ -1945,7 +1982,8 @@ function confirmHTML(r){
 function hechoHTML(r){
   const h=paso.hecho, resta=UNDO_MS-(Date.now()-h.t), min=Math.max(0,Math.ceil(resta/60000));
   const T={asig:["Asignación confirmada",`La entrega del vehículo se habilita el ${diaTxt(r.salida)}.`],sal:["Salida registrada","El regreso se registra cuando el vehículo vuelva."],reg:["Regreso registrado","La salida quedó finalizada."]}[h.tipo];
-  return `<div class="hecho-paso" role="status"><span class="ok" aria-hidden="true">✓</span><div><h3>${T[0]}</h3><p>${T[1]}</p></div></div>
+  const cor=h.tipo==="asig"&&(r.correos||[]).length?r.correos[r.correos.length-1]:null;
+  return `<div class="hecho-paso" role="status"><span class="ok" aria-hidden="true">✓</span><div><h3>${T[0]}</h3><p>${T[1]}</p>${cor?`<p>Se envió un correo automático a ${esc(cor.para.map(nom).join(" y "))}.</p>`:""}</div></div>${cor?correoHTML(cor,true):""}
    <div class="acciones"><button class="btn" type="button" data-volver-sal>Volver a Salidas a terreno</button>${["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)?`<button class="btn sec" type="button" data-orden="${r.id}">Ver orden de salida</button>`:""}${resta>0?`<button class="btn sec" type="button" id="h-undo">Deshacer (${min} min)</button>`:""}</div>
    ${resta>0?"":`<p class="tenue peq">Pasaron 10 minutos: para corregir, pide al administrador nacional que anule el registro.</p>`}`;
 }
@@ -1957,7 +1995,7 @@ function anularHTML(r){ const s=r._snaps[r._snaps.length-1];
 function aplicarPaso(r){
   const c=paso.conf, d=c.d; snapSalida(r,c.tipo);
   if(c.tipo==="asig"){ r.pat=asig.pat; r.tarjeta=asig.tarj; if(r.reqCond){r.cond=asig.cond; r.relevo=asig.rel||null} r.est="CONFIRMADA"; if(d.obs) r.obsLog="Logística: "+d.obs;
-    r.hist.push({t:iso(HOY),quien:ROLES[rol].quien,acc:"Asignada"}); audit("Asigna vehículo y conductor",r.id,"Aprobada",r.pat+" · "+nom(r.cond)); asig={pat:null,cond:null,rel:null,tarj:null,rid:r.id}; }
+    r.hist.push({t:iso(HOY),quien:ROLES[rol].quien,acc:"Asignada"}); audit("Asigna vehículo y conductor",r.id,"Aprobada",r.pat+" · "+nom(r.cond)); asig={pat:null,cond:null,rel:null,tarj:null,rid:r.id}; enviarCorreoSalida(r,r._previa); delete r._previa; }
   if(c.tipo==="sal"){ r.bit={sal:d.hora,odoS:d.odo,combS:d.comb,docs:d.docsEnt.length===DOCS_ENTREGA.length,docsEnt:d.docsEnt}; r.est="EN_TERRENO"; r.hist.push({t:d.hora,quien:ROLES[rol].quien,acc:"Salida"});
     audit("Registra salida",r.id+" · "+r.pat,"Confirmada","En terreno · "+km(d.odo)+" km"); }
   if(c.tipo==="reg"){ Object.assign(r.bit,{reg:d.hora,odoR:d.odo,combR:d.comb,nov:d.sin?"Sin novedades":d.nov,lt:d.lt,monto:d.monto});
@@ -2016,7 +2054,7 @@ function cierreHTML(r){
 function postSalida(r){
   const C=$("#capa");
   C.querySelectorAll("[data-volver-sal]").forEach(b=>b.onclick=()=>{cerrarCapa();render()});
-  const cok=$("#c-ok"); if(cok) cok.onclick=()=>{ aplicarPaso(r); tostada({asig:"Asignación confirmada.",sal:"Salida registrada.",reg:"Regreso registrado."}[paso.hecho.tipo]); abrirSalida(r.id); };
+  const cok=$("#c-ok"); if(cok) cok.onclick=()=>{ aplicarPaso(r); tostada({asig:"Asignación confirmada. Correo enviado al solicitante y a la jefatura.",sal:"Salida registrada.",reg:"Regreso registrado."}[paso.hecho.tipo]); abrirSalida(r.id); };
   const cbk=$("#c-back"); if(cbk) cbk.onclick=()=>{ paso.conf=null; abrirSalida(r.id); };
   const hu=$("#h-undo"); if(hu) hu.onclick=()=>{ if(Date.now()-paso.hecho.t>UNDO_MS){ tostada("Pasaron 10 minutos: pide al administrador nacional que lo anule."); abrirSalida(r.id); return; } const s=restaurarSalida(r); audit("Deshace "+NOMBRE_PASO[s.tipo],r.id,"—","Vuelve a "+EST[r.est][0]); paso.hecho=null; tostada("Registro deshecho."); abrirSalida(r.id); };
   const xr=$("#x-reasig"); if(xr) xr.onclick=()=>{ if(!xr.dataset.conf){ xr.dataset.conf="1"; xr.textContent="Confirmar: liberar "+r.pat+" y reasignar"; xr.classList.add("peligro"); return; } reasignarSalida(r,"se reasigna vehículo o conductor."); asig={pat:null,cond:null,rel:null,tarj:null,rid:r.id}; paso={rid:r.id,conf:null,hecho:null,form:{},anular:false}; tostada(`${r.id}: vuelve a «por asignar». Elige otro vehículo${r.reqCond?" y conductor":""}.`); abrirSalida(r.id); };
