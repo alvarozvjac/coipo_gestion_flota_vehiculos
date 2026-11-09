@@ -2380,9 +2380,9 @@ const CATALOGOS=[
  {k:"tipos",g:"Flota",t:"Tipos de vehículo",d:"Lista del ERS (§2.3) que se ofrece al agregar un vehículo.",edit:true,
   cols:["Tipo de vehículo"],filas:()=>TIPOS_VEH.map(x=>({v:x,c:[capT(x)]})),
   campos:[["Tipo de vehículo","text"]],agregar:([a])=>{const v=a.toUpperCase(); if(TIPOS_VEH.includes(v)) return "Ese tipo ya existe."; TIPOS_VEH.push(v)}},
- {k:"marcas",g:"Flota",t:"Marcas y modelos",d:"Catálogo normalizado para evitar duplicidades de escritura (ERS §2.3).",edit:true,
-  cols:["Marca","Modelos","Vehículos en la flota"],filas:()=>Object.keys(MARCAS).sort().map(m=>({v:m,c:[m,[...MARCAS[m]].sort().join(", "),VEH.filter(x=>x.marca===m).length||"—"]})),
-  campos:[["Marca","text"],["Modelo","text"]],agregar:([m,mo])=>{const ex=Object.keys(MARCAS).find(x=>x.toLowerCase()===m.toLowerCase())||m; MARCAS[ex]=MARCAS[ex]||new Set(); if(!mo) return "Indique el modelo."; if([...MARCAS[ex]].some(x=>x.toLowerCase()===mo.toLowerCase())) return "Ese modelo ya existe."; MARCAS[ex].add(mo)}},
+ {k:"marcas",g:"Flota",t:"Marcas",d:"Catálogo normalizado para evitar duplicidades de escritura (ERS §2.3). El modelo se escribe en el alta de cada vehículo, tal como figura en su padrón.",edit:true,
+  cols:["Marca","Vehículos en la flota"],filas:()=>Object.keys(MARCAS).sort().map(m=>({v:m,c:[m,VEH.filter(x=>x.marca===m).length||"—"]})),
+  campos:[["Marca","text"]],agregar:([m])=>{if(Object.keys(MARCAS).some(x=>x.toLowerCase()===m.toLowerCase())) return "Esa marca ya existe."; MARCAS[m]=true}},
  {k:"trabajos",g:"Mantención y gastos",t:"Trabajos de taller",d:"Trabajos que se marcan al abrir una orden de trabajo.",edit:true,
   cols:["Trabajo","Tipo de mantención"],filas:()=>Object.entries(TRABAJOS).flatMap(([ti,a])=>a.map(x=>({v:x,c:[x,ti.startsWith("Prev")?"Preventiva":"Correctiva"]}))),
   campos:[["Trabajo","text"],["Tipo de mantención",["Preventiva","Correctiva"]]],agregar:([a,ti])=>{const k=Object.keys(TRABAJOS).find(x=>ti==="Preventiva"?x.startsWith("Prev"):!x.startsWith("Prev")); if(Object.values(TRABAJOS).flat().some(x=>x.toLowerCase()===a.toLowerCase())) return "Ese trabajo ya existe."; TRABAJOS[k].push(a)}},
@@ -2437,8 +2437,8 @@ document.addEventListener("click",e=>{
 /* ======================= ALTAS (sólo administrador nacional) ======================= */
 const TIPOS_VEH=["CAMIONETA DOBLE CABINA","CAMIONETA CABINA SIMPLE","SUV","TODOTERRENO","STATION WAGON","FURGÓN","AUTOMÓVIL SEDÁN","MINIBÚS","CAMIÓN","MAQUINARIA PESADA"];
 const MARCAS={};
-VEH.forEach(v=>{ (MARCAS[v.marca]=MARCAS[v.marca]||new Set()).add(v.modelo); });
-[["Toyota",["Land Cruiser","RAV4"]],["Mitsubishi",["L200","Montero Sport"]],["Ford",["Ranger","Transit"]],["Mercedes-Benz",["Sprinter"]],["Isuzu",["D-Max"]]].forEach(([m,a])=>{ MARCAS[m]=MARCAS[m]||new Set(); a.forEach(x=>MARCAS[m].add(x)); });
+VEH.forEach(v=>{ MARCAS[v.marca]=true; });
+["Toyota","Mitsubishi","Ford","Mercedes-Benz","Isuzu"].forEach(m=>{ MARCAS[m]=true; });
 const MODALIDADES=["Pool vehicular (uso compartido)","Asignación exclusiva (Dirección / Jefatura)","Operativo de emergencia / incendios","Asignación permanente unidad / parque"];
 const TENENCIAS=["Propiedad CONAF (fiscal)","Arriendo operativo (leasing)","Comodato","Convenio GORE / Ministerial"];
 const REGIONES_ALTA=["Oficina Central",...DPA.map(x=>x[0])];
