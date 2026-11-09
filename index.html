@@ -1560,20 +1560,8 @@ function abrirOrden(id){
 
 /* ======================= ADMINISTRACIÓN ======================= */
 function vAdmin(){
-  const hallazgos=[
-   ["Patentes con formatos distintos","Planilla de mantenciones: «CR BJ - 40», «WJ - 77 12». Inventario V7: «CRBJ-40», «WX-6622». Reservas V7: «CR BJ 40».","21 normalizadas a BBBB-10 / BB-1000","c-pend","!"],
-   ["Mismo N° de motor y chasis en dos vehículos","SZWY-98 y SZWZ-31 registran el mismo motor (K14C-138·····) y el mismo chasis (TSMYBA2S7RMB·····).","Bloquea la carga hasta corregir","c-malo","✕"],
-   ["Chasis con largo distinto de 17","CRBJ-40 «MR2069·····» (11), GVYR-53 (18), DRSY-45 (17 con letra O en vez de 0).","Revisar contra padrón","c-pend","!"],
-   ["Kilometraje del inventario desactualizado","El inventario V7 repite el km de la última mantención (ej. FXHB-90: 394.124) y la planilla informa 490.993.","Se toma «Kmtje. Actual» de la planilla","c-pend","!"],
-   ["Vehículo fuera del inventario","VGXF-75 (KIA Sorento 2026, arriendo MITTA) aparece en mantenciones pero no en el inventario.","Agregado como arriendo operativo","c-res","i"],
-   ["Documentos sin fecha","GVYR-53, VGXF-75 y WX-6622 no tienen fechas de revisión técnica, gases, SOAP ni permiso.","Quedan con alerta «Sin registro»","c-malo","✕"],
-   ["Reservas con errores de fórmula","Hoja «Reservas» del V7: celdas #REF!, años 31423 y 12132, y un conflicto de fechas para KBSW-97.","No se migran; se recargan validadas","c-malo","✕"],
-   ["Licencias de conducir ausentes","La nómina de pólizas de conducción (1.651 registros) no trae clase ni vencimiento de licencia.","Levantar con cada región en la fase 2","c-pend","!"],
-   ["Padrón sin mantención de 17 de 21 vehículos","La planilla marca «VENCIDO» en 17 vehículos; 3 superan 250.000 km sin cambio de distribución.","Alerta operativa, no de datos","c-tall","⚙"],
-  ];
   return cab("Administración nacional","Tablas maestras, carga masiva inicial, cuentas y registro de auditoría. Sólo para el administrador nacional.","ERS §3.2 Perfil 1 · §7")+
-  `<section class="panel"><header><h2>Calidad de datos de la carga inicial</h2><span class="sub">Hallazgos reales en las planillas entregadas el 15-10-2026</span></header><div class="tabla-env"><table><thead><tr><th>Hallazgo</th><th>Evidencia</th><th>Tratamiento</th></tr></thead><tbody>${hallazgos.map(h=>`<tr><td><b>${h[0]}</b></td><td class="peq">${h[1]}</td><td>${chip(h[2],h[3],h[4])}</td></tr>`).join("")}</tbody></table></div></section>
-  <div style="margin-top:var(--e-4)"><section class="panel"><header><h2>Tablas maestras</h2></header><div class="tabla-env"><table><tbody>
+  `<div style="margin-top:var(--e-4)"><section class="panel"><header><h2>Tablas maestras</h2><span class="sub">Carga masiva inicial con plantillas .xlsx o .csv (ERS §7.2)</span></header><div class="tabla-env"><table><tbody>
    <tr><td>Vehículos</td><td class="d">${VEH.length}</td><td class="peq tenue">Oficina Central; 16 regiones en fase 2</td></tr>
    <tr><td>Nómina base de funcionarios</td><td class="d">346</td><td class="peq tenue">NOMINA-GEFA, Oficina Central</td></tr>
    <tr><td>Pólizas de conducción (caución)</td><td class="d">1.651</td><td class="peq tenue">DESC.-POLIZA-CONDUCCION jul-2026</td></tr>
@@ -1641,8 +1629,6 @@ let GASTOS = [
  {id:6,fecha:"2026-10-09",pat:"SHPY-15",doc:"Boleta",n:"B-90021",prov:"Estacionamiento Viña del Mar",tipo:"GV",monto:6800,km:90690,folio:"P01-601"},
 ];
 let nGasto=7;
-let CIERRES = [{mes:"2026-08",estado:"Cerrado",por:"p1",fecha:"2026-09-05"},{mes:"2026-09",estado:"Abierto"},{mes:"2026-10",estado:"Abierto"}];
-const mesCerrado = f=>CIERRES.some(c=>c.estado==="Cerrado"&&f.slice(0,7)===c.mes);
 
 /* ---------- Perfiles y navegación ---------- */
 ROLES.solicitante.nav=[["inicio","Inicio"],["nueva","Nueva solicitud"],["mis","Mis salidas"]];
@@ -1820,7 +1806,7 @@ function accesosGestion(){
    {v:"conductores",ico:"licencia",t:"Conductores",d:"Caución y licencia de cada conductor. Los bloqueados no se pueden asignar.",cta:"Ver padrón",n:porVencer,nl:"por vencer o bloqueados",aviso:porVencer>0},
    {v:"combustible",ico:"combustible",t:"Combustible y gastos",d:"Cargas, archivo COPEC y gastos por factura o boleta.",cta:"Ver combustible y gastos"},
    {v:"reportes",ico:"grafico",t:"Reportes",d:"Excel mensual o anual de kilómetros y costos, cometidos y gastos por vehículo; operatividad y rendimiento.",cta:"Ver reportes"}];
-  if(rol==="super") ACCESOS.push({v:"config",ico:"config",t:"Configuración",d:"Catálogos, usuarios y accesos, cierre mensual y auditoría.",cta:"Configurar"});
+  if(rol==="super") ACCESOS.push({v:"config",ico:"config",t:"Configuración",d:"Catálogos, usuarios y accesos, tablas maestras y auditoría.",cta:"Configurar"});
   return ACCESOS;
 }
 function vInicio(){
@@ -2196,7 +2182,6 @@ function postFicha(pat, op){
   C.querySelectorAll("[data-op2]").forEach(b=>b.onclick=()=>{ const k=b.dataset.op2; abrirFicha(pat,fichaTab,k==="ot"?{nuevaOT:true}:k==="gasto"?{nuevoGasto:true}:k==="trasp"?{nuevoTrasp:true}:{}); });
   bindOT(C,pat,op,o=>abrirFicha(pat,"mant",o));
   const fg=$("#f-gasto"); if(fg) fg.onsubmit=e=>{e.preventDefault(); const mo=+$("#ga-monto").value, n=$("#ga-n").value.trim(); if(!mo||!n){tostada("Ingresa número de documento y monto.");return}
-    if(mesCerrado(iso(HOY))){tostada("El período está cerrado.");return}
     GASTOS.unshift({id:nGasto++,fecha:iso(HOY).slice(0,10),pat,doc:$("#ga-doc").value,n,prov:$("#ga-prov").value||"—",tipo:$("#ga-tipo").value,monto:mo,km:+$("#ga-km").value,folio:$("#ga-folio").value});
     audit("Registra gasto",pat+" · "+n,"—",clp(mo)); tostada("Gasto registrado."); abrirFicha(pat,"gastos"); };
 }
@@ -2363,14 +2348,13 @@ function vEquipo(){
 
 /* ======================= CONFIGURACIÓN (administrador) ======================= */
 function vConfig(){
-  const t=sel.cfgTab, tabs=[["catalogos","Catálogos"],["usuarios","Usuarios y accesos"],["cierre","Cierre mensual"],["datos","Calidad de datos"],["auditoria","Auditoría"]];
+  const t=sel.cfgTab, tabs=[["catalogos","Catálogos"],["usuarios","Usuarios y accesos"],["datos","Tablas maestras"],["auditoria","Auditoría"]];
   let c="";
   if(t==="catalogos") c=vCatalogos();
   if(t==="usuarios") c=`<section class="panel"><div class="tabla-env"><table><thead><tr><th>Usuario</th><th>Perfil</th><th>Jurisdicción</th><th>Estado</th></tr></thead><tbody>${[["p1","Administrador nacional","Nacional"],["p2","Encargado de vehículos","Oficina Central"],["p3","Jefatura directa","Depto. Abastecimiento"],["p5","Jefatura directa","GEPRIF · Análisis y Diagnóstico"],["p8","Jefatura directa","GEF · Fiscalización"],["p10","Jefatura directa","GEBCC · Viveros"]].map(([id,pf,j])=>`<tr><td>${esc(nom(id))}<br><span class="tenue peq">${PX[id].correo}</span></td><td>${pf}</td><td>${j}</td><td>${chip("Activo","c-disp","●")}</td></tr>`).join("")}</tbody></table></div><div class="leyenda"><span class="tenue peq">Todo funcionario de la nómina puede ingresar como solicitante con su RUT. Los encargados regionales sólo ven su región.</span></div></section>`;
-  if(t==="cierre") c=`<section class="panel"><header><div><h2>Cierre mensual</h2><span class="sub">Al cerrar un mes ya no se pueden modificar cargas ni gastos de ese período. Reemplaza «Cerrar período» de GESAD.</span></div></header><div class="tabla-env"><table><thead><tr><th>Período</th><th>Estado</th><th>Cerrado por</th><th></th></tr></thead><tbody>${CIERRES.map(x=>`<tr><td>${MESES[+x.mes.slice(5)-1]} ${x.mes.slice(0,4)}</td><td>${x.estado==="Cerrado"?chip("Cerrado","c-neu","✓"):chip("Abierto","c-pend","◔")}</td><td class="peq">${x.por?esc(nom(x.por))+" · "+fF(x.fecha):"—"}</td><td>${x.estado==="Abierto"&&x.mes<iso(HOY).slice(0,7)?`<button class="btn sec chico" type="button" data-cerrar-mes="${x.mes}">Cerrar mes</button>`:""}</td></tr>`).join("")}</tbody></table></div></section>`;
   if(t==="datos"||t==="auditoria"){ const h=vAdmin().replace(/^<div class="cab-vista">[\s\S]*?<\/span><\/div>/,""), k=h.indexOf('<section class="panel" style="margin-top:var(--e-4)"><header><h2>Registro de auditoría');
-    c=t==="datos"?`<div class="datos-2">${h.slice(0,k).replace('<div style="margin-top:var(--e-4)">',"<div>")}</div>`:h.slice(k).replace('style="margin-top:var(--e-4)"',""); }
-  return cab("Configuración","Catálogos, usuarios, cierre mensual y control de datos.","ERS §3.2 Perfil 1 · §7")+tabsHTML(tabs,t,"data-cfg")+c;
+    c=t==="datos"?h.slice(0,k).replace('<div style="margin-top:var(--e-4)">',"<div>"):h.slice(k).replace('style="margin-top:var(--e-4)"',""); }
+  return cab("Configuración","Catálogos, usuarios, tablas maestras y auditoría.","ERS §3.2 Perfil 1 · §7")+tabsHTML(tabs,t,"data-cfg")+c;
 }
 /* ---------- Catálogos (administrador nacional) ---------- */
 const CAT_INACT=new Set(); // "catalogo|valor" desactivados: dejan de ofrecerse, se conservan en el historial
@@ -2419,7 +2403,6 @@ function postCatalogos(){
   const q=$("#cat-q"); if(q) q.oninput=()=>{const s=q.value.trim().toLowerCase(); let n=0; V.querySelectorAll(".cat-tabla tbody tr").forEach(tr=>{const ok=!s||tr.dataset.busca.includes(s); tr.hidden=!ok; if(ok)n++}); $("#cat-cuenta").textContent=n+" de "+cat.filas().length+" registros"; };
 }
 post.config = ()=>{ const V=$("#vista"); V.querySelectorAll("[data-cfg]").forEach(b=>b.onclick=()=>{sel.cfgTab=b.dataset.cfg;render()});
-  V.querySelectorAll("[data-cerrar-mes]").forEach(b=>b.onclick=()=>{const x=CIERRES.find(c=>c.mes===b.dataset.cerrarMes); if(!b.dataset.conf){ b.dataset.conf="1"; b.textContent="Confirmar cierre de "+MESES[+x.mes.slice(5)-1]+" (no se puede deshacer)"; b.classList.add("peligro"); return; } x.estado="Cerrado"; x.por=ROLES[rol].quien; x.fecha=iso(HOY).slice(0,10); audit("Cierra período",x.mes,"Abierto","Cerrado"); tostada("Período cerrado."); render();});
   if(sel.cfgTab==="catalogos") postCatalogos();
   if(sel.cfgTab==="datos") post.admin(); };
 
