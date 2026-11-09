@@ -14,6 +14,8 @@ vencimientos legales y combustible. Requerimiento de la Sección Servicios Gener
 > (fecha simulada: 22-10-2026) y nada se envía a un servidor. La maqueta sirve para
 > validar el flujo y el alcance con la contraparte y el Departamento de Informática.
 
+**Vista celular:** en computador, el botón flotante «Vista celular», abajo a la izquierda muestra la maqueta dentro de un marco de teléfono de 390 × 844 px, para presentarla sin abrir las herramientas del navegador. Se cierra con «Cerrar» o Esc. En un teléfono real el botón no aparece.
+
 ## Cómo probarla
 
 La maqueta parte en una **pantalla de ingreso** que pide RUT y nombre completo (simulación: se valida el RUT y que el nombre coincida con la nómina ficticia; no hay contraseña). Bajo el formulario está la lista de **usuarios de prueba**, uno por perfil; al hacer clic en uno se completan el RUT y el nombre. Para probar otro perfil, use «Cerrar sesión» e ingrese con otro usuario. Desde la versión 0.3 la navegación se ordena por tareas y no por las pantallas de GESAD: cada perfil ve sólo lo que usa, y el detalle de una salida, un vehículo o un conductor se abre en un panel lateral.
