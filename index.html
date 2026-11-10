@@ -1847,7 +1847,7 @@ function vTaller(){
   const fila=x=>`<tr class="clic" data-talv="${x.v.pat}" tabindex="0"><td>${placa(x.v.pat)}</td><td class="mis-com"><span><b>${esc(x.v.marca)} ${esc(x.v.modelo)}</b></span></td>
      <td class="tal-que">${x.it.slice(0,2).map(i=>`<span class="tal-i ${i.urg>=3?"alta":""}">${esc(i.txt)}</span>`).join("")}${x.it.length>2?`<span class="tenue peq">+${x.it.length-2} más</span>`:""}</td>
      <td>${urg(x)}</td><td class="mis-acc">${acc(x)}${chev}</td></tr>`;
-  return `<div class="cab-vista cab-compacta cab-mis"><h1>Taller y documentos</h1><button class="btn sec chico" type="button" data-ir="flota">Ver flota</button></div>
+  return `<div class="cab-vista cab-compacta cab-mis"><h1>Taller y documentos</h1></div>
    ${tabsHTML(TALLER_FILTROS.map(([k,n])=>[k,`${n} (${cnt(k)})`]),f,"data-talf")}
    <section class="panel mis-panel">${ver.length?tablaFilas(["Patente","Vehículo","Qué tiene","Urgencia"],ver.map(fila).join(""),[2],[4]):vacio("Nada pendiente","Ningún vehículo tiene pendientes en esta categoría.")}${ver.length?pie:""}</section>`;
 }
@@ -2154,7 +2154,7 @@ function vFlota(){
   const {ver,pie}=paginar(lista,"flo","Selecciona un vehículo para ver su hoja de vida: documentos, mantenciones, combustible, gastos, salidas y traspasos.");
   const fila=v=>{const enT=RES.find(r=>r.pat===v.pat&&r.est==="EN_TERRENO");
     return `<tr class="clic" data-veh="${v.pat}" tabindex="0"><td>${placa(v.pat)}</td><td class="mis-com"><span><b>${esc(v.marca)} ${esc(v.modelo)}</b> <span class="tenue peq">${esc(v.tipo)} · ${v.anio} · ${v.cap} plazas</span></span></td><td>${chipV(v)}${traspActivo(v)?`<br><span class="chip c-excl" style="margin-top:4px"><i aria-hidden="true">⇄</i>En ${esc(traspActivo(v).destino)}</span>`:""}</td><td class="d">${km(v.km)}</td><td class="peq">${esc(v.guarda||v.unidad||"—")}</td><td class="peq">${enT?`${esc(enT.destinos.map(d=>d.com).join(", "))} · regresa ${fCorta(enT.regreso)}`:`<span class="tenue">—</span>`}</td><td class="mis-acc">${chev}</td></tr>`;};
-  return `<div class="cab-vista cab-compacta cab-mis"><h1>Flota</h1><div class="acciones" style="margin:0">${rol==="super"?`<button class="btn chico" type="button" id="btn-alta-veh">${ico("plus")}Agregar vehículo</button>`:""}<button class="btn sec chico" type="button" data-ir="taller">Taller y documentos</button></div></div>
+  return `<div class="cab-vista cab-compacta cab-mis"><h1>Flota</h1><div class="acciones" style="margin:0">${rol==="super"?`<button class="btn chico" type="button" id="btn-alta-veh">${ico("plus")}Agregar vehículo</button>`:""}</div></div>
    <section class="panel mis-panel"><div class="mis-excel">${filtrosHTML([["todos","Todos",cnt("todos")],["DISP","Disponibles",cnt("DISP")],["TERR","En terreno",cnt("TERR")],["TALLER","Taller o fuera de servicio",cnt("TALLER")]],f,"data-ff")}<div style="margin-left:auto"><label class="sr" for="f-q">Buscar</label><input type="search" id="f-q" placeholder="Patente, marca o modelo" value="${esc(sel.flotaQ)}"></div></div>
    ${ver.length?tablaFilas(["Patente","Vehículo","Estado hoy","Kilometraje","Lugar de guarda","Salida en curso"],ver.map(fila).join(""),[5,6],[2,4]):vacio("Sin vehículos","Ningún vehículo coincide con el filtro o la búsqueda.")}${ver.length?pie:""}</section>`;
 }
