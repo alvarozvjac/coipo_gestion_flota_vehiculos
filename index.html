@@ -56,7 +56,7 @@
   color-scheme:dark;
 }}
 :root[data-theme="light"]{color-scheme:light}
-#btn-tema{min-width:36px;padding-inline:8px;justify-content:center} #btn-tema .ico-tema{width:18px;height:18px;margin:0}
+.login-form{position:relative} #btn-tema{position:absolute;top:var(--e-3);right:var(--e-3);min-width:44px;min-height:44px;padding:0;justify-content:center} #btn-tema .ico-tema{width:20px;height:20px;margin:0}
 :root[data-theme="dark"]{
   --bg:#141714; --sup:#1c201b; --sup-2:#212b25; --sup-3:#29342d; --linea:#33413a; --linea-fuerte:#4e5f55;
   --tinta:#e5ece7; --tinta-2:#b4c1b8; --tinta-3:#8f9d94;
@@ -572,7 +572,7 @@ body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{d
   #rol-chip{display:none}
   .quien{border-left:0;padding-left:0}
   .quien .qtxt{display:none}
-  #btn-salir,#btn-tema{min-width:44px;min-height:44px;padding:0;justify-content:center}
+  #btn-salir{min-width:44px;min-height:44px;padding:0;justify-content:center}
   #btn-salir .txt-salir{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   .nav button{min-height:44px} /* la pestaña «Inicio» queda visible también en teléfono */
   .hero{padding:var(--e-4)}
@@ -765,6 +765,7 @@ tr.pag-oculta{display:none}
 <section class="login" id="login" aria-labelledby="t-login" hidden>
   <div class="login-caja">
     <form class="login-form" id="form-login" novalidate>
+      <button class="btn sec chico btn-tema" type="button" id="btn-tema" aria-label="Cambiar a tema oscuro" title="Cambiar a tema oscuro"><svg class="ico ico-tema" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sol"/></svg></button>
       <span class="app-ico grande" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-car"/></svg></span>
       <h1 id="t-login">Ingreso al sistema</h1>
       <p class="tenue">Sistema Nacional de Gestión de Flota · CONAF</p>
@@ -793,7 +794,6 @@ tr.pag-oculta{display:none}
     <div class="perfil">
       <span class="rol-chip" id="rol-chip"></span>
       <div class="quien" id="quien"></div>
-      <button class="btn sec chico btn-tema" type="button" id="btn-tema" aria-label="Cambiar a tema oscuro" title="Cambiar a tema oscuro"><svg class="ico ico-tema" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-sol"/></svg></button>
       <button class="btn sec chico" type="button" id="btn-salir"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-salir"/></svg><span class="txt-salir">Cerrar sesión</span></button>
     </div>
   </div>
@@ -2786,12 +2786,12 @@ function rolDe(p){ const u=typeof USR!=="undefined"&&USR.find(x=>x.id===p.id&&x.
 function iniciarSesion(p){
   rol=rolDe(p); ROLES[rol].quien=p.id; vista=ROLES[rol].nav[0][0]; borrador=null;
   try{ localStorage.setItem("flota-sesion",p.id); }catch(e){}
-  temaClaro();
   document.body.classList.remove("sin-sesion"); $("#login").hidden=true;
   const h=(location.hash||"").slice(1); if(h && ROLES[rol].nav.some(n=>n[0]===h)) vista=h;
   render(); tostada("Sesión iniciada: "+p.nom+" · "+ROLES[rol].nombre);
 }
 function mostrarLogin(){
+  temaClaro();
   cerrarCapa(); $("#capa2").innerHTML=""; document.body.classList.add("sin-sesion"); $("#login").hidden=false;
   $("#l-rut").value=""; $("#l-nom").value=""; $("#l-error").textContent=""; ["#l-rut","#l-nom"].forEach(s=>$(s).removeAttribute("aria-invalid"));
   $("#l-usuarios").innerHTML=USUARIOS_PRUEBA.map(([k,ic,t])=>`<li><button type="button" class="l-usuario" data-u="${QUIEN_BASE[k]}" aria-pressed="false">${ico(ic)}${t}${ico("flecha","ico fin")}</button></li>`).join("");
@@ -2811,7 +2811,7 @@ $("#form-login").addEventListener("submit",e=>{
   iniciarSesion(p);
 });
 /* Tema claro / oscuro (10-11-2026): botón sólo con ícono; el sol indica tema claro y la luna menguante, tema oscuro.
-   Cada ingreso al sistema parte en tema claro. */
+   Está sólo en la pantalla de ingreso, que siempre parte en tema claro; el tema elegido se mantiene durante la sesión. */
 function pintarBotonTema(){ const osc=document.documentElement.dataset.theme==="dark", b=$("#btn-tema"); if(!b) return;
   b.querySelector("use").setAttribute("href",osc?"#i-luna":"#i-sol");
   const t=osc?"Tema oscuro activo. Cambiar a tema claro":"Tema claro activo. Cambiar a tema oscuro"; b.setAttribute("aria-label",t); b.title=t; }
