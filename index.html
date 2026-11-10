@@ -153,7 +153,7 @@ main{padding-block:var(--e-5) var(--e-7);padding-left:var(--gutter-l);padding-ri
 .c-excl{color:var(--st-excl);background:var(--st-excl-bg)} .c-neu{color:var(--st-neu);background:var(--st-neu-bg)}
 
 /* Tablas */
-.tabla-env{overflow-x:auto}
+.tabla-env{overflow-x:auto;position:relative}
 table{border-collapse:collapse;width:100%;font-size:var(--f-s)}
 th{text-align:left;font-weight:600;font-size:var(--f-xs);text-transform:uppercase;letter-spacing:.05em;color:var(--tinta-3);padding:var(--e-2) var(--e-3);border-bottom:1px solid var(--linea-fuerte);white-space:nowrap;background:var(--sup)}
 td{padding:var(--e-2) var(--e-3);border-bottom:1px solid var(--linea);vertical-align:middle}
@@ -171,6 +171,10 @@ td.d{text-align:right;font-variant-numeric:tabular-nums}
 .cat-lista .n{font-family:var(--ff-dato);font-size:var(--f-xs);color:var(--tinta-2);background:var(--sup-2);border-radius:var(--r-pill);padding:1px 8px;min-width:28px;text-align:center}
 .cat-herr{display:flex;gap:var(--e-3);align-items:center;flex-wrap:wrap;padding:var(--e-3) var(--e-4);border-top:1px solid var(--linea)}
 .cat-herr input{max-width:340px}
+.cc-carga{padding:var(--e-3) var(--e-4);border-top:1px solid var(--linea);background:var(--sup-2);display:grid;gap:var(--e-3)}
+.cc-carga .res{display:flex;flex-wrap:wrap;gap:var(--e-2) var(--e-4);font-size:var(--f-s)}
+.cc-carga ul{margin:0;padding-left:1.2em;font-size:var(--f-xs);max-height:12em;overflow:auto}
+.cat-acc{display:flex;gap:var(--e-2);flex-wrap:wrap;align-items:center}
 .cat-form{padding:var(--e-3) var(--e-4);border-top:1px solid var(--linea);background:var(--sup-2);display:grid;gap:var(--e-3)}
 .cat-tabla td.acc{text-align:right;width:1%;white-space:nowrap}
 .cat-tabla tr.inact td:not(.acc){color:var(--tinta-3)}
@@ -1224,6 +1228,7 @@ let borrador = null;
 const DPA = [["Arica y Parinacota", [["Arica", ["Arica", "Camarones"]], ["Parinacota", ["General Lagos", "Putre"]]]], ["Tarapacá", [["Iquique", ["Alto Hospicio", "Iquique"]], ["Tamarugal", ["Camiña", "Colchane", "Huara", "Pica", "Pozo Almonte"]]]], ["Antofagasta", [["Antofagasta", ["Antofagasta", "Mejillones", "Sierra Gorda", "Taltal"]], ["El Loa", ["Calama", "Ollagüe", "San Pedro de Atacama"]], ["Tocopilla", ["María Elena", "Tocopilla"]]]], ["Atacama", [["Chañaral", ["Chañaral", "Diego de Almagro"]], ["Copiapó", ["Caldera", "Copiapó", "Tierra Amarilla"]], ["Huasco", ["Alto del Carmen", "Freirina", "Huasco", "Vallenar"]]]], ["Coquimbo", [["Choapa", ["Canela", "Illapel", "Los Vilos", "Salamanca"]], ["Elqui", ["Andacollo", "Coquimbo", "La Higuera", "La Serena", "Paiguano", "Vicuña"]], ["Limarí", ["Combarbalá", "Monte Patria", "Ovalle", "Punitaqui", "Río Hurtado"]]]], ["Valparaíso", [["Isla de Pascua", ["Isla de Pascua"]], ["Los Andes", ["Calle Larga", "Los Andes", "Rinconada", "San Esteban"]], ["Marga Marga", ["Limache", "Olmué", "Quilpué", "Villa Alemana"]], ["Petorca", ["Cabildo", "La Ligua", "Papudo", "Petorca", "Zapallar"]], ["Quillota", ["Calera", "Hijuelas", "La Cruz", "Nogales", "Quillota"]], ["San Antonio", ["Algarrobo", "Cartagena", "El Quisco", "El Tabo", "San Antonio", "Santo Domingo"]], ["San Felipe de Aconcagua", ["Catemu", "Llaillay", "Panquehue", "Putaendo", "San Felipe", "Santa María"]], ["Valparaíso", ["Casablanca", "Concón", "Juan Fernández", "Puchuncaví", "Quintero", "Valparaíso", "Viña del Mar"]]]], ["Libertador General Bernardo O'Higgins", [["Cachapoal", ["Codegua", "Coinco", "Coltauco", "Doñihue", "Graneros", "Las Cabras", "Machalí", "Malloa", "Mostazal", "Olivar", "Peumo", "Pichidegua", "Quinta de Tilcoco", "Rancagua", "Rengo", "Requínoa", "San Vicente"]], ["Cardenal Caro", ["La Estrella", "Litueche", "Marchihue", "Navidad", "Paredones", "Pichilemu"]], ["Colchagua", ["Chimbarongo", "Chépica", "Lolol", "Nancagua", "Palmilla", "Peralillo", "Placilla", "Pumanque", "San Fernando", "Santa Cruz"]]]], ["Maule", [["Cauquenes", ["Cauquenes", "Chanco", "Pelluhue"]], ["Curicó", ["Curicó", "Hualañé", "Licantén", "Molina", "Rauco", "Romeral", "Sagrada Familia", "Teno", "Vichuquén"]], ["Linares", ["Colbún", "Linares", "Longaví", "Parral", "Retiro", "San Javier", "Villa Alegre", "Yerbas Buenas"]], ["Talca", ["Constitución", "Curepto", "Empedrado", "Maule", "Pelarco", "Pencahue", "Río Claro", "San Clemente", "San Rafael", "Talca"]]]], ["Ñuble", [["Diguillín", ["Bulnes", "Chillán", "Chillán Viejo", "El Carmen", "Pemuco", "Pinto", "Quillón", "San Ignacio", "Yungay"]], ["Itata", ["Cobquecura", "Coelemu", "Ninhue", "Portezuelo", "Quirihue", "Ranquil", "Treguaco"]], ["Punilla", ["Coihueco", "San Carlos", "San Fabián", "San Nicolás", "Ñiquén"]]]], ["Biobío", [["Arauco", ["Arauco", "Cañete", "Contulmo", "Curanilahue", "Lebu", "Los Alamos", "Tirúa"]], ["Biobío", ["Alto Biobío", "Antuco", "Cabrero", "Laja", "Los Angeles", "Mulchén", "Nacimiento", "Negrete", "Quilaco", "Quilleco", "San Rosendo", "Santa Bárbara", "Tucapel", "Yumbel"]], ["Concepción", ["Chiguayante", "Concepción", "Coronel", "Florida", "Hualpén", "Hualqui", "Lota", "Penco", "San Pedro de la Paz", "Santa Juana", "Talcahuano", "Tomé"]]]], ["La Araucanía", [["Cautín", ["Carahue", "Cholchol", "Cunco", "Curarrehue", "Freire", "Galvarino", "Gorbea", "Lautaro", "Loncoche", "Melipeuco", "Nueva Imperial", "Padre Las Casas", "Perquenco", "Pitrufquén", "Pucón", "Saavedra", "Temuco", "Teodoro Schmidt", "Toltén", "Vilcún", "Villarrica"]], ["Malleco", ["Angol", "Collipulli", "Curacautín", "Ercilla", "Lonquimay", "Los Sauces", "Lumaco", "Purén", "Renaico", "Traiguén", "Victoria"]]]], ["Los Ríos", [["Ranco", ["Futrono", "La Unión", "Lago Ranco", "Río Bueno"]], ["Valdivia", ["Corral", "Lanco", "Los Lagos", "Mariquina", "Máfil", "Paillaco", "Panguipulli", "Valdivia"]]]], ["Los Lagos", [["Chiloé", ["Ancud", "Castro", "Chonchi", "Curaco de Vélez", "Dalcahue", "Puqueldón", "Queilén", "Quellón", "Quemchi", "Quinchao"]], ["Llanquihue", ["Calbuco", "Cochamó", "Fresia", "Frutillar", "Llanquihue", "Los Muermos", "Maullín", "Puerto Montt", "Puerto Varas"]], ["Osorno", ["Osorno", "Puerto Octay", "Purranque", "Puyehue", "Río Negro", "San Juan de la Costa", "San Pablo"]], ["Palena", ["Chaitén", "Futaleufú", "Hualaihué", "Palena"]]]], ["Aysén del General Carlos Ibáñez del Campo", [["Aisén", ["Aisén", "Cisnes", "Guaitecas"]], ["Capitán Prat", ["Cochrane", "O\"Higgins", "Tortel"]], ["Coihaique", ["Coihaique", "Lago Verde"]], ["General Carrera", ["Chile Chico", "Río Ibáñez"]]]], ["Magallanes y de la Antártica Chilena", [["Antártica Chilena", ["Antártica", "Cabo de Hornos"]], ["Magallanes", ["Laguna Blanca", "Punta Arenas", "Río Verde", "San Gregorio"]], ["Tierra del Fuego", ["Porvenir", "Primavera", "Timaukel"]], ["Última Esperanza", ["Natales", "Torres del Paine"]]]], ["Metropolitana de Santiago", [["Chacabuco", ["Colina", "Lampa", "Tiltil"]], ["Cordillera", ["Pirque", "Puente Alto", "San José de Maipo"]], ["Maipo", ["Buin", "Calera de Tango", "Paine", "San Bernardo"]], ["Melipilla", ["Alhué", "Curacaví", "María Pinto", "Melipilla", "San Pedro"]], ["Santiago", ["Cerrillos", "Cerro Navia", "Conchalí", "El Bosque", "Estación Central", "Huechuraba", "Independencia", "La Cisterna", "La Florida", "La Granja", "La Pintana", "La Reina", "Las Condes", "Lo Barnechea", "Lo Espejo", "Lo Prado", "Macul", "Maipú", "Pedro Aguirre Cerda", "Peñalolén", "Providencia", "Pudahuel", "Quilicura", "Quinta Normal", "Recoleta", "Renca", "San Joaquín", "San Miguel", "San Ramón", "Santiago", "Vitacura", "Ñuñoa"]], ["Talagante", ["El Monte", "Isla de Maipo", "Padre Hurtado", "Peñaflor", "Talagante"]]]]];
 const UNIDADES = {"Biobío": ["Brigada 301 - Punta de Parra", "Brigada 401", "Brigada 402 - Duqueco Ii", "Brigada 403 - Primavera", "Brigada 404-duqueco Iii", "Brigada 601 - la Granja", "Brigada 602 - Trancalco", "Brigada 603 Lleu - Lleu", "Contulmo", "Oficina Provincial Arauco", "Oficina Provincial Concepcion", "Oficina Provincial los Angeles Bio-bio", "Oficina Regional Bio-bio", "P.N. Laguna del Laja", "P.N. Nonguen", "Pino 4 los Angeles", "Punta de Parra", "R.N. Altos de Pemehue", "R.N. Isla Mocha", "R.N. Nonguen", "R.N. Ralco"], "Libertador General Bernardo O'Higgins": ["Cencor O'Higgins", "EA-61 San Vicente T.t", "Hotel 6 Helitransp - Peumo", "Litueche Peumo 9", "Oficina Coordinacion Tanume", "Oficina Provincial Cachapoal", "Oficina Provincial Cardenal Caro", "Oficina Provincial Colchagua", "Oficina Regional O'Higgins", "Peumo 12 Cauquenes", "Peumo 17 las Cabras", "Peumo 21 Santa Cruz", "Peumo 5 Rosario", "Peumo 7 San Fernando", "Peumo 8 Pumanque", "R.N. Rio de los Cipreses", "R.N. Robleria del Cobre de Loncha", "Tanume", "Vivero Santa Cruz"], "Metropolitana de Santiago": ["Distrito Melipilla", "M.N. El Morado", "Oficina Central", "Oficina Provincial Melipilla", "Oficina Provincial Santiago", "Oficina Regional RM", "P.N. Rio Clarillo", "Roble 1 DPCIF", "Roble 9 Lampa", "Tobalaba", "Vivero Buin", "Vivero San Pedro"], "Tarapacá": ["Oficina Regional Tarapaca", "P.N. Volcan Isluga", "R.N. Pampa del Tamarugal"], "Antofagasta": ["M.N. La Portada", "Oficina Provincial Calama", "Oficina Regional Antofagasta", "P.N. Llullaillaco", "P.N. Morro Moreno", "R.N. Los Flamencos", "San Pedro de Atacama", "Vivero Antofagasta"], "Los Ríos": ["Aerodromo las Marias", "Area Panguipulli", "Lingue 1 Valdivia", "Lingue 3 - Ciruelos", "Lingue 5 - Choroico", "Lingue 9 - Ciruelo", "Oficina Provincial Ranco", "Oficina Provincial Valdivia", "Oficina Regional los Rios", "P.N. Alerce Costero", "P.N. Villarrica Acceso Sur", "Predio Huillilemu", "Predio Pumillahue", "R.N. Mocho Choshuenco", "Santuario Naturaleza Carlos Anwanter", "Valdivia"], "Valparaíso": ["Jardin Botanico", "Oficina Provincial Isla de Pascua", "Oficina Provincial Petorca", "Oficina Provincial Quillota", "Oficina Provincial San Antonio", "Oficina Provincial San Felipe", "Oficina Regional Valparaiso", "P.N. Archipielago Juan Fernandez", "P.N. La Campana", "Palma 1 Rodelillo", "Palma 2, Sto Domingo", "Petorca", "R.N. El Yali", "R.N. Lago Penuelas", "Villa Alemana"], "Ñuble": ["Base Tres Esquinas Bulnes", "Brigada 501 Vivero de Alamos", "Chillan", "Oficina Regional Ñuble", "R.N. Huemules de Niblinto", "R.N. Nuble", "Vivero de Alamos"], "La Araucanía": ["Angol", "Area Carahue", "Area Curacautin", "Area Villarrica", "Boldo 1 las Encinas", "Brigada 903 - Aerodromo Victoria", "Brigada 907 - Llau Llau", "Brigada 908 - Carahue", "Las Encinas", "Linch", "M.N. Cerro Nielol", "M.N. Contulmo", "Oficina Provincial Cautin", "Oficina Provincial Malleco", "Oficina Regional Araucania", "P.N. Conguillio los Paraguas", "P.N. Huerquehue", "P.N. Tolhuaca", "P.N. Villarrica", "R.N. Alto Bio-bio", "R.N. China Muerta", "R.N. Malalcahuello", "R.N. Malleco", "R.N. Villarrica (sureste)", "Victoria", "Vivero Curacautin", "Vivero Imperial"], "Magallanes y de la Antártica Chilena": ["Area Puerto Williams", "H 12 Base Villa Monzino", "Lenga 1 Punta Arenas", "Lenga 3 Punta Arenas", "Lenga 4 Puerto Natales", "Lenga 8 Pta Arenas", "Lenga 9 Tierra del Fuego", "M.N. Cueva del Milodon", "M.N. Los Pinguinos", "Oficina Provincial Ultima Esperanza", "Oficina Regional Magallanes", "P.N. Bernardo O'Higgins", "P.N. Pali Aike", "P.N. Torres del Paine", "R.N. Laguna Parrillar", "R.N. Magallanes", "Vivero Experimental Rio los Ciervos"], "Aysén del General Carlos Ibáñez del Campo": ["Area Puerto Tranquilo", "Brigada NIRRE 2 la Junta", "Brigada NIRRE 3 Manihuales", "Brigada NIRRE 6 Puerto Tranquilo", "Brigada NIRRE 8 Cochrane", "Cochrane", "M.N. Dos Lagunas", "NIRRE 1 Coihaique", "NIRRE 2 la Junta", "Oficina Provincial Aysen", "Oficina Provincial Capitan Prat", "Oficina Provincial Coihaique", "Oficina Provincial General Carrera", "Oficina Provincial la Junta", "Oficina Regional Aysen", "P.N. Cerro Castillo", "P.N. Laguna San Rafael", "P.N. Laguna San Rafael (sector Exploradores)", "P.N. Patagonia (r.n. Jeinimeni)", "P.N. Patagonia (sector Tamango)", "P.N. Patagonia (sector Valle Chacabuco)", "P.N. Queulat", "Predio Forestal Manihuales", "R.N. Coihaique", "R.N. Lago Carlota", "R.N. Rio Simpson", "R.N. Rio Simpson (area Rio Claro)", "R.N. Trapananda", "Tortel", "Vivero Chile Chico", "Vivero Cochrane", "Vivero Maillin"], "Maule": ["Area Constitucion", "Maqui 1 Costado Media Luna", "Oficina Provincial Cauquenes", "Oficina Provincial Curico", "Oficina Provincial Linares", "Oficina Provincial Talca", "Oficina Regional Maule", "P.N. Radal Siete Tazas", "R.N. Altos de Lircay", "R.N. Federico Albert", "R.N. Laguna Torca", "R.N. Los Bellotos del Melado", "R.N. Los Ruiles"], "Coquimbo": ["M.N. Pichasca", "Molle 1 Coquimbo", "Oficina Provincial Choapa", "Oficina Provincial Elqui", "Oficina Provincial Limari", "Oficina Regional Coquimbo", "P.N. Bosque Fray Jorge", "R.N. Las Chinchillas", "R.N. Pinguino de Humboldt (coquimbo)", "Vivero Illapel"], "Los Lagos": ["Area Ancud", "Area Futaleufu", "Area Hualaihue", "Brigada 10-62 Puerto Ramirez", "Chaiten", "Coigue 1 Puerto Montt", "Coigue 3 Osorno", "El Tepual Brigada 10-41", "M.N. Lahuen Nadi", "Oficina Provincial Chiloe", "Oficina Provincial Llanquihue", "Oficina Provincial Osorno", "Oficina Provincial Palena", "Oficina Regional los Lagos", "P.N. Alerce Andino", "P.N. Chiloe", "P.N. Corcovado", "P.N. Hornopiren", "P.N. Pumalin Douglas Tompkins", "P.N. Puyehue", "P.N. Vicente Perez Rosales", "P.N. Vicente Perez Rosales (ensenada)", "P.N. Vicente Perez Rosales (saltos Petrohue)", "P.N. Vicente Perez Rosales (volcan Osorno)", "Palena", "R.N. Futaleufu", "R.N. Llanquihue"], "Arica y Parinacota": ["Area Putre", "M.N. Picaflor de Arica", "M.N. Salar de Surire (surire)", "Oficina Regional Arica y Parinacota", "P.N. Lauca", "P.N. Lauca (chungara)", "P.N. Lauca (parinacota)", "R.N. Las Vicunas (guallatire)", "Vivero las Maitas"], "Atacama": ["Oficina Provincial Huasco", "Oficina Regional Atacama", "P.N. Llanos de Challe", "P.N. Nevado de Tres Cruces", "P.N. Pan de Azucar", "Vivero Vallenar"]};
 const provinciasDe = r=>(DPA.find(x=>x[0]===r)||[null,[]])[1];
+const provDeCom = (reg,com)=>(provinciasDe(reg).find(p=>p[1].includes(com))||[""])[0];
 const comunasDe = (r,p)=>(provinciasDe(r).find(x=>x[0]===p)||[null,[]])[1];
 const OTRA = "__otra";
 /* RUT: formato 12.345.678-9 y dígito verificador */
@@ -1433,7 +1438,7 @@ function decisionHTML(r){
   <dt>Periodo</dt><dd class="num">${fFH(r.salida)} → ${fFH(r.regreso)}</dd>${r.km?`<dt>Distancia</dt><dd class="num">${km(r.km)} km aprox.</dd>`:""}
   <dt>Ocupantes</dt><dd>${[r.sol!==r.cond?nom(r.sol)+" (solicitante)":"",r.cond?nom(r.cond)+" (conductor)":(r.reqCond?"Conductor del pool (por asignar)":""),r.relevo?nom(r.relevo)+" (relevo)":"",...r.pas.map(nom)].filter(Boolean).map(esc).join("<br>")}</dd>
   </dl>
-  <div class="campo"><label for="j-cc">Imputación presupuestaria (folio)</label><select id="j-cc"><option value="">— Seleccionar folio —</option>${Object.entries(PROGRAMAS).map(([k,n])=>`<optgroup label="${esc(n)}">${CC.filter(c=>c.prog===k).map(c=>`<option value="${c.folio}" ${c.folio===r.cc?"selected":""}>${c.folio} · ${esc(c.t)}</option>`).join("")}</optgroup>`).join("")}</select><span class="ayuda">Obligatoria para aprobar. Define a qué programa y centro de costo se imputa el gasto del cometido.</span></div>
+  <div class="campo"><label for="j-cc">Imputación presupuestaria (folio)</label><select id="j-cc"><option value="">— Seleccionar folio —</option>${Object.entries(PROGRAMAS).map(([k,n])=>`<optgroup label="${esc(n)}">${CC.filter(c=>c.prog===k&&(catActivo("cc",c.folio)||c.folio===r.cc)).map(c=>`<option value="${c.folio}" ${c.folio===r.cc?"selected":""}>${c.folio} · ${esc(c.t)}</option>`).join("")}</optgroup>`).join("")}</select><span class="ayuda">Obligatoria para aprobar. Define a qué programa y centro de costo se imputa el gasto del cometido.</span></div>
 
   <div class="campo"><label for="j-com">Comentario para el solicitante</label><textarea id="j-com" placeholder="Obligatorio al observar o rechazar"></textarea></div>
   <div class="acciones"><button class="btn" type="button" data-dec="APROBADA">Aprobar</button><button class="btn aviso" type="button" data-dec="OBSERVADA">Observar</button><button class="btn peligro" type="button" data-dec="RECHAZADA">Rechazar</button></div>
@@ -1543,13 +1548,17 @@ function bajarXlsx(base,titulo,hojas,n){
 }
 function filasTesoreria(){
   const t=sel.tes, out=[];
+  const amb=rol==="super"?t.amb:"nac";
   RES.filter(r=>r.est==="FINALIZADA"&&r.bit?.reg).forEach(r=>{
     const sal=F(r.bit.sal); if(sal.getFullYear()!==t.anio || (t.modo==="mes" && sal.getMonth()+1!==t.mes)) return;
+    if(amb!=="nac" && !r.destinos.some(d=>d.reg===amb)) return;
+    const uniq=a=>[...new Set(a.filter(Boolean))].join(" · ");
+    const regs=uniq(r.destinos.map(d=>d.reg)), provs=uniq(r.destinos.map(d=>d.prov||provDeCom(d.reg,d.com)));
     const dias=diasEntre(r.bit.sal.slice(0,10),r.bit.reg.slice(0,10))+1;
     const personas=[[r.sol,"Solicitante"],[r.cond,"Conductor"],[r.relevo,"Conductor de relevo"],...r.pas.map(x=>[x,"Acompañante"])].filter(x=>x[0]);
     const vistos=new Set();
     personas.forEach(([id,rolv])=>{ if(vistos.has(id)) return; vistos.add(id); const p=PX[id];
-      out.push({id:r.id,rut:p.rut,nom:p.nom,rol:rolv,sal:r.bit.sal,reg:r.bit.reg,dias,destino:r.destinos.map(d=>`${d.lug}, ${d.com} (${d.reg})`).join(" · "),cometido:r.cometido,folio:r.cc,folioTxt:CCX[r.cc]?.t||"",prog:CCX[r.cc]?.prog||"",ger:gerenciaFolio(r.cc),jefe:nom(r.jefe)}); });
+      out.push({id:r.id,rut:p.rut,nom:p.nom,rol:rolv,sal:r.bit.sal,reg:r.bit.reg,dias,destino:r.destinos.map(d=>`${d.lug}, ${d.com}`).join(" · "),region:regs,provincia:provs,cometido:r.cometido,folio:r.cc,folioTxt:CCX[r.cc]?.t||"",prog:CCX[r.cc]?.prog||"",ger:gerenciaFolio(r.cc),jefe:nom(r.jefe)}); });
   });
   return out.sort((a,b)=>a.sal.localeCompare(b.sal)||a.nom.localeCompare(b.nom));
 }
@@ -1557,10 +1566,10 @@ function vReportesTes(){
   const t=sel.tes, filas=filasTesoreria(), salidas=new Set(filas.map(f=>f.id)).size, personas=new Set(filas.map(f=>f.rut)).size;
   const per=perTxt();
   return `<section class="panel"><header><div><h2>Reporte de cometidos</h2><span class="sub">Una fila por persona y salida finalizada · ${per}</span></div>
-   ${perCtl("tes",filas.length)}</header>
-   <div class="cuerpo grid" style="gap:var(--e-2)"><div class="meta"><span>Emite: <b>Encargado de Vehículos · Oficina Central</b> (en regiones, cada encargado regional emite el de su jurisdicción)</span><span>Salidas: <b>${salidas}</b></span><span>Personas: <b>${personas}</b></span><span>Filas: <b>${filas.length}</b></span><span>Folios: <b>${new Set(filas.map(f=>f.folio)).size}</b></span></div>
-   <p class="nota">El folio presupuestario es el que seleccionó la jefatura al autorizar la salida. Incluye solicitante, conductores y acompañantes. El Excel se envía a Tesorería. Días: calendario, entre la salida y el regreso reales. RUT y nombres ficticios.</p></div>
-   <div class="tabla-env">${filas.length?`<table class="t-com"><thead><tr><th>ID salida</th><th>Folio presupuestario</th><th>Jefatura que autorizó</th><th>Funcionario</th><th>RUT</th><th>Rol</th><th>Fecha de salida</th><th>Hora de salida</th><th>Fecha de regreso</th><th>Hora de regreso</th><th>Días</th><th>Destino</th><th>Cometido</th><th>Gerencia</th></tr></thead><tbody>${filas.map(f=>`<tr><td class="mono">${f.id}</td><td class="folio-c" title="${esc(f.folioTxt)}"><b class="mono">${esc(f.folio)}</b><span class="tenue peq">${esc(f.prog)} · ${esc(f.folioTxt)}</span></td><td class="peq">${esc(f.jefe)}</td><td>${esc(f.nom)}</td><td class="mono peq">${f.rut}</td><td class="peq">${f.rol}</td><td class="num">${fF(f.sal)}</td><td class="num">${fH(f.sal)}</td><td class="num">${fF(f.reg)}</td><td class="num">${fH(f.reg)}</td><td class="d">${f.dias}</td><td class="peq">${esc(f.destino)}</td><td class="peq">${esc(f.cometido)}</td><td class="peq">${esc(f.ger.split(" · ")[0])}</td></tr>`).join("")}</tbody></table>`:vacio("Sin salidas finalizadas en el periodo","Elige otro mes o el reporte anual.")}</div></section>`;
+   ${rol==="super"?`<div class="gantt-ctl" style="max-width:100%;min-width:0"><label for="t-amb">Alcance</label><select id="t-amb" style="width:auto;max-width:100%;min-width:0"><option value="nac" ${t.amb==="nac"?"selected":""}>Nacional</option>${DPA.map(x=>`<option value="${esc(x[0])}" ${t.amb===x[0]?"selected":""}>Región de ${esc(x[0])}</option>`).join("")}</select></div>`:""}${perCtl("tes",filas.length)}</header>
+   <div class="cuerpo grid" style="gap:var(--e-2)"><div class="meta"><span>Emite: <b>${rol==="super"?"Administrador nacional · "+(t.amb==="nac"?"nivel nacional":"Región de "+esc(t.amb)):"Encargado de Vehículos · Oficina Central"}</b>${rol==="super"?"":" (en regiones, cada encargado regional emite el de su jurisdicción)"}</span><span>Salidas: <b>${salidas}</b></span><span>Personas: <b>${personas}</b></span><span>Filas: <b>${filas.length}</b></span><span>Folios: <b>${new Set(filas.map(f=>f.folio)).size}</b></span></div>
+   <p class="nota">${rol==="super"?"A nivel regional se incluyen los cometidos con al menos un destino en la región elegida. ":""}Región y provincia son las de los destinos. El folio presupuestario es el que seleccionó la jefatura al autorizar la salida. Incluye solicitante, conductores y acompañantes. El Excel se envía a Tesorería. Días: calendario, entre la salida y el regreso reales. RUT y nombres ficticios.</p></div>
+   <div class="tabla-env">${filas.length?`<table class="t-com"><thead><tr><th>ID salida</th><th>Folio presupuestario</th><th>Jefatura que autorizó</th><th>Funcionario</th><th>RUT</th><th>Rol</th><th>Fecha de salida</th><th>Hora de salida</th><th>Fecha de regreso</th><th>Hora de regreso</th><th>Días</th><th>Región</th><th>Provincia</th><th>Destino</th><th>Cometido</th><th>Gerencia</th></tr></thead><tbody>${filas.map(f=>`<tr><td class="mono">${f.id}</td><td class="folio-c" title="${esc(f.folioTxt)}"><b class="mono">${esc(f.folio)}</b><span class="tenue peq">${esc(f.prog)} · ${esc(f.folioTxt)}</span></td><td class="peq">${esc(f.jefe)}</td><td>${esc(f.nom)}</td><td class="mono peq">${f.rut}</td><td class="peq">${f.rol}</td><td class="num">${fF(f.sal)}</td><td class="num">${fH(f.sal)}</td><td class="num">${fF(f.reg)}</td><td class="num">${fH(f.reg)}</td><td class="d">${f.dias}</td><td class="peq">${esc(f.region)}</td><td class="peq">${esc(f.provincia)}</td><td class="peq">${esc(f.destino)}</td><td class="peq">${esc(f.cometido)}</td><td class="peq">${esc(f.ger.split(" · ")[0])}</td></tr>`).join("")}</tbody></table>`:vacio("Sin salidas finalizadas en el periodo","Elige otro mes o el reporte anual.")}</div></section>`;
 }
 /* ======================= ORDEN DE SALIDA ======================= */
 function abrirOrden(id){
@@ -1683,7 +1692,7 @@ const iniciales=n=>String(n||"").split(/\s+/).filter(Boolean).slice(0,2).map(x=>
 
 /* ---------- Estado de vista ---------- */
 let rol = "encargado", vista = "hoy";
-let sel = {cat:"tipos", catAdd:false, repTab:"km", tes:{modo:"mes",mes:10,anio:2026}, bandeja:null, gantt:{ini:F("2026-10-19"),dias:7}, ganttSel:null,
+let sel = {cat:"tipos", catAdd:false, repTab:"km", tes:{modo:"mes",mes:10,anio:2026,amb:"nac"}, bandeja:null, gantt:{ini:F("2026-10-19"),dias:7}, ganttSel:null,
   salFiltro:"asignar", salModo:"lista", salQ:"", flotaFiltro:"todos", flotaQ:"", condFiltro:"todos", combTab:"cargas", cfgTab:"catalogos"};
 
 function cuentas(){
@@ -2184,7 +2193,7 @@ function gastoFormHTML(pat){ const v=VX[pat];
   return `<form class="seccion" id="f-gasto" style="border:1px solid var(--linea);border-radius:var(--r-m);padding:var(--e-4)"><h3>Registrar gasto</h3><div class="campos"><div class="campo"><label for="ga-doc">Documento</label><select id="ga-doc"><option>Factura</option><option>Boleta</option></select></div><div class="campo"><label for="ga-n">Número</label><input type="text" id="ga-n" placeholder="Ej.: F-12345"></div>
   <div class="campo"><label for="ga-prov">Proveedor</label><input type="text" id="ga-prov"></div><div class="campo"><label for="ga-tipo">Tipo de gasto</label><select id="ga-tipo">${TIPO_GASTO.filter(([k])=>k!=="CB"&&catActivo("gastos",k)).map(([k,t])=>`<option value="${k}">${t}</option>`).join("")}</select></div>
   <div class="campo"><label for="ga-monto">Monto ($)</label><input type="number" id="ga-monto" min="1"></div><div class="campo"><label for="ga-km">Kilometraje</label><input type="number" id="ga-km" value="${v.km}"></div>
-  <div class="campo"><label for="ga-folio">Folio de imputación</label><select id="ga-folio">${CC.map(c=>`<option value="${c.folio}" ${c.folio==="P01-601"?"selected":""}>${c.folio} · ${esc(c.t.slice(0,48))}</option>`).join("")}</select></div><div class="campo"><label for="ga-fecha">Fecha</label><input type="text" id="ga-fecha" value="${fF(HOY)}" readonly></div></div>
+  <div class="campo"><label for="ga-folio">Folio de imputación</label><select id="ga-folio">${CC.filter(c=>catActivo("cc",c.folio)).map(c=>`<option value="${c.folio}" ${c.folio==="P01-601"?"selected":""}>${c.folio} · ${esc(c.t.slice(0,48))}</option>`).join("")}</select></div><div class="campo"><label for="ga-fecha">Fecha</label><input type="text" id="ga-fecha" value="${fF(HOY)}" readonly></div></div>
   <div class="acciones"><button class="btn" type="submit">Guardar gasto</button><button class="btn sec" type="button" data-op2="">Cancelar</button></div></form>`; }
 function bindOT(C,pat,op,rehacer){ // abrir y cerrar órdenes de trabajo: lo usan la ficha y «Taller y documentos»
   const v=VX[pat];
@@ -2304,7 +2313,7 @@ function vGastosVeh(){
 }
 function vReportes(){
   const t=sel.repTab, tabs=[["km","Kilómetros y costos"],["tes","Cometidos"],["oper","Operatividad mensual"],["rend","Rendimiento"],["gastos","Gastos por vehículo"]];
-  const d={km:"Kilómetros por programa y centro de costo, para distribuir el costo operacional entre programas.",tes:"Cometidos realizados por cada funcionario, con el folio presupuestario que definió la jefatura al autorizar, para enviar a Tesorería en forma mensual o anual.",oper:"Días en que cada vehículo estuvo disponible, en terreno o en taller. Reemplaza «Operatividad mensual del vehículo» de GESAD.",rend:"Rendimiento real de cada vehículo para detectar sobreconsumo o usos anómalos de la tarjeta.",gastos:"Gasto acumulado por vehículo y tipo."}[t];
+  const d={km:"Kilómetros por programa y centro de costo, para distribuir el costo operacional entre programas.",tes:"Cometidos realizados por cada funcionario, con el folio presupuestario que definió la jefatura al autorizar, para enviar a Tesorería en forma mensual o anual."+(rol==="super"?" El administrador nacional lo emite a nivel nacional o por región, con la región y la provincia de cada destino.":""),oper:"Días en que cada vehículo estuvo disponible, en terreno o en taller. Reemplaza «Operatividad mensual del vehículo» de GESAD.",rend:"Rendimiento real de cada vehículo para detectar sobreconsumo o usos anómalos de la tarjeta.",gastos:"Gasto acumulado por vehículo y tipo."}[t];
   return cab("Reportes",d,"ERS §4.4-B · GESAD «Reportes»")+tabsHTML(tabs,t,"data-rt")+({km:vReportesKm,tes:vReportesTes,oper:vOperatividad,rend:vRendimiento,gastos:vGastosVeh}[t])();
 }
 post.reportes = ()=>{
@@ -2313,10 +2322,12 @@ post.reportes = ()=>{
   V.querySelectorAll("[data-tm]").forEach(b=>b.onclick=()=>{sel.tes.modo=b.dataset.tm;render()});
   const tm=$("#t-mes"); if(tm) tm.onchange=e=>{sel.tes.mes=+e.target.value;render()};
   const ta=$("#t-anio"); if(ta) ta.onchange=e=>{sel.tes.anio=+e.target.value;render()};
+  const tb=$("#t-amb"); if(tb) tb.onchange=e=>{sel.tes.amb=e.target.value;render()};
   V.querySelectorAll("[data-xlsx]").forEach(b=>b.onclick=()=>{
     const x=b.dataset.xlsx;
     if(x==="tes"){ const filas=filasTesoreria();
-      bajarXlsx("cometidos","Reporte de cometidos",[["Cometidos",["ID salida","Folio presupuestario","Descripción del folio","Programa","Jefatura que autorizó","RUT","Funcionario","Rol en el viaje","Fecha de salida","Hora de salida","Fecha de regreso","Hora de regreso","Días","Destino","Cometido","Gerencia"],filas.map(f=>[f.id,f.folio,f.folioTxt,f.prog,f.jefe,f.rut,f.nom,f.rol,fF(f.sal),fH(f.sal),fF(f.reg),fH(f.reg),f.dias,f.destino,f.cometido,f.ger]),[16,14,46,9,28,13,28,18,12,9,12,9,6,44,50,46]]],filas.length); }
+      const amb=rol==="super"?sel.tes.amb:"nac", sufijo=amb==="nac"?(rol==="super"?"_nacional":""):"_"+amb.normalize("NFD").replace(/[\u0300-\u036f']/g,"").replace(/[^A-Za-z]+/g,"_").toLowerCase();
+      bajarXlsx("cometidos"+sufijo,"Reporte de cometidos"+(rol==="super"?(amb==="nac"?" · nivel nacional":" · Región de "+amb):""),[["Cometidos",["ID salida","Folio presupuestario","Descripción del folio","Programa","Jefatura que autorizó","RUT","Funcionario","Rol en el viaje","Fecha de salida","Hora de salida","Fecha de regreso","Hora de regreso","Días","Región","Provincia","Destino","Cometido","Gerencia"],filas.map(f=>[f.id,f.folio,f.folioTxt,f.prog,f.jefe,f.rut,f.nom,f.rol,fF(f.sal),fH(f.sal),fF(f.reg),fH(f.reg),f.dias,f.region,f.provincia,f.destino,f.cometido,f.ger]),[16,14,46,9,28,13,28,18,12,9,12,9,6,22,22,40,50,46]]],filas.length); }
     if(x==="km"){ const {viajes,tot,porCC,porProg,porVeh}=resumenKm(), pc=k=>tot?Math.round(k/tot*1000)/10:0;
       bajarXlsx("kilometros_costos","Reporte de kilómetros y costos",[
         ["Centro de costo",["Folio","Imputación","Programa","Km","% del total"],[...porCC.map(([f,k])=>[f,CCX[f]?.t||"",PROGRAMAS[CCX[f]?.prog]||CCX[f]?.prog||"",k,pc(k)]),["Total","","",tot,100]],[12,48,36,10,12]],
@@ -2389,12 +2400,49 @@ function vConfig(){
   const t=sel.cfgTab, tabs=[["catalogos","Catálogos"],["usuarios","Usuarios y accesos"],["datos","Tablas maestras"],["auditoria","Auditoría"]];
   let c="";
   if(t==="catalogos") c=vCatalogos();
-  if(t==="usuarios") c=`<section class="panel"><div class="tabla-env"><table><thead><tr><th>Usuario</th><th>Perfil</th><th>Jurisdicción</th><th>Estado</th></tr></thead><tbody>${[["p1","Administrador nacional","Nacional"],["p2","Encargado de vehículos","Oficina Central"],["p3","Jefatura directa","Depto. Abastecimiento"],["p5","Jefatura directa","GEPRIF · Análisis y Diagnóstico"],["p8","Jefatura directa","GEF · Fiscalización"],["p10","Jefatura directa","GEBCC · Viveros"]].map(([id,pf,j])=>`<tr><td>${esc(nom(id))}<br><span class="tenue peq">${PX[id].correo}</span></td><td>${pf}</td><td>${j}</td><td>${chip("Activo","c-disp","●")}</td></tr>`).join("")}</tbody></table></div><div class="leyenda"><span class="tenue peq">Todo funcionario de la nómina puede ingresar como solicitante con su RUT. Los encargados regionales sólo ven su región.</span></div></section>`;
+  if(t==="usuarios") c=vUsuarios();
   if(t==="datos"||t==="auditoria"){ const h=vAdmin().replace(/^<div class="cab-vista">[\s\S]*?<\/span><\/div>/,""), k=h.indexOf('<section class="panel" style="margin-top:var(--e-4)"><header><h2>Registro de auditoría');
     c=t==="datos"?h.slice(0,k).replace('<div style="margin-top:var(--e-4)">',"<div>"):h.slice(k).replace('style="margin-top:var(--e-4)"',""); }
   return cab("Configuración","Catálogos, usuarios, tablas maestras y auditoría.","ERS §3.2 Perfil 1 · §7")+tabsHTML(tabs,t,"data-cfg")+c;
 }
 /* ---------- Catálogos (administrador nacional) ---------- */
+let CC_CARGA=null, CC_ULT=null; // vista previa de la carga y última carga aplicada
+const CC_ENC=["Folio","Imputación","Programa"];
+function leerCargaCC(filas,archivo){
+  const norm=x=>String(x??"").trim(), enc=(filas[0]||[]).map(x=>norm(x).toLowerCase());
+  const iF=enc.indexOf("folio"), iT=enc.findIndex(x=>x.startsWith("imputaci")), iP=enc.indexOf("programa");
+  if(iF<0||iT<0||iP<0) return {archivo,errEnc:"El archivo debe tener las columnas Folio, Imputación y Programa en la primera fila (use la plantilla)."};
+  const nuevos=[],cambios=[],iguales=[],errores=[],vistos=new Set();
+  filas.slice(1).forEach((f,i)=>{ const n=i+2, folio=norm(f[iF]), t=norm(f[iT]).toUpperCase(); let prog=norm(f[iP]).toUpperCase().slice(0,3);
+    if(!folio&&!t&&!prog) return;
+    if(!/^\d{5}$/.test(folio)&&!/^P\d{2}-\d{3}$/.test(folio)) return errores.push(`Fila ${n}: folio «${folio||"vacío"}» no válido.`);
+    if(vistos.has(folio)) return errores.push(`Fila ${n}: folio ${folio} repetido en el archivo.`);
+    if(!t) return errores.push(`Fila ${n}: folio ${folio} sin imputación.`);
+    if(!PROGRAMAS[prog]) return errores.push(`Fila ${n}: folio ${folio} con programa «${norm(f[iP])||"vacío"}» que no existe.`);
+    vistos.add(folio); const a=CCX[folio], c={folio,t,prog};
+    if(!a) nuevos.push(c); else if(a.t!==t||a.prog!==prog) cambios.push({...c,antes:a.t+(a.prog!==prog?" ("+a.prog+")":"")}); else iguales.push(c); });
+  const ausentes=CC.filter(c=>!vistos.has(c.folio)&&catActivo("cc",c.folio)).map(c=>c.folio);
+  return {archivo,nuevos,cambios,iguales,errores,ausentes};
+}
+function cargaCCHTML(){ const c=CC_CARGA; if(!c) return "";
+  if(c.errEnc) return `<div class="cc-carga" role="alert"><b>No se pudo leer ${esc(c.archivo)}</b><p class="peq">${c.errEnc}</p><div class="cat-acc"><button class="btn sec chico" type="button" id="cc-cancel">Cerrar</button></div></div>`;
+  const ok=c.nuevos.length+c.cambios.length+c.ausentes.length;
+  return `<div class="cc-carga" role="region" aria-label="Vista previa de la carga"><div><b>Vista previa · ${esc(c.archivo)}</b> <span class="tenue peq">Carga ${c.tipo==="anual"?"anual":"mensual"}. Nada cambia hasta presionar «Aplicar carga».</span></div>
+   <div class="res"><span>Nuevos: <b>${c.nuevos.length}</b></span><span>Con cambios: <b>${c.cambios.length}</b></span><span>Sin cambios: <b>${c.iguales.length}</b></span><span>No vienen en el archivo (se desactivan): <b>${c.ausentes.length}</b></span><span>Filas con error (no se cargan): <b>${c.errores.length}</b></span></div>
+   ${c.nuevos.length?`<div><span class="peq"><b>Nuevos</b></span><ul>${c.nuevos.map(x=>`<li><span class="mono">${x.folio}</span> ${esc(x.t)}</li>`).join("")}</ul></div>`:""}
+   ${c.cambios.length?`<div><span class="peq"><b>Con cambios</b></span><ul>${c.cambios.map(x=>`<li><span class="mono">${x.folio}</span> ${esc(x.antes)} → ${esc(x.t)}</li>`).join("")}</ul></div>`:""}
+   ${c.ausentes.length?`<div><span class="peq"><b>Se desactivan</b> (se conservan en las salidas ya imputadas)</span><ul>${c.ausentes.map(f=>`<li><span class="mono">${f}</span> ${esc(CCX[f].t)}</li>`).join("")}</ul></div>`:""}
+   ${c.errores.length?`<div><span class="peq"><b>Errores</b></span><ul>${c.errores.map(e=>`<li>${esc(e)}</li>`).join("")}</ul></div>`:""}
+   <div class="cat-acc"><button class="btn chico" type="button" id="cc-aplicar" ${ok?"":"disabled"}>Aplicar carga</button><button class="btn sec chico" type="button" id="cc-cancel">Cancelar</button>${ok?"":`<span class="tenue peq">El archivo no trae cambios para aplicar.</span>`}</div></div>`;
+}
+function aplicarCargaCC(){ const c=CC_CARGA;
+  c.nuevos.forEach(x=>{CC.push({folio:x.folio,t:x.t,prog:x.prog}); CCX[x.folio]=CC[CC.length-1]; CAT_INACT.delete("cc|"+x.folio)});
+  c.cambios.forEach(x=>{CCX[x.folio].t=x.t; CCX[x.folio].prog=x.prog; CAT_INACT.delete("cc|"+x.folio)});
+  c.ausentes.forEach(f=>CAT_INACT.add("cc|"+f));
+  CC_ULT={t:iso(HOY),tipo:c.tipo,archivo:c.archivo,n:c.nuevos.length,m:c.cambios.length,d:c.ausentes.length,e:c.errores.length};
+  audit("Carga "+c.tipo+" de centros de costo",c.archivo,"—",`${c.nuevos.length} nuevos · ${c.cambios.length} con cambios · ${c.ausentes.length} desactivados · ${c.errores.length} con error`);
+  tostada("Carga aplicada al catálogo de centros de costo."); CC_CARGA=null; render();
+}
 const CAT_INACT=new Set(); // "catalogo|valor" desactivados: dejan de ofrecerse, se conservan en el historial
 const catActivo=(c,v)=>!CAT_INACT.has(c+"|"+v);
 const capT=s=>s.length<=3?s:s.charAt(0)+s.slice(1).toLowerCase();
@@ -2414,9 +2462,9 @@ const CATALOGOS=[
  {k:"gastos",g:"Mantención y gastos",t:"Tipos de gasto",d:"Clasificación de cada factura o boleta del vehículo.",edit:true,
   cols:["Código","Tipo de gasto"],filas:()=>TIPO_GASTO.map(([c,x])=>({v:c,c:[c,x]})),
   campos:[["Código (2 letras)","text"],["Tipo de gasto","text"]],agregar:([c,x])=>{c=c.toUpperCase(); if(!/^[A-Z]{2}$/.test(c)) return "El código debe tener 2 letras."; if(TGX[c]) return "Ese código ya existe."; if(!x) return "Indique el tipo de gasto."; TIPO_GASTO.push([c,x]); TGX[c]=x}},
- {k:"cc",g:"Sólo consulta",t:"Centros de costo",d:"Catálogo oficial de imputación (pilar 4 del ERS). Lo mantiene Finanzas y se actualiza con su carga.",edit:false,
+ {k:"cc",g:"Por carga de archivo",t:"Centros de costo",d:"Catálogo oficial de imputación (pilar 4 del ERS). Lo mantiene el administrador nacional y se actualiza con su carga anual o mensual.",edit:false,carga:true,
   cols:["Folio","Imputación","Programa"],filas:()=>CC.map(c=>({v:c.folio,c:[c.folio,c.t,PROGRAMAS[c.prog]||c.prog]}))},
- {k:"estaciones",g:"Sólo consulta",t:"Estaciones de servicio",d:"Se registran solas con el archivo de cargas COPEC; no se ingresan a mano.",edit:false,
+ {k:"estaciones",g:"Por carga de archivo",t:"Estaciones de servicio",d:"Se registran solas con el archivo de cargas COPEC; no se ingresan a mano.",edit:false,
   cols:["Estación","Cargas registradas"],filas:()=>[...new Set([...ESTACIONES,...CARGAS.map(c=>c.est)])].sort().map(x=>({v:x,c:[x,CARGAS.filter(c=>c.est===x).length]}))}
 ];
 function vCatalogos(){
@@ -2424,24 +2472,120 @@ function vCatalogos(){
   const grupos=[...new Set(CATALOGOS.map(c=>c.g))];
   const lista=`<nav class="cat-lista" aria-label="Catálogos">${grupos.map(g=>`<h3>${g}</h3><ul>${CATALOGOS.filter(c=>c.g===g).map(c=>`<li><button type="button" data-cat="${c.k}" aria-pressed="${c===cat}"><span>${c.t}</span><span class="n">${c.filas().length}</span></button></li>`).join("")}</ul>`).join("")}</nav>`;
   const form=cat.edit&&sel.catAdd?`<form id="f-cat" class="cat-form" novalidate><div class="campos">${cat.campos.map(([l,tp],i)=>`<div class="campo"><label for="cat-${i}">${l}</label>${Array.isArray(tp)?`<select id="cat-${i}">${tp.map(o=>`<option>${o}</option>`).join("")}</select>`:`<input type="text" id="cat-${i}" autocomplete="off">`}</div>`).join("")}</div><div class="acciones"><button class="btn chico" type="submit">Guardar</button><button class="btn sec chico" type="button" id="cat-cancel">Cancelar</button></div></form>`:"";
-  const tabla=`<table class="cat-tabla"><thead><tr>${cat.cols.map(c=>`<th>${c}</th>`).join("")}${cat.edit?"<th>Estado</th><th><span class='sr'>Acción</span></th>":""}</tr></thead><tbody>${filas.map(f=>{const on=catActivo(cat.k,f.v); return `<tr class="${on?"":"inact"}" data-busca="${esc(f.c.join(" ").toLowerCase())}">${f.c.map((x,i)=>`<td class="${i===0&&cat.k==="cc"?"mono":""}">${esc(String(x))}</td>`).join("")}${cat.edit?`<td>${on?chip("Activo","c-disp","●"):chip("Desactivado","c-neu","–")}</td><td class="acc"><button class="btn sec chico" type="button" data-cat-tog="${esc(f.v)}">${on?"Desactivar":"Activar"}</button></td>`:""}</tr>`}).join("")}</tbody></table>`;
-  return `<div class="cat-lay">${lista}<section class="panel cat-panel"><header><div><h2>${cat.t}</h2><span class="sub">${cat.d}</span></div>${cat.edit&&!sel.catAdd?`<button class="btn chico" type="button" id="cat-add">${ico("plus")}Agregar</button>`:""}</header>
-   ${form}<div class="cat-herr"><label class="sr" for="cat-q">Buscar en ${cat.t.toLowerCase()}</label><input type="search" id="cat-q" placeholder="Buscar en ${cat.t.toLowerCase()}"><span class="tenue peq" id="cat-cuenta">${filas.length} registros${cat.edit?` · ${act} activos`:""}</span></div>
+  const tabla=`<table class="cat-tabla"><thead><tr>${cat.cols.map(c=>`<th>${c}</th>`).join("")}${cat.edit?"<th>Estado</th><th><span class='sr'>Acción</span></th>":cat.carga?"<th>Estado</th>":""}</tr></thead><tbody>${filas.map(f=>{const on=catActivo(cat.k,f.v); return `<tr class="${on?"":"inact"}" data-busca="${esc(f.c.join(" ").toLowerCase())}">${f.c.map((x,i)=>`<td class="${i===0&&cat.k==="cc"?"mono":""}">${esc(String(x))}</td>`).join("")}${cat.edit?`<td>${on?chip("Activo","c-disp","●"):chip("Desactivado","c-neu","–")}</td><td class="acc"><button class="btn sec chico" type="button" data-cat-tog="${esc(f.v)}">${on?"Desactivar":"Activar"}</button></td>`:cat.carga?`<td>${on?chip("Activo","c-disp","●"):chip("Desactivado","c-neu","–")}</td>`:""}</tr>`}).join("")}</tbody></table>`;
+  return `<div class="cat-lay">${lista}<section class="panel cat-panel"><header><div><h2>${cat.t}</h2><span class="sub">${cat.d}</span></div>${cat.edit&&!sel.catAdd?`<button class="btn chico" type="button" id="cat-add">${ico("plus")}Agregar</button>`:""}${cat.carga?`<div class="cat-acc"><select id="cc-tipo" aria-label="Tipo de carga" style="width:auto"><option value="anual">Carga anual</option><option value="mensual">Carga mensual</option></select><button class="btn chico" type="button" id="cc-cargar">Cargar archivo</button><input type="file" id="cc-file" accept=".xlsx,.xls,.csv" hidden><button class="btn sec chico" type="button" id="cc-plantilla">Descargar plantilla</button><button class="btn sec chico" type="button" id="cc-ejemplo" title="Simula un archivo con un folio nuevo, uno modificado y una fila con error">Probar con archivo de ejemplo</button></div>`:""}</header>
+   ${cat.carga&&CC_ULT?`<p class="tenue peq" style="padding:0 var(--e-4) var(--e-3)">Última carga: ${fF(CC_ULT.t)} a las ${fH(CC_ULT.t)} · ${CC_ULT.tipo} · ${esc(CC_ULT.archivo)} · ${CC_ULT.n} nuevos, ${CC_ULT.m} con cambios, ${CC_ULT.d} desactivados, ${CC_ULT.e} con error.</p>`:""}
+   ${cat.carga?cargaCCHTML():""}${form}<div class="cat-herr"><label class="sr" for="cat-q">Buscar en ${cat.t.toLowerCase()}</label><input type="search" id="cat-q" placeholder="Buscar en ${cat.t.toLowerCase()}"><span class="tenue peq" id="cat-cuenta">${filas.length} registros${cat.edit?` · ${act} activos`:""}</span></div>
    <div class="tabla-env">${tabla}</div>
-   <div class="leyenda"><span class="tenue peq">${cat.edit?"Lo desactivado deja de ofrecerse en los formularios, pero se conserva en los registros históricos. Los catálogos son nacionales: todas las regiones usan los mismos.":"Catálogo de sólo consulta: se actualiza desde su fuente oficial."}</span></div></section></div>`;
+   <div class="leyenda"><span class="tenue peq">${cat.edit?"Lo desactivado deja de ofrecerse en los formularios, pero se conserva en los registros históricos. Los catálogos son nacionales: todas las regiones usan los mismos.":(cat.k==="cc"?"Se actualiza sólo con la carga del archivo oficial (anual o mensual); los folios que dejan de venir se desactivan y se conservan en las salidas ya imputadas.":"Catálogo de sólo consulta: se actualiza desde su fuente oficial.")}</span></div></section></div>`;
 }
 function postCatalogos(){
   const V=$("#vista"), cat=CATALOGOS.find(c=>c.k===sel.cat)||CATALOGOS[0];
-  V.querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>{sel.cat=b.dataset.cat; sel.catAdd=false; render()});
+  V.querySelectorAll("[data-cat]").forEach(b=>b.onclick=()=>{sel.cat=b.dataset.cat; sel.catAdd=false; CC_CARGA=null; render()});
   const a=$("#cat-add"); if(a) a.onclick=()=>{sel.catAdd=true; render(); $("#cat-0")?.focus()};
   const cc=$("#cat-cancel"); if(cc) cc.onclick=()=>{sel.catAdd=false; render()};
   const f=$("#f-cat"); if(f) f.onsubmit=e=>{e.preventDefault(); const vals=cat.campos.map((_,i)=>$("#cat-"+i).value.trim()); if(!vals[0]){tostada("Complete el primer campo.");$("#cat-0").focus();return}
     const err=cat.agregar(vals); if(err){tostada(err);return} audit("Agrega a catálogo",cat.t,"—",vals.filter(Boolean).join(" · ")); sel.catAdd=false; tostada("Agregado a "+cat.t.toLowerCase()+"."); render(); };
   V.querySelectorAll("[data-cat-tog]").forEach(b=>b.onclick=()=>{const k=cat.k+"|"+b.dataset.catTog, on=!CAT_INACT.has(k); on?CAT_INACT.add(k):CAT_INACT.delete(k); audit(on?"Desactiva en catálogo":"Activa en catálogo",cat.t,on?"Activo":"Desactivado",b.dataset.catTog); render();});
+  const ccf=$("#cc-file"), tipo=()=>($("#cc-tipo")?.value||"anual");
+  const cb=$("#cc-cargar"); if(cb) cb.onclick=()=>ccf.click();
+  if(ccf) ccf.onchange=()=>{ const f=ccf.files[0]; if(!f) return; if(typeof XLSX==="undefined"){tostada("No se pudo cargar el lector de Excel. Revisa tu conexión.");return}
+    const rd=new FileReader(); rd.onload=e=>{ try{ const wb=XLSX.read(new Uint8Array(e.target.result),{type:"array"}); const filas=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:""});
+      CC_CARGA={...leerCargaCC(filas,f.name),tipo:tipo()}; }catch(err){ CC_CARGA={archivo:f.name,errEnc:"El archivo no es un Excel o CSV válido."}; } render(); }; rd.readAsArrayBuffer(f); };
+  const cp=$("#cc-plantilla"); if(cp) cp.onclick=()=>{ if(typeof XLSX==="undefined"){tostada("No se pudo cargar el generador de Excel. Revisa tu conexión.");return}
+    const ws=XLSX.utils.aoa_to_sheet([CC_ENC,...CC.filter(c=>catActivo("cc",c.folio)).map(c=>[c.folio,c.t,c.prog])]); ws["!cols"]=[{wch:10},{wch:70},{wch:10}]; const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,"Centros de costo");
+    try{ XLSX.writeFile(wb,"plantilla_centros_de_costo.xlsx"); tostada("Plantilla descargada con el catálogo vigente."); }catch(e){ tostada("La descarga fue bloqueada en esta vista. Ábrela desde GitHub Pages."); } };
+  const ce=$("#cc-ejemplo"); if(ce) ce.onclick=()=>{ const vig=CC.filter(c=>catActivo("cc",c.folio));
+    const filas=[CC_ENC,...vig.slice(0,-1).map((c,i)=>[c.folio,i===1?c.t+" (REDENOMINADO 2027)":c.t,c.prog]),["48071","P06 UD 1302 CC 130 RESTAURACION ECOLOGICA","P06"],["4807","P03 FILA CON FOLIO INCOMPLETO","P03"]];
+    CC_CARGA={...leerCargaCC(filas,"centros_costo_ejemplo.xlsx"),tipo:tipo()}; render(); };
+  const ca=$("#cc-aplicar"); if(ca) ca.onclick=aplicarCargaCC;
+  const cx=$("#cc-cancel"); if(cx) cx.onclick=()=>{CC_CARGA=null; render()};
   const q=$("#cat-q"); if(q) q.oninput=()=>{const s=q.value.trim().toLowerCase(); let n=0; V.querySelectorAll(".cat-tabla tbody tr").forEach(tr=>{const ok=!s||tr.dataset.busca.includes(s); tr.hidden=!ok; if(ok)n++}); $("#cat-cuenta").textContent=n+" de "+cat.filas().length+" registros"; };
 }
+/* ======================= USUARIOS Y ACCESOS (carga masiva) ======================= */
+const PERFILES_USR={"Administrador nacional":"super","Encargado de vehículos":"encargado","Jefatura directa":"jefatura"};
+let USR=[["p1","Administrador nacional","Nacional"],["p2","Encargado de vehículos","Oficina Central"],["p3","Jefatura directa","Depto. Abastecimiento"],["p5","Jefatura directa","GEPRIF · Análisis y Diagnóstico"],["p8","Jefatura directa","GEF · Fiscalización"],["p10","Jefatura directa","GEBCC · Viveros"]].map(([id,perfil,jur])=>({id,perfil,jur,activo:true}));
+let USR_CARGA=null, USR_ULT=null, USR_DEL=null, NUSR=0;
+const USR_ENC=["RUT","Nombre completo","Correo institucional","Cargo","Unidad o gerencia","Perfil","Jurisdicción","Estado"];
+const usuarioDe = id=>USR.find(u=>u.id===id);
+const tieneHistoria = id=>RES.some(r=>[r.sol,r.jefe,r.cond,r.relevo,...(r.pas||[])].includes(id))||AUD.some(a=>a.u===id);
+function leerCargaUsr(filas,archivo){
+  const norm=x=>String(x??"").trim(), enc=(filas[0]||[]).map(x=>normNom(x));
+  const ix=USR_ENC.map(h=>enc.indexOf(normNom(h)));
+  if(ix.slice(0,7).some(i=>i<0)) return {archivo,errEnc:"El archivo debe tener en la primera fila las columnas de la planilla tipo: "+USR_ENC.slice(0,7).join(", ")+" y, opcional, Estado."};
+  const nuevos=[],cambios=[],iguales=[],errores=[],vistos=new Set(), val=(f,k)=>ix[k]<0?"":norm(f[ix[k]]);
+  filas.slice(1).forEach((f,i)=>{ const n=i+2, rut=val(f,0), nm=val(f,1), correo=val(f,2).toLowerCase(), cargo=val(f,3), ger=val(f,4), perfil=Object.keys(PERFILES_USR).find(k=>normNom(k)===normNom(val(f,5))), jur=val(f,6), est=normNom(val(f,7)||"Activo");
+    if(f.every(x=>!norm(x))) return;
+    if(!rutValido(rut)) return errores.push(`Fila ${n}: RUT «${rut||"vacío"}» no válido.`);
+    const r=rutFormato(rut); if(vistos.has(r)) return errores.push(`Fila ${n}: RUT ${r} repetido en el archivo.`);
+    if(!nm) return errores.push(`Fila ${n}: RUT ${r} sin nombre.`);
+    if(!/^[^@\s]+@conaf\.cl$/.test(correo)) return errores.push(`Fila ${n}: ${nm}: el correo debe ser institucional (@conaf.cl).`);
+    if(!perfil) return errores.push(`Fila ${n}: ${nm}: perfil «${val(f,5)||"vacío"}» no existe (use Administrador nacional, Encargado de vehículos o Jefatura directa).`);
+    if(!jur) return errores.push(`Fila ${n}: ${nm}: falta la jurisdicción.`);
+    if(!["activo","inactivo"].includes(est)) return errores.push(`Fila ${n}: ${nm}: estado «${val(f,7)}» no válido (Activo o Inactivo).`);
+    const p=personaPorRut(r); if(p&&normNom(p.nom)!==normNom(nm)) return errores.push(`Fila ${n}: el RUT ${r} está registrado a nombre de ${p.nom}.`);
+    vistos.add(r); const u=p&&usuarioDe(p.id), x={rut:r,nom:nm,correo,cargo,ger,perfil,jur,activo:est==="activo",pid:p?.id||null};
+    if(!u) nuevos.push(x); else if(u.perfil!==perfil||u.jur!==jur||u.activo!==x.activo) cambios.push({...x,antes:`${u.perfil} · ${u.jur}${u.activo?"":" · inactivo"}`}); else iguales.push(x); });
+  return {archivo,nuevos,cambios,iguales,errores};
+}
+function cargaUsrHTML(){ const c=USR_CARGA; if(!c) return "";
+  if(c.errEnc) return `<div class="cc-carga" role="alert"><b>No se pudo leer ${esc(c.archivo)}</b><p class="peq">${c.errEnc}</p><div class="cat-acc"><button class="btn sec chico" type="button" id="us-cancel">Cerrar</button></div></div>`;
+  const ok=c.nuevos.length+c.cambios.length;
+  return `<div class="cc-carga" role="region" aria-label="Vista previa de la carga de usuarios"><div><b>Vista previa · ${esc(c.archivo)}</b> <span class="tenue peq">Nada cambia hasta presionar «Aplicar carga». Los usuarios que no vienen en el archivo no se modifican.</span></div>
+   <div class="res"><span>Nuevos: <b>${c.nuevos.length}</b></span><span>Con cambios: <b>${c.cambios.length}</b></span><span>Sin cambios: <b>${c.iguales.length}</b></span><span>Filas con error (no se cargan): <b>${c.errores.length}</b></span></div>
+   ${c.nuevos.length?`<div><span class="peq"><b>Nuevos</b></span><ul>${c.nuevos.map(x=>`<li>${esc(x.nom)} <span class="mono">${x.rut}</span> · ${x.perfil} · ${esc(x.jur)}${x.activo?"":" · inactivo"}</li>`).join("")}</ul></div>`:""}
+   ${c.cambios.length?`<div><span class="peq"><b>Con cambios</b></span><ul>${c.cambios.map(x=>`<li>${esc(x.nom)}: ${esc(x.antes)} → ${x.perfil} · ${esc(x.jur)}${x.activo?"":" · inactivo"}</li>`).join("")}</ul></div>`:""}
+   ${c.errores.length?`<div><span class="peq"><b>Errores</b></span><ul>${c.errores.map(e=>`<li>${esc(e)}</li>`).join("")}</ul></div>`:""}
+   <div class="cat-acc"><button class="btn chico" type="button" id="us-aplicar" ${ok?"":"disabled"}>Aplicar carga</button><button class="btn sec chico" type="button" id="us-cancel">Cancelar</button>${ok?"":`<span class="tenue peq">El archivo no trae cambios para aplicar.</span>`}</div></div>`;
+}
+function aplicarCargaUsr(){ const c=USR_CARGA;
+  c.nuevos.forEach(x=>{ let id=x.pid; if(!id){ id="u"+(++NUSR); const p={id,nom:x.nom,cargo:x.cargo||x.perfil,ger:x.ger,rut:x.rut,correo:x.correo,calidad:"Contrata",jefe:x.perfil==="Jefatura directa"}; PERS.push(p); PX[id]=p; }
+    else if(x.perfil==="Jefatura directa") PX[id].jefe=true;
+    USR.push({id,perfil:x.perfil,jur:x.jur,activo:x.activo}); });
+  c.cambios.forEach(x=>{ const u=usuarioDe(x.pid); Object.assign(u,{perfil:x.perfil,jur:x.jur,activo:x.activo}); if(x.perfil==="Jefatura directa") PX[x.pid].jefe=true; });
+  USR_ULT={t:iso(HOY),archivo:c.archivo,n:c.nuevos.length,m:c.cambios.length,e:c.errores.length};
+  audit("Carga masiva de usuarios",c.archivo,"—",`${c.nuevos.length} nuevos · ${c.cambios.length} con cambios · ${c.errores.length} con error`);
+  tostada("Carga aplicada a usuarios y accesos."); USR_CARGA=null; render();
+}
+function vUsuarios(){
+  const yo=ROLES[rol].quien, act=USR.filter(u=>u.activo).length;
+  const filas=USR.map(u=>{ const p=PX[u.id], hist=tieneHistoria(u.id), propio=u.id===yo, conf=USR_DEL===u.id;
+    return `<tr class="${u.activo?"":"inact"}"><td>${esc(p.nom)}<br><span class="tenue peq">${esc(p.correo)} · <span class="mono">${p.rut}</span></span></td><td>${u.perfil}</td><td>${esc(u.jur)}</td><td>${u.activo?chip("Activo","c-disp","●"):chip("Inactivo","c-neu","–")}</td>
+     <td class="acc">${propio?`<span class="tenue peq">Su usuario</span>`:`<button class="btn sec chico" type="button" data-us-tog="${u.id}">${u.activo?"Dejar inactivo":"Activar"}</button> <button class="btn sec chico ${conf?"peligro":""}" type="button" data-us-del="${u.id}" ${hist?`data-hist="1" title="Tiene salidas o registros en la auditoría"`:""}>${conf?"Confirmar: eliminar":"Eliminar"}</button>`}</td></tr>`; }).join("");
+  return `<section class="panel"><header><div><h2>Usuarios y accesos</h2><span class="sub">Perfiles con acceso especial. Se cargan en forma masiva con la planilla tipo; el administrador nacional puede dejarlos inactivos o eliminarlos.</span></div>
+   <div class="cat-acc"><button class="btn chico" type="button" id="us-cargar">Cargar planilla</button><input type="file" id="us-file" accept=".xlsx,.xls,.csv" hidden><button class="btn sec chico" type="button" id="us-plantilla">Descargar planilla tipo</button><button class="btn sec chico" type="button" id="us-ejemplo">Probar con archivo de ejemplo</button></div></header>
+   ${USR_ULT?`<p class="tenue peq" style="padding:0 var(--e-4) var(--e-3)">Última carga: ${fF(USR_ULT.t)} a las ${fH(USR_ULT.t)} · ${esc(USR_ULT.archivo)} · ${USR_ULT.n} nuevos, ${USR_ULT.m} con cambios, ${USR_ULT.e} con error.</p>`:""}
+   ${cargaUsrHTML()}
+   <div class="cat-herr"><span class="tenue peq">${USR.length} usuarios · ${act} activos</span></div>
+   <div class="tabla-env"><table class="cat-tabla"><thead><tr><th>Usuario</th><th>Perfil</th><th>Jurisdicción</th><th>Estado</th><th><span class="sr">Acciones</span></th></tr></thead><tbody>${filas}</tbody></table></div>
+   <div class="leyenda"><span class="tenue peq">Todo funcionario de la nómina puede ingresar como solicitante con su RUT. Un usuario inactivo no puede ingresar. Sólo se elimina un usuario sin salidas ni registros en la auditoría; si los tiene, se deja inactivo para no perder la trazabilidad. Los encargados regionales sólo ven su región.</span></div></section>`;
+}
+function postUsuarios(){
+  const V=$("#vista"), yo=ROLES[rol].quien;
+  V.querySelectorAll("[data-us-tog]").forEach(b=>b.onclick=()=>{ const u=usuarioDe(b.dataset.usTog); u.activo=!u.activo; USR_DEL=null; audit(u.activo?"Activa usuario":"Deja inactivo usuario",nom(u.id),u.activo?"Inactivo":"Activo",u.activo?"Activo":"Inactivo"); tostada("El usuario de "+nom(u.id)+(u.activo?" quedó activo.":" quedó inactivo: ya no puede ingresar.")); render(); });
+  V.querySelectorAll("[data-us-del]").forEach(b=>b.onclick=()=>{ const id=b.dataset.usDel, u=usuarioDe(id);
+    if(b.dataset.hist){ USR_DEL=null; tostada(nom(id)+" tiene salidas o registros en la auditoría: no se puede eliminar. Use «Dejar inactivo»."); if(u.activo){ const t=V.querySelector(`[data-us-tog="${id}"]`); t?.focus(); } return; }
+    if(USR_DEL!==id){ USR_DEL=id; render(); return; }
+    audit("Elimina usuario",nom(id),u.perfil+" · "+u.jur,"—"); USR=USR.filter(x=>x.id!==id); USR_DEL=null; if(id.startsWith("u")){ const k=PERS.findIndex(x=>x.id===id); if(k>=0) PERS.splice(k,1); delete PX[id]; } tostada("Se eliminó el usuario."); render(); });
+  const f=$("#us-file"); $("#us-cargar").onclick=()=>f.click();
+  f.onchange=()=>{ const a=f.files[0]; if(!a) return; if(typeof XLSX==="undefined"){tostada("No se pudo cargar el lector de Excel. Revisa tu conexión.");return}
+    const rd=new FileReader(); rd.onload=e=>{ try{ const wb=XLSX.read(new Uint8Array(e.target.result),{type:"array"}); USR_CARGA=leerCargaUsr(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:""}),a.name); }catch(err){ USR_CARGA={archivo:a.name,errEnc:"El archivo no es un Excel o CSV válido."}; } render(); }; rd.readAsArrayBuffer(a); };
+  $("#us-plantilla").onclick=()=>{ if(typeof XLSX==="undefined"){tostada("No se pudo cargar el generador de Excel. Revisa tu conexión.");return}
+    const ws=XLSX.utils.aoa_to_sheet([USR_ENC,...USR.map(u=>{const p=PX[u.id]; return [p.rut,p.nom,p.correo,p.cargo,p.ger,u.perfil,u.jur,u.activo?"Activo":"Inactivo"];})]); ws["!cols"]=[{wch:13},{wch:30},{wch:32},{wch:36},{wch:36},{wch:24},{wch:30},{wch:10}];
+    const ins=XLSX.utils.aoa_to_sheet([["Instrucciones"],["Una fila por usuario. La primera fila no se modifica."],["RUT: con dígito verificador (por ejemplo 12.345.678-5)."],["Correo institucional: debe terminar en @conaf.cl."],["Perfil: Administrador nacional, Encargado de vehículos o Jefatura directa."],["Jurisdicción: Nacional, Oficina Central o la región (encargados); unidad o gerencia (jefaturas)."],["Estado: Activo o Inactivo (si se deja vacío, queda Activo)."],["Los usuarios que no vienen en la planilla no se modifican; para quitar el acceso use «Dejar inactivo» o «Eliminar»."],["Todo funcionario de la nómina ingresa como solicitante sin estar en esta planilla."]]); ins["!cols"]=[{wch:100}];
+    const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,"Usuarios"); XLSX.utils.book_append_sheet(wb,ins,"Instrucciones");
+    try{ XLSX.writeFile(wb,"planilla_tipo_usuarios.xlsx"); tostada("Planilla tipo descargada con los usuarios vigentes."); }catch(e){ tostada("La descarga fue bloqueada en esta vista. Ábrela desde GitHub Pages."); } };
+  $("#us-ejemplo").onclick=()=>{ const base=USR.map(u=>{const p=PX[u.id]; return [p.rut,p.nom,p.correo,p.cargo,p.ger,u.perfil,u.jur,u.activo?"Activo":"Inactivo"];});
+    base[3]=[...base[3].slice(0,7),"Inactivo"];
+    const filas=[USR_ENC,...base,[rutF(16543210),"Rodrigo Peña Salinas","rodrigo.pena@conaf.cl","Encargado de Vehículos Región del Maule","GEFA · Dirección Regional Maule","Encargado de vehículos","Maule","Activo"],[PX.p6.rut,PX.p6.nom,PX.p6.correo,PX.p6.cargo,PX.p6.ger,"Jefatura directa","GEPRIF · Análisis y Diagnóstico","Activo"],["12.345.678-0","Fila con RUT inválido","x@conaf.cl","","","Jefatura directa","Nacional",""],[rutF(15111222),"Marta Soto Vera","marta.soto@gmail.com","","","Jefatura directa","GEF",""]];
+    USR_CARGA=leerCargaUsr(filas,"usuarios_ejemplo.xlsx"); render(); };
+  const ap=$("#us-aplicar"); if(ap) ap.onclick=aplicarCargaUsr;
+  const cx=$("#us-cancel"); if(cx) cx.onclick=()=>{USR_CARGA=null; render()};
+}
+
 post.config = ()=>{ const V=$("#vista"); V.querySelectorAll("[data-cfg]").forEach(b=>b.onclick=()=>{sel.cfgTab=b.dataset.cfg;render()});
   if(sel.cfgTab==="catalogos") postCatalogos();
+  if(sel.cfgTab==="usuarios") postUsuarios();
   if(sel.cfgTab==="datos") post.admin(); };
 
 /* ======================= Delegación global ======================= */
@@ -2626,7 +2770,7 @@ function abrirAltaConductor(){
 const QUIEN_BASE=Object.fromEntries(Object.entries(ROLES).map(([k,r])=>[k,r.quien]));
 const USUARIOS_PRUEBA=[["solicitante","plus","Funcionario solicitante"],["jefatura","aprobar","Jefatura directa"],["encargado","car","Encargado de vehículos"],["super","config","Administrador nacional"]];
 const normNom=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/\s+/g," ").trim();
-function rolDe(p){ const k=Object.keys(QUIEN_BASE).find(k=>QUIEN_BASE[k]===p.id); return k||(p.jefe?"jefatura":"solicitante"); }
+function rolDe(p){ const u=typeof USR!=="undefined"&&USR.find(x=>x.id===p.id&&x.activo); if(u&&!Object.values(QUIEN_BASE).includes(p.id)) return PERFILES_USR[u.perfil]; const k=Object.keys(QUIEN_BASE).find(k=>QUIEN_BASE[k]===p.id); return k||(p.jefe?"jefatura":"solicitante"); }
 function iniciarSesion(p){
   rol=rolDe(p); ROLES[rol].quien=p.id; vista=ROLES[rol].nav[0][0]; borrador=null;
   try{ localStorage.setItem("flota-sesion",p.id); }catch(e){}
@@ -2650,6 +2794,7 @@ $("#form-login").addEventListener("submit",e=>{
   const p=personaPorRut(rut);
   if(!p){ $("#l-rut").setAttribute("aria-invalid","true"); err("El RUT no está registrado en la nómina institucional."); return; }
   if(normNom(p.nom)!==normNom(nm)){ $("#l-nom").setAttribute("aria-invalid","true"); err("El nombre no coincide con el registrado para ese RUT."); return; }
+  if(USR.some(u=>u.id===p.id&&!u.activo)){ err("Su usuario está inactivo. Contacte al administrador nacional."); return; }
   iniciarSesion(p);
 });
 $("#btn-salir").addEventListener("click",()=>{ try{localStorage.removeItem("flota-sesion")}catch(e){} Object.entries(QUIEN_BASE).forEach(([k,q])=>ROLES[k].quien=q); mostrarLogin(); tostada("Sesión cerrada."); });
