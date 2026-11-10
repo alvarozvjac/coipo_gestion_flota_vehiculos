@@ -547,7 +547,9 @@ body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{d
 .wiz button.hecho{color:var(--st-disp);border-color:var(--st-disp);background:var(--st-disp-bg)} .wiz button.hecho .n{background:var(--st-disp);border-color:var(--st-disp);color:var(--sup)}
 .wiz button[aria-current="step"]{border:2px solid var(--boton);color:var(--tinta);font-weight:600} .wiz button[aria-current="step"] .n{background:var(--boton);border-color:var(--boton);color:var(--boton-texto)}
 .wiz button:disabled{cursor:default;opacity:.6}
-.nav-pasos{justify-content:space-between} .nav-pasos #btn-sig{margin-left:auto}
+.nav-pasos{justify-content:space-between;align-items:center} .nav-pasos .env-pasos{margin-left:auto}
+#form-sol [data-paso].recien{animation:recien 1.6s ease-out} @keyframes recien{from{box-shadow:0 0 0 3px var(--boton);border-radius:var(--r-m)}to{box-shadow:0 0 0 3px transparent}}
+@media (prefers-reduced-motion:reduce){#form-sol [data-paso].recien{animation:none}}
 .link-edit{border:0;background:none;color:var(--verde-tinta);font:inherit;font-size:var(--f-xs);font-weight:600;text-decoration:underline;cursor:pointer;margin-left:var(--e-2)}
 @media (max-width:559.98px){ /* teléfono */ .wiz{grid-template-columns:repeat(4,minmax(0,1fr))} .wiz button{flex-direction:column;justify-content:center;text-align:center;font-size:11px;padding:var(--e-1)} }
 .err-campo{display:flex;gap:6px;align-items:flex-start;color:var(--st-malo);font-size:var(--f-s);font-weight:600;margin-top:4px}
@@ -1250,10 +1252,10 @@ function vNueva(){
   const regionSol = "Oficina Central";
   const habil = COND.filter(c=>c.tipo==="HABILITADO" && (c.region||"Oficina Central")===regionSol && condApto(c.id,{...b,id:"tmp",pas:[],req:{},salida:b.salida||iso(HOY),regreso:b.regreso||iso(HOY)},null).ok);
   const condOpts=(selId)=>`<option value="">— Seleccionar —</option>`+habil.map(c=>`<option value="${c.id}" ${c.id===selId?"selected":""}>${esc(nom(c.id))} · licencia ${c.clases.join("/")}</option>`).join("");
-  b._paso=b._paso||1; b._max=Math.max(b._max||1,b._paso);
+  b._max=b._max||1;
   return `<div class="cab-vista cab-compacta"><h1>Nueva solicitud de vehículo</h1>${b.ejemplo&&!b.editId?`<p class="nota-mini">Ejemplo precargado para la demostración. <button class="link-edit" type="button" id="btn-limpiar">Limpiar formulario</button></p>`:""}</div>`+
   (b.editId?`<div class="regla av" style="margin-bottom:var(--e-4)"><span class="ico" aria-hidden="true">!</span><div><b>Corrigiendo la solicitud ${b.editId}</b><span>${esc(b.obs||"Tu jefatura pidió corregir la solicitud.")} Al enviar, vuelve a tu jefatura para su aprobación.</span></div></div>`:"")+
-  `<div class="form-sol-env"><ol class="wiz" id="wiz" aria-label="Pasos de la solicitud">${PASOS_SOL.map((n,i)=>`<li><button type="button" data-wiz="${i+1}"><span class="n">${i+1}</span>${n}</button></li>`).join("")}</ol>
+  `<div class="form-sol-env"><ol class="wiz" id="wiz" aria-label="Pasos de la solicitud">${PASOS_SOL.map((n,i)=>`<li><button type="button" data-wiz="${i+1}" aria-label="Ir al paso ${i+1}: ${n}"><span class="n">${i+1}</span>${n}</button></li>`).join("")}</ol>
   <form id="form-sol" class="grid" novalidate>
    <fieldset data-paso="1"><legend><span class="seccion-num">1</span>Identificación</legend><div class="campos">
      <div class="campo"><span class="lbl">Solicitante</span><span class="dato-fijo" id="f-sol">${esc(yo.nom)} · ${esc(yo.rut)}<small>${esc(yo.cargo)} · ${esc(yo.ger)}</small></span></div>
@@ -1282,7 +1284,8 @@ function vNueva(){
    </div></fieldset>
    <section class="panel" data-paso="4" id="f-resumen" aria-labelledby="t-resumen"></section>
    <div class="faltan" id="f-faltan" role="alert" hidden></div>
-   <div class="acciones nav-pasos"><button class="btn sec" type="button" id="btn-ant">← Anterior</button><button class="btn" type="button" id="btn-sig">Siguiente →</button><span class="env-pasos" data-paso="4"><button class="btn sec" type="button" id="btn-borr">Guardar sin enviar</button><button class="btn" type="submit" id="btn-enviar">${b.editId?"Reenviar a jefatura":"Enviar a jefatura"}</button></span></div>
+   <p class="sr" id="f-paso-vivo" aria-live="polite"></p>
+   <div class="acciones nav-pasos"><span class="tenue peq" id="f-progreso"></span><span class="env-pasos"><button class="btn sec" type="button" id="btn-borr">Guardar sin enviar</button><button class="btn" type="submit" id="btn-enviar">${b.editId?"Reenviar a jefatura":"Enviar a jefatura"}</button></span></div>
   </form></div>`;
 }
 post.nueva = ()=>{
@@ -1337,6 +1340,7 @@ post.nueva = ()=>{
     b._bloqueos=errs.map(x=>x.t); b._errs=errs;
     pintarErrores();
     const fl=$("#f-faltan"); if(fl&&!fl.hidden) mostrarFaltan();
+    actualizarPasos();
   };
   const rutEnVivo=(inp)=>{ const f=rutFormato(inp.value); if(f!==inp.value){ inp.value=f; } };
   pintarDest(); pintarPas(); revisar();
@@ -1381,26 +1385,28 @@ post.nueva = ()=>{
       ${fila("Total de personas",esc($("#f-tot").textContent),3)}
     </dl><div class="disp-res">${$("#f-disp").innerHTML}</div></div>`;
   }
-  function mostrarPaso(n){
-    b._paso=n; b._max=Math.max(b._max||1,n);
-    document.querySelectorAll("#form-sol [data-paso]").forEach(el=>el.hidden=+el.dataset.paso!==n);
-    $("#btn-ant").hidden=n===1; $("#btn-sig").hidden=n===4;
-    document.querySelectorAll("#wiz [data-wiz]").forEach(bt=>{const k=+bt.dataset.wiz; bt.setAttribute("aria-current",k===n?"step":"false"); bt.classList.toggle("hecho",k<n||(k<=b._max&&k!==n)); bt.disabled=k>b._max;});
-    if(n===4) pintarResumen(); else { const fl=$("#f-faltan"); fl.hidden=true; }
-    window.scrollTo({top:0,behavior:"smooth"});
-  }
+  // Pasos que se abren solos (10-11-2026): al completar un paso, el siguiente aparece debajo sin botón «Siguiente».
+  // No se mueve el foco ni la página: se anuncia el paso nuevo y se resalta un instante.
   function erroresDePaso(n){ return (b._errs||[]).filter(x=>PASO_DE[x.campo]===n); }
-  function siguiente(){ leer(); revisar(); const e=erroresDePaso(b._paso);
-    if(e.length){ (b._valid=b._valid||new Set()).add(b._paso); pintarErrores(); const p1=$("#"+e[0].campo); const foco=p1&&(["INPUT","SELECT","TEXTAREA"].includes(p1.tagName)?p1:p1.querySelector("[aria-invalid],input,select")); if(foco) foco.focus(); tostada(e.length===1?"Completa el campo marcado para continuar.":`Completa los ${e.length} campos marcados para continuar.`); return; }
-    mostrarPaso(b._paso+1); }
-  $("#btn-sig").onclick=siguiente;
-  $("#btn-ant").onclick=()=>mostrarPaso(Math.max(1,b._paso-1));
-  document.querySelector(".form-sol-env").addEventListener("click",e=>{ const w=e.target.closest("[data-wiz]"); if(!w||w.disabled) return; e.preventDefault(); const k=+w.dataset.wiz; if(k>b._paso){ for(let p=b._paso;p<k;p++){ if(erroresDePaso(p).length){ mostrarPaso(p); siguiente(); return; } } } mostrarPaso(k); });
-  mostrarPaso(b._paso);
+  function actualizarPasos(){
+    if(!$("#wiz")) return;
+    let n=1; while(n<4&&!erroresDePaso(n).length) n++;   // primer paso con algo pendiente (4 = todo completo)
+    const antes=b._max||1; b._max=Math.max(antes,n);
+    document.querySelectorAll("#form-sol [data-paso]").forEach(el=>{ const k=+el.dataset.paso, era=el.hidden; el.hidden=k>b._max;
+      if(era&&!el.hidden&&k>antes){ el.classList.remove("recien"); void el.offsetWidth; el.classList.add("recien"); } });
+    document.querySelectorAll("#wiz [data-wiz]").forEach(bt=>{const k=+bt.dataset.wiz, ok=k<4?!erroresDePaso(k).length:n===4;
+      bt.classList.toggle("hecho",k<=b._max&&ok); bt.setAttribute("aria-current",k===Math.min(n,4)?"step":"false"); bt.disabled=k>b._max;});
+    if(b._max>antes){ const v=$("#f-paso-vivo"); if(v) v.textContent=`Se abrió el paso ${b._max}: ${PASOS_SOL[b._max-1]}.`; }
+    if(b._max>=4) pintarResumen();
+    const pr=$("#f-progreso"); if(pr){ const pend=(b._errs||[]).length; pr.textContent=n===4&&!pend?"Todo completo: revisa el resumen y envía.":`Paso ${Math.min(n,4)} de 4 · ${PASOS_SOL[Math.min(n,4)-1]}`; }
+  }
+  function irAPaso(k){ const el=document.querySelector(`#form-sol [data-paso="${k}"]:not([hidden])`); if(!el) return;
+    el.scrollIntoView({block:"start",behavior:"smooth"}); const f=el.querySelector("input:not([type=hidden]):not([disabled]),select:not([disabled]),textarea"); if(f) f.focus({preventScroll:true}); }
+  document.querySelector(".form-sol-env").addEventListener("click",e=>{ const w=e.target.closest("[data-wiz]"); if(!w||w.disabled) return; e.preventDefault(); irAPaso(+w.dataset.wiz); });
+  actualizarPasos();
   function mostrarFaltan(){ const fl=$("#f-faltan"), L=b._errs||[]; if(!L.length){ fl.hidden=true; fl.innerHTML=""; return; } fl.hidden=false; fl.innerHTML=`<b>No se puede enviar: ${L.length===1?"falta completar un campo":"faltan "+L.length+" campos por completar"}.</b> Están marcados en rojo.`; }
   f.addEventListener("submit",e=>{e.preventDefault();leer();revisar();
-    if(b._paso<4){ siguiente(); return; }
-    if((b._bloqueos||[]).length){ b._intento=true; const pe=PASO_DE[b._errs[0].campo]||1; if(pe!==b._paso){ mostrarPaso(pe); } pintarErrores(); mostrarFaltan(); const p1=$("#"+b._errs[0].campo); const foco=p1&&(["INPUT","SELECT","TEXTAREA"].includes(p1.tagName)?p1:p1.querySelector("[aria-invalid],input,select")); if(foco){ foco.scrollIntoView({block:"center",behavior:"smooth"}); foco.focus({preventScroll:true}); } return; }
+    if((b._bloqueos||[]).length){ b._intento=true; pintarErrores(); mostrarFaltan(); const p1=$("#"+b._errs[0].campo); const foco=p1&&(["INPUT","SELECT","TEXTAREA"].includes(p1.tagName)?p1:p1.querySelector("[aria-invalid],input,select")); if(foco){ foco.scrollIntoView({block:"center",behavior:"smooth"}); foco.focus({preventScroll:true}); } return; }
     const destinos=b.destinos.map(d=>({reg:d.reg,prov:d.prov,com:d.com,lug:d.lug===OTRA?d.otro.trim():d.lug}));
     const relevo=null;
     const pas=pasValidos().map(x=>personaPorRut(x.rut).id);
@@ -1811,12 +1817,14 @@ function abrirTaller(pat, op={}){
      ${it.length?`<ul class="mini-lista">${it.map(i=>`<li class="mini-fila"><div class="mini-dato" style="cursor:default"><span class="tal-dot ${i.urg>=3?"alta":i.urg===2?"media":i.k==="ot"?"taller":""}" aria-hidden="true"></span><b>${esc(i.txt)}</b><span class="tenue peq">${esc(i.sub)}</span></div>${btn(i)}</li>`).join("")}</ul>`:`<p class="mini-vacio">Este vehículo no tiene pendientes de taller ni documentos.</p>`}
     </section>
     ${op.nuevaOT&&!ot?otFormHTML(v,op):""}<div id="cierre-ot"></div>
+    <section class="panel" id="tal-docs"><header><h2>Documentos</h2><span class="sub">Al renovar un documento, registre su nueva fecha de vencimiento.</span></header>${docsTablaHTML(v,op,puedeGestionar())}</section>
     <p class="tenue peq">Kilometraje ${km(v.km)} · última mantención a los ${km(v.ultMant)} km. <button class="link-edit" type="button" data-tal-ficha>Ver hoja de vida completa</button></p></div>`);
   const C=$("#capa");
   bindOT(C,pat,op,o=>abrirTaller(pat,o));
   C.querySelectorAll("[data-tal-ot]").forEach(b=>b.onclick=()=>abrirTaller(pat,{nuevaOT:true,desde:b.dataset.talOt||undefined,tipoOT:b.dataset.talOt?"Reparación":PRE_OT}));
   C.querySelectorAll("[data-op2]").forEach(b=>b.onclick=()=>abrirTaller(pat,{}));
-  C.querySelectorAll("[data-tal-doc]").forEach(b=>b.onclick=()=>abrirFicha(pat,"docs",{docEdit:b.dataset.talDoc}));
+  C.querySelectorAll("[data-tal-doc]").forEach(b=>b.onclick=()=>abrirTaller(pat,{docEdit:b.dataset.talDoc}));
+  bindDocs(C,pat,o=>abrirTaller(pat,o)); if(op.docEdit) $("#tal-docs")?.scrollIntoView({block:"center"});
   const fi=C.querySelector("[data-tal-ficha]"); if(fi) fi.onclick=()=>abrirFicha(pat,"resumen");
   if(op.cerrar&&ot){ C.querySelector(`[data-cerrar-ot="${ot.id}"]`)?.click(); $("#co-n")?.focus(); }
   else if(op.nuevaOT) $("#ot-taller")?.focus();
@@ -1825,7 +1833,7 @@ post.taller = ()=>{
   const V=$("#vista");
   V.querySelectorAll("[data-talf]").forEach(b=>b.onclick=()=>{sel.talF=b.dataset.talf; sel.talPag=0; render()});
   if(postPaginar("tal")) return;
-  V.querySelectorAll("[data-tal]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); const k=b.dataset.op; if(k==="doc") abrirFicha(b.dataset.tal,"docs",{docEdit:b.dataset.docK}); else abrirTaller(b.dataset.tal,k==="ot"?{nuevaOT:true}:{cerrar:true}); });
+  V.querySelectorAll("[data-tal]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); const k=b.dataset.op; if(k==="doc") abrirTaller(b.dataset.tal,{docEdit:b.dataset.docK}); else abrirTaller(b.dataset.tal,k==="ot"?{nuevaOT:true}:{cerrar:true}); });
   filasClic("data-talv",pat=>abrirTaller(pat));
 };
 
@@ -2116,6 +2124,18 @@ post.flota = ()=>{ const V=$("#vista"); const ba=$("#btn-alta-veh"); if(ba) ba.o
   V.addEventListener("keydown",e=>{const t=e.target.closest("tr[data-veh]"); if(t&&e.key==="Enter") abrirFicha(t.dataset.veh)}); };
 
 let fichaTab="resumen";
+const DOCS_VEH=[["rt","Revisión técnica"],["gases","Revisión de gases"],["soap","SOAP"],["perm","Permiso de circulación"],["polizaVence","Póliza de seguro"]];
+function docsTablaHTML(v,op,ed){ const DOCS=DOCS_VEH; return `<div class="tabla-env"><table><thead><tr><th>Documento</th><th>Vencimiento</th><th>Estado</th>${ed?"<th></th>":""}</tr></thead><tbody>${DOCS.map(([k,n])=>op.docEdit===k?`<tr><td>${n}</td><td colspan="${ed?3:2}"><form class="doc-edit" id="f-doc" data-k="${k}"><label class="sr" for="d-fecha">Nuevo vencimiento</label><input type="date" id="d-fecha" value="${v[k]||""}" min="${iso(HOY).slice(0,10)}">${k==="polizaVence"?`<label class="sr" for="d-num">N° de póliza</label><input type="text" id="d-num" class="mono" value="${esc(v.poliza||"")}" placeholder="N° de póliza">`:`<label class="sr" for="d-num">N° de documento</label><input type="text" id="d-num" class="mono" placeholder="N° o folio (opcional)">`}<button class="btn chico" type="submit">Guardar</button><button class="btn sec chico" type="button" data-doc-cancel>Cancelar</button></form></td></tr>`:`<tr><td>${n}${k==="polizaVence"&&v.poliza?` <span class="tenue peq mono">${esc(v.poliza)}</span>`:""}</td><td class="num">${v[k]?fF(v[k]):"—"}</td><td>${chipEstadoDoc(v[k])}</td>${ed?`<td class="d"><button class="btn sec chico" type="button" data-doc="${k}">Actualizar</button></td>`:""}</tr>`).join("")}</tbody></table></div>`; }
+function bindDocs(C,pat,rehacer){
+  C.querySelectorAll("[data-doc]").forEach(b=>b.onclick=()=>rehacer({docEdit:b.dataset.doc}));
+  C.querySelectorAll("[data-doc-cancel]").forEach(b=>b.onclick=()=>rehacer({}));
+  const fd=C.querySelector("#f-doc"); if(fd){ fd.onsubmit=e=>{ e.preventDefault(); const k=fd.dataset.k, f=$("#d-fecha").value, n=$("#d-num").value.trim();
+    if(!f||f<iso(HOY).slice(0,10)){ $("#d-fecha").setAttribute("aria-invalid","true"); tostada("Ingrese una fecha de vencimiento futura."); return; }
+    const ant=VX[pat][k]; VX[pat][k]=f; if(k==="polizaVence"&&n) VX[pat].poliza=n;
+    const nomDoc=Object.fromEntries(DOCS_VEH)[k];
+    audit("Actualiza documento: "+nomDoc+(n?" · "+n:""),pat,ant?fF(ant):"—",fF(f)); tostada(`${nomDoc} de ${pat} actualizado: vence ${fF(f)}.`); render(); rehacer({}); };
+    $("#d-fecha")?.focus(); }
+}
 function abrirFicha(pat, tab, op={}){
   if(tab) fichaTab=tab; const v=VX[pat], g=puedeGestionar();
   const tabs=[["resumen","Resumen"],["docs","Documentos"],["mant","Mantención"],["comb","Combustible"],["gastos","Gastos"],["salidas","Salidas"],["trasp","Traspasos"]];
@@ -2126,12 +2146,11 @@ function abrirFicha(pat, tab, op={}){
     <dl class="ficha"><dt>Estado hoy</dt><dd>${chipV(v)}</dd><dt>Kilometraje</dt><dd class="num">${km(v.km)} km</dd><dt>Mantención</dt><dd>${chipMant(v)}</dd><dt>Seguro</dt><dd><span class="mono">${esc(v.poliza)}</span>${v.aseguradora?` · ${esc(v.aseguradora)}`:""}${v.deducibleUF?` · deducible ${esc(v.deducibleUF)} UF`:""} · vence ${fF(v.polizaVence)}${v.asistencia?`<br><span class="tenue peq">Asistencia en ruta: ${esc(v.asistencia)}</span>`:""}</dd><dt>Tarjeta</dt><dd class="mono">${esc(v.tarjeta)} · ${esc(v.tarjetaEstado)}</dd><dt>Alertas</dt><dd>${alertasVeh(v)||"Sin alertas"}</dd></dl></div>
     `; // Resumen: sólo información; las acciones están en su pestaña (Mantención, Gastos, Traspasos)
   if(fichaTab==="resumen"&&traspActivo(v)) c=traspAvisoHTML(v)+c;
-  if(fichaTab==="docs"){ const DOCS=[["rt","Revisión técnica"],["gases","Revisión de gases"],["soap","SOAP"],["perm","Permiso de circulación"],["polizaVence","Póliza de seguro"]];
-    c=`<p class="tenue peq">Al renovar un documento, registre su nueva fecha de vencimiento.${g?"":" Sólo el encargado de vehículos y el administrador pueden actualizarlos."}</p><div class="tabla-env"><table><thead><tr><th>Documento</th><th>Vencimiento</th><th>Estado</th>${g?"<th></th>":""}</tr></thead><tbody>${DOCS.map(([k,n])=>op.docEdit===k?`<tr><td>${n}</td><td colspan="${g?3:2}"><form class="doc-edit" id="f-doc" data-k="${k}"><label class="sr" for="d-fecha">Nuevo vencimiento</label><input type="date" id="d-fecha" value="${v[k]||""}" min="${iso(HOY).slice(0,10)}">${k==="polizaVence"?`<label class="sr" for="d-num">N° de póliza</label><input type="text" id="d-num" class="mono" value="${esc(v.poliza||"")}" placeholder="N° de póliza">`:`<label class="sr" for="d-num">N° de documento</label><input type="text" id="d-num" class="mono" placeholder="N° o folio (opcional)">`}<button class="btn chico" type="submit">Guardar</button><button class="btn sec chico" type="button" data-doc-cancel>Cancelar</button></form></td></tr>`:`<tr><td>${n}${k==="polizaVence"&&v.poliza?` <span class="tenue peq mono">${esc(v.poliza)}</span>`:""}</td><td class="num">${v[k]?fF(v[k]):"—"}</td><td>${chipEstadoDoc(v[k])}</td>${g?`<td class="d"><button class="btn sec chico" type="button" data-doc="${k}">Actualizar</button></td>`:""}</tr>`).join("")}</tbody></table></div>`; }
+  if(fichaTab==="docs") c=`<p class="tenue peq">Vencimientos de los documentos del vehículo. Se actualizan en <b>Taller y documentos</b>.</p>`+docsTablaHTML(v,{},false);
   if(fichaTab==="mant") c=`<div class="estado-linea">${chipMant(v)}<span class="tenue peq">Última: ${km(v.ultMant)} km · próxima: ${km(v.proxMant)} km</span></div>
     ${v.diag?`<div class="regla ${/CATASTR|CRÍTICO|URGENTE/.test(v.diag)?"bl":"av"}"><span class="ico">!</span><div><b>Diagnóstico de la planilla de mantenciones</b><span>${esc(v.diag)}</span></div></div>`:""}
-    ${g?(op.nuevaOT?otFormHTML(v,op):`<div><button class="btn chico" type="button" data-op2="ot">Nueva orden de trabajo</button></div>`):""}
-    <div class="tabla-env"><table><thead><tr><th>Orden</th><th>Fecha</th><th>Tipo</th><th>Trabajos</th><th>Taller</th><th>Estado</th><th></th></tr></thead><tbody>${ots.length?ots.map(o=>`<tr><td class="mono">${o.id}</td><td class="num">${fF(o.fecha)}</td><td class="peq">${o.tipo}</td><td class="peq">${esc(o.trabajos.join(", "))}${o.realizados?`<span class="tenue peq" style="display:block">Realizado: ${esc(o.realizados)}</span>`:""}</td><td class="peq">${esc(o.taller)}</td><td>${o.estado==="Cerrada"?chip("Cerrada","c-neu","✓"):chip(o.estado,"c-tall","⚙")}${o.factura?`<br><span class="peq tenue">${o.factura.n} · ${clp(o.factura.monto)}</span>`:""}</td><td>${g&&o.estado!=="Cerrada"?`<button class="btn sec chico" type="button" data-cerrar-ot="${o.id}">Cerrar</button>`:""}</td></tr>`).join(""):`<tr><td colspan="7" class="tenue">Sin órdenes de trabajo.</td></tr>`}</tbody></table></div><div id="cierre-ot"></div>`;
+    <p class="tenue peq">Historial de órdenes de trabajo. Las órdenes se abren y se cierran en <b>Taller y documentos</b>.</p>
+    <div class="tabla-env"><table><thead><tr><th>Orden</th><th>Fecha</th><th>Tipo</th><th>Trabajos</th><th>Taller</th><th>Estado</th></tr></thead><tbody>${ots.length?ots.map(o=>`<tr><td class="mono">${o.id}</td><td class="num">${fF(o.fecha)}</td><td class="peq">${o.tipo}</td><td class="peq">${esc(o.trabajos.join(", "))}${o.realizados?`<span class="tenue peq" style="display:block">Realizado: ${esc(o.realizados)}</span>`:""}</td><td class="peq">${esc(o.taller)}</td><td>${o.estado==="Cerrada"?chip("Cerrada","c-neu","✓"):chip(o.estado,"c-tall","⚙")}${o.factura?`<br><span class="peq tenue">${o.factura.n} · ${clp(o.factura.monto)}</span>`:""}</td></tr>`).join(""):`<tr><td colspan="6" class="tenue">Sin órdenes de trabajo.</td></tr>`}</tbody></table></div>`;
   if(fichaTab==="comb"){ let tot=0, lts=0; c=`<div class="tabla-env"><table><thead><tr><th>Fecha</th><th>Origen</th><th>Estación</th><th>Litros</th><th>Monto</th><th>Odómetro</th><th>km/L</th></tr></thead><tbody>${cs.map((x,i)=>{const prev=cs[i-1]; const r=prev?(x.km-prev.km)/x.lt:null; tot+=x.monto; lts+=x.lt; return `<tr><td class="num">${fF(x.fecha)}</td><td class="peq">${x.origen}</td><td class="peq">${esc(x.est)}</td><td class="d">${x.lt}</td><td class="d">${clp(x.monto)}</td><td class="d">${km(x.km)}</td><td class="d">${r?(r<6?chip(r.toFixed(1).replace(".",",")+" bajo","c-pend","!"):r.toFixed(1).replace(".",",")):"—"}</td></tr>`}).join("")||`<tr><td colspan="7" class="tenue">Sin cargas registradas.</td></tr>`}</tbody></table></div><div class="pie-tabla"><span>${cs.length} cargas · ${lts} litros</span><span class="total">${clp(tot)}</span></div>`; }
   if(fichaTab==="gastos"){ const t=gs.reduce((s,x)=>s+x.monto,0); c=`<div class="regla inf"><span class="ico" aria-hidden="true">i</span><div><b>Qué gastos se registran aquí</b><span>Cada factura o boleta pagada por este vehículo que no sea combustible: mantenciones y reparaciones (con la factura de la orden de trabajo), prima del seguro, SOAP, permiso de circulación, revisión técnica, control de gases y gastos varios (peajes, estacionamientos, lavado). El combustible se registra en la pestaña Combustible o con el archivo COPEC. Se imputa al folio que corresponda y queda en el reporte «Gastos por vehículo».</span></div></div>${g?(op.nuevoGasto?gastoFormHTML(pat):`<div><button class="btn chico" type="button" data-op2="gasto">Registrar gasto</button></div>`):""}<div class="tabla-env"><table><thead><tr><th>Fecha</th><th>Documento</th><th>Proveedor</th><th>Tipo</th><th>Folio</th><th>Monto</th></tr></thead><tbody>${gs.map(x=>`<tr><td class="num">${fF(x.fecha)}</td><td class="peq">${x.doc} ${esc(x.n)}</td><td class="peq">${esc(x.prov)}</td><td class="peq">${TGX[x.tipo]}</td><td class="mono">${x.folio}</td><td class="d">${clp(x.monto)}</td></tr>`).join("")||`<tr><td colspan="6" class="tenue">Sin gastos registrados.</td></tr>`}</tbody></table></div><div class="pie-tabla"><span>${gs.length} ${gs.length===1?"documento":"documentos"}</span><span class="total">${clp(t)}</span></div>`; }
   if(fichaTab==="trasp") c=traspasosHTML(v,op);
@@ -2218,16 +2237,8 @@ function bindOT(C,pat,op,rehacer){ // abrir y cerrar órdenes de trabajo: lo usa
 function postFicha(pat, op){
   const C=$("#capa"), v=VX[pat];
   postTraspaso(pat, op);
-  C.querySelectorAll("[data-doc]").forEach(b=>b.onclick=()=>abrirFicha(pat,"docs",{docEdit:b.dataset.doc}));
-  C.querySelectorAll("[data-doc-cancel]").forEach(b=>b.onclick=()=>abrirFicha(pat,"docs"));
-  const fd=$("#f-doc"); if(fd) fd.onsubmit=e=>{ e.preventDefault(); const k=fd.dataset.k, f=$("#d-fecha").value, n=$("#d-num").value.trim();
-    if(!f||f<iso(HOY).slice(0,10)){ $("#d-fecha").setAttribute("aria-invalid","true"); tostada("Ingrese una fecha de vencimiento futura."); return; }
-    const ant=VX[pat][k]; VX[pat][k]=f; if(k==="polizaVence"&&n) VX[pat].poliza=n;
-    const nomDoc={rt:"Revisión técnica",gases:"Revisión de gases",soap:"SOAP",perm:"Permiso de circulación",polizaVence:"Póliza de seguro"}[k];
-    audit("Actualiza documento: "+nomDoc+(n?" · "+n:""),pat,ant?fF(ant):"—",fF(f)); tostada(`${nomDoc} de ${pat} actualizado: vence ${fF(f)}.`); abrirFicha(pat,"docs"); };
   C.querySelectorAll("[data-ftab]").forEach(b=>b.onclick=()=>{ const o={}; if(b.dataset.op==="ot") o.nuevaOT=true; if(b.dataset.op==="gasto") o.nuevoGasto=true; if(b.dataset.op==="trasp") o.nuevoTrasp=true; abrirFicha(pat,b.dataset.ftab,o); });
   C.querySelectorAll("[data-op2]").forEach(b=>b.onclick=()=>{ const k=b.dataset.op2; abrirFicha(pat,fichaTab,k==="ot"?{nuevaOT:true}:k==="gasto"?{nuevoGasto:true}:k==="trasp"?{nuevoTrasp:true}:{}); });
-  bindOT(C,pat,op,o=>abrirFicha(pat,"mant",o));
   const fg=$("#f-gasto"); if(fg) fg.onsubmit=e=>{e.preventDefault(); const mo=+$("#ga-monto").value, n=$("#ga-n").value.trim(); if(!mo||!n){tostada("Ingresa número de documento y monto.");return}
     GASTOS.unshift({id:nGasto++,fecha:iso(HOY).slice(0,10),pat,doc:$("#ga-doc").value,n,prov:$("#ga-prov").value||"—",tipo:$("#ga-tipo").value,monto:mo,km:+$("#ga-km").value,folio:$("#ga-folio").value});
     audit("Registra gasto",pat+" · "+n,"—",clp(mo)); tostada("Gasto registrado."); abrirFicha(pat,"gastos"); };
