@@ -1049,7 +1049,7 @@ function condApto(cid, r, ignorar){
 const REQ_SOL=/^(Capacidad|Requiere 4x4|Sin espacio de carga)/;
 const PASOS_SOL=["Viaje","Destinos y cometido","Personas","Revisar y enviar"];
 const PASO_DE={"f-sal":1,"f-sal-h":1,"f-reg":1,"f-reg-h":1,"f-dest":2,"f-com":2,"f-km":2,"f-cond":3,"f-pas":3,"f-sol-u":1,"f-motivo":1};
-const CAMPO_ERR={"Falta el funcionario a cargo":"f-sol-u","Falta el motivo de la urgencia":"f-motivo","Falta la fecha de salida":"f-sal","Falta la hora de salida":"f-sal-h","Falta la fecha de regreso":"f-reg","Falta la hora de regreso":"f-reg-h","Fechas incoherentes":"f-reg","Salida en el pasado":"f-sal","Faltan los kilómetros":"f-km","Destino incompleto":"f-dest","Capacidad excedida":"f-pas","Falta conductor":"f-cond","Conductor no habilitado":"f-cond","Revisa los acompañantes":"f-pas","Cometido incompleto":"f-com"};
+const CAMPO_ERR={"Falta el funcionario a cargo":"f-sol-u","Falta el motivo de la asignación":"f-motivo","Falta la fecha de salida":"f-sal","Falta la hora de salida":"f-sal-h","Falta la fecha de regreso":"f-reg","Falta la hora de regreso":"f-reg-h","Fechas incoherentes":"f-reg","Salida en el pasado":"f-sal","Faltan los kilómetros":"f-km","Destino incompleto":"f-dest","Capacidad excedida":"f-pas","Falta conductor":"f-cond","Conductor no habilitado":"f-cond","Revisa los acompañantes":"f-pas","Cometido incompleto":"f-com"};
 function disponibilidad(r){
   const region="Oficina Central";
   const pool=VEH.filter(v=>v.modalidad.startsWith("Pool")&&regionBase(v)===region);
@@ -1092,7 +1092,7 @@ function enviarCorreoSalida(r,previa){
   const v=VX[r.pat]||{}, cambio=!!previa;
   const c={t:iso(new Date(HOY.getTime()+((r.correos||[]).length+1)*60000)),de:"flota@conaf.cl",para:[r.sol,r.jefe].filter((x,i,a)=>x&&a.indexOf(x)===i),por:ROLES[rol].quien,cambio,previa:previa||"",
     asunto:(cambio?"Cambio en la asignación de su salida a terreno ":"Salida a terreno confirmada ")+r.id,
-    datos:[["N° de orden",r.id],["Cometido",r.cometido]].concat(r.urg?[["Asignación","Por urgencia o emergencia, sin solicitud previa"]]:[]).concat([["Destino",r.destinos.map(d=>(d.lug?d.lug+", ":"")+d.com+" ("+d.reg+")").join(" · ")],
+    datos:[["N° de orden",r.id],["Cometido",r.cometido]].concat(r.urg?[["Asignación","Asignación manual, sin solicitud previa del funcionario"]]:[]).concat([["Destino",r.destinos.map(d=>(d.lug?d.lug+", ":"")+d.com+" ("+d.reg+")").join(" · ")],
       ["Fecha de salida",fF(r.salida)],["Hora de salida",horaDe(r.salida)],["Fecha de regreso",fF(r.regreso)],["Hora de regreso",horaDe(r.regreso)],
       ["Vehículo",r.pat+(v.marca?" · "+v.marca+" "+(v.modelo||""):"")],["Conductor",r.cond?nom(r.cond):"—"]]).concat(r.relevo?[["Conductor de relevo",nom(r.relevo)]]:[])};
   (r.correos=r.correos||[]).push(c);
@@ -1272,14 +1272,14 @@ function vNueva(){
   const habil = COND.filter(c=>c.tipo==="HABILITADO" && (c.region||"Oficina Central")===regionSol && condApto(c.id,{...b,id:"tmp",pas:[],req:{},salida:b.salida||iso(HOY),regreso:b.regreso||iso(HOY)},null).ok);
   const condOpts=(selId)=>`<option value="">— Seleccionar —</option>`+habil.map(c=>`<option value="${c.id}" ${c.id===selId?"selected":""}>${esc(nom(c.id))} · licencia ${c.clases.join("/")}</option>`).join("");
   b._paso=b._paso||1; b._max=Math.max(b._max||1,b._paso);
-  return `<div class="cab-vista cab-compacta"><h1>${urg?"Asignación manual por urgencia o emergencia":"Nueva solicitud de vehículo"}</h1>${b.ejemplo&&!b.editId?`<p class="nota-mini">Ejemplo precargado para la demostración. <button class="link-edit" type="button" id="btn-limpiar">Limpiar formulario</button></p>`:""}</div>`+
-  (urg?`<div class="regla av" style="margin-bottom:var(--e-4)"><span class="ico" aria-hidden="true">!</span><div><b>Salida sin solicitud del funcionario</b><span>Se usa sólo ante una urgencia o emergencia que resulte de la naturaleza de las funciones de CONAF. La salida queda aprobada sin pasar por la jefatura, con el motivo y quién la autoriza registrados; a continuación se asignan el vehículo y el conductor.</span></div></div>`:"")+
+  return `<div class="cab-vista cab-compacta"><h1>${urg?"Asignación manual":"Nueva solicitud de vehículo"}</h1>${b.ejemplo&&!b.editId?`<p class="nota-mini">Ejemplo precargado para la demostración. <button class="link-edit" type="button" id="btn-limpiar">Limpiar formulario</button></p>`:""}</div>`+
+  (urg?`<div class="regla av" style="margin-bottom:var(--e-4)"><span class="ico" aria-hidden="true">!</span><div><b>Salida sin solicitud del funcionario</b><span>El vehículo se asigna sin que el funcionario haya hecho la solicitud. La salida queda aprobada sin pasar por la jefatura, con el motivo y quién la asignó registrados; a continuación se asignan el vehículo y el conductor.</span></div></div>`:"")+
   (b.editId?`<div class="regla av" style="margin-bottom:var(--e-4)"><span class="ico" aria-hidden="true">!</span><div><b>Corrigiendo la solicitud ${b.editId}</b><span>${esc(b.obs||"Tu jefatura pidió corregir la solicitud.")} Al enviar, vuelve a tu jefatura para su aprobación.</span></div></div>`:"")+
   `<div class="form-sol-env"><ol class="wiz" id="wiz" aria-label="Pasos de la solicitud">${PASOS_SOL.map((n,i)=>`<li><button type="button" data-wiz="${i+1}"><span class="n">${i+1}</span>${n}</button></li>`).join("")}</ol>
   <form id="form-sol" class="grid" novalidate>
    <fieldset data-paso="1"><legend><span class="seccion-num">1</span>Identificación</legend><div class="campos">
      ${urg?`<div class="campo"><label for="f-sol-u">Funcionario a cargo del cometido</label><select id="f-sol-u"><option value="">— Seleccionar —</option>${PERS.filter(x=>x.id!==ROLES[rol].quien).map(x=>`<option value="${x.id}" ${x.id===b.sol?"selected":""}>${esc(x.nom)} · ${esc(x.cargo)}</option>`).join("")}</select></div>
-     <div class="campo ancho"><label for="f-motivo">Motivo de la urgencia o emergencia</label><textarea id="f-motivo" rows="2" placeholder="Describe la urgencia o emergencia que justifica asignar el vehículo sin solicitud previa">${esc(b.motivo)}</textarea></div>`:`<div class="campo"><span class="lbl">Solicitante</span><span class="dato-fijo" id="f-sol">${esc(yo.nom)} · ${esc(yo.rut)}<small>${esc(yo.cargo)} · ${esc(yo.ger)}</small></span></div>
+     <div class="campo ancho"><label for="f-motivo">Motivo de la asignación manual</label><textarea id="f-motivo" rows="2" placeholder="Describe por qué se asigna el vehículo sin solicitud previa del funcionario">${esc(b.motivo)}</textarea></div>`:`<div class="campo"><span class="lbl">Solicitante</span><span class="dato-fijo" id="f-sol">${esc(yo.nom)} · ${esc(yo.rut)}<small>${esc(yo.cargo)} · ${esc(yo.ger)}</small></span></div>
      <div class="campo"><label for="f-jefe">Jefatura que autoriza el cometido</label><select id="f-jefe">${jefes.map(j=>`<option value="${j.id}" ${j.id===b.jefe?"selected":""}>${esc(j.nom)} · ${esc(j.cargo)}</option>`).join("")}</select></div>`}
    </div></fieldset>
    <fieldset data-paso="1"><legend><span class="seccion-num">2</span>Programación del viaje</legend><div class="campos c4">
@@ -1353,7 +1353,7 @@ post.nueva = ()=>{
       if(!rutValido(x.rut)) m="RUT inválido"; else if(!personaPorRut(x.rut)) m="no está en la nómina de CONAF"; else if(k===yoRut) m="eres tú: ya cuentas como ocupante"; else if(k===condRut) m="ya va como conductor"; else if(vistosR.has(k)) m="está repetido";
       vistosR.add(k); if(m) probPas.push({i,m,rut:x.rut}); });
     if(probPas.length) reg("bl","Revisa los acompañantes",probPas.map(x=>`${x.rut||"Sin RUT"}: ${x.m}`).join(" · ")+"."); else if(pv.length) reg("ok","Acompañantes",`${pv.length} ${pv.length===1?"acompañante":"acompañantes"}.`);
-    if(b.urgente){ if(!b.sol) reg("bl","Falta el funcionario a cargo","Selecciona al funcionario a cargo del cometido."); if(b.motivo.trim().length<15) reg("bl","Falta el motivo de la urgencia","Describe la urgencia o emergencia que justifica la asignación (mín. 15 caracteres)."); }
+    if(b.urgente){ if(!b.sol) reg("bl","Falta el funcionario a cargo","Selecciona al funcionario a cargo del cometido."); if(b.motivo.trim().length<15) reg("bl","Falta el motivo de la asignación","Describe el motivo de la asignación manual (mín. 15 caracteres)."); }
     else if(b.cometido.trim().length<15) reg("bl","Cometido incompleto","Describe la labor institucional a realizar (mín. 15 caracteres).");
     // Sin panel de revisión: cada campo obligatorio muestra su propio mensaje y el envío queda bloqueado mientras falte algo.
     const errs=out.filter(x=>x.includes('regla bl')).map(x=>({t:(x.match(/<b>(.*?)<\/b>/)||[])[1],d:(x.match(/<span>(.*?)<\/span><\/div><\/div>$/)||[])[1]||""}));
@@ -1464,8 +1464,8 @@ post.nueva = ()=>{
     const pas=pasValidos().map(x=>personaPorRut(x.rut).id);
     if(b.urgente){ const yo=ROLES[rol].quien;
       const r=R({id:nuevoId(),est:"APROBADA",fSol:iso(HOY),sol:b.sol,jefe:yo,salida:b.salida,regreso:b.regreso,destinos,cometido:b.cometido,km:b.km,cc:null,reqCond:b.reqCond,cond:b.cond||null,relevo:null,pas,externos:0,req:{t4:b.t4,carga:b.carga},tipoReq:b.tipo,urg:{motivo:b.motivo,por:yo,t:iso(HOY)}});
-      r.hist.push({t:r.fSol,quien:yo,acc:"Asignación manual por urgencia o emergencia: "+b.motivo}); RES.push(r); audit("Crea salida por urgencia (sin solicitud del funcionario)",r.id,"—","Aprobada · por asignar");
-      borrador=null; sel.salFiltro="asignar"; sel.salModo="lista"; ir("salidas"); abrirSalida(r.id); tostada(`Salida ${r.id} creada por urgencia. Asigna ahora el vehículo y el conductor.`); return; }
+      r.hist.push({t:r.fSol,quien:yo,acc:"Asignación manual: "+b.motivo}); RES.push(r); audit("Crea salida por asignación manual (sin solicitud del funcionario)",r.id,"—","Aprobada · por asignar");
+      borrador=null; sel.salFiltro="asignar"; sel.salModo="lista"; ir("salidas"); abrirSalida(r.id); tostada(`Salida ${r.id} creada por asignación manual. Asigna ahora el vehículo y el conductor.`); return; }
     if(b.editId){ const r=RES.find(x=>x.id===b.editId);
       Object.assign(r,{est:"PEND_JEFE",jefe:b.jefe,salida:b.salida,regreso:b.regreso,destinos,cometido:b.cometido,km:b.km,reqCond:b.reqCond,cond:b.cond||null,pas,req:{t4:b.t4,carga:b.carga},tipoReq:b.tipo,obsLog:""});
       r.hist.push({t:iso(HOY),quien:r.sol,acc:"Corregida y reenviada"}); audit("Corrige y reenvía solicitud",r.id,"Observada","Pendiente jefatura");
@@ -1620,7 +1620,7 @@ function filasTesoreria(){
     const personas=[[r.sol,"Solicitante"],[r.cond,"Conductor"],[r.relevo,"Conductor de relevo"],...r.pas.map(x=>[x,"Acompañante"])].filter(x=>x[0]);
     const vistos=new Set();
     personas.forEach(([id,rolv])=>{ if(vistos.has(id)) return; vistos.add(id); const p=PX[id];
-      out.push({id:r.id,rut:p.rut,nom:p.nom,rol:rolv,sal:r.bit.sal,reg:r.bit.reg,dias,destino:r.destinos.map(d=>`${d.lug}, ${d.com}`).join(" · "),region:regs,provincia:provs,cometido:r.cometido,folio:r.cc,folioTxt:CCX[r.cc]?.t||"",prog:CCX[r.cc]?.prog||"",ger:gerenciaFolio(r.cc),jefe:nom(r.jefe)+(r.urg?" (urgencia)":"")}); });
+      out.push({id:r.id,rut:p.rut,nom:p.nom,rol:rolv,sal:r.bit.sal,reg:r.bit.reg,dias,destino:r.destinos.map(d=>`${d.lug}, ${d.com}`).join(" · "),region:regs,provincia:provs,cometido:r.cometido,folio:r.cc,folioTxt:CCX[r.cc]?.t||"",prog:CCX[r.cc]?.prog||"",ger:gerenciaFolio(r.cc),jefe:nom(r.jefe)+(r.urg?" (asignación manual)":"")}); });
   });
   return out.sort((a,b)=>a.sal.localeCompare(b.sal)||a.nom.localeCompare(b.nom));
 }
@@ -1640,7 +1640,7 @@ function abrirOrden(id){
   <div class="orden"><div class="enc"><div><b>Corporación Nacional Forestal</b><br>Gerencia de Finanzas y Administración · Unidad de Vehículos<h3>Orden de salida de vehículo fiscal</h3><span class="mono">N° ${r.id}</span> · fecha de emisión ${fF(HOY)} · hora de emisión ${fH(HOY)}</div></div>
   <table><tbody>
    <tr><td>Solicitado por</td><td>${esc(nom(r.sol))} · ${esc(PX[r.sol].ger)}</td></tr>
-   <tr><td>Autorizado por</td><td>${esc(nom(r.jefe))} · ${esc(PX[r.jefe].cargo)}${r.urg?" · asignación por urgencia o emergencia":""}</td></tr>${r.urg?`<tr><td>Motivo de la urgencia</td><td>${esc(r.urg.motivo)}</td></tr>`:""}
+   <tr><td>Autorizado por</td><td>${esc(nom(r.jefe))} · ${esc(PX[r.jefe].cargo)}${r.urg?" · asignación manual":""}</td></tr>${r.urg?`<tr><td>Motivo de la asignación manual</td><td>${esc(r.urg.motivo)}</td></tr>`:""}
    <tr><td>Cometido</td><td>${esc(r.cometido)}</td></tr>
    <tr><td>Destino</td><td>${esc(r.destinos.map(d=>`${d.lug}, ${d.com}, Región de ${d.reg}`).join(" · "))}</td></tr>
    <tr><td>Imputación</td><td>${r.cc?`${esc(r.cc)} · ${esc(cc?.t||"")}`:"Por definir"}</td></tr>
@@ -1994,7 +1994,7 @@ function abrirSalida(id){
   else if(r.obsLog) accion = `<p class="nota">${esc(r.obsLog)}</p>`;
   if(gestor&&!paso.hecho&&!paso.conf&&!paso.anular&&rol==="super"&&(r._snaps||[]).length) accion+=`<p class="tenue peq" style="margin-top:var(--e-3)">¿El último registro fue un error? <button class="btn sec chico" type="button" id="x-anular">Anular último registro</button></p>`;
   const cuerpo=`<div class="estado-linea">${chipR(r.est)}</div>${gestor?pasosHTML(r):flujoHTML(r.est)}
-   <div class="seccion"><h3>Solicitud</h3><dl class="ficha"><dt>Cometido</dt><dd>${esc(r.cometido)}</dd>${r.urg?`<dt>Urgencia</dt><dd>Asignada sin solicitud del funcionario por ${esc(nom(r.urg.por))}, el ${fFH(r.urg.t)}. Motivo: ${esc(r.urg.motivo)}</dd>`:""}<dt>Destino</dt><dd>${r.destinos.map(d=>esc(`${d.lug}, ${d.com} (${d.reg})`)).join("<br>")}</dd><dt>Periodo</dt><dd class="num">${fFH(r.salida)} → ${fFH(r.regreso)}</dd><dt>Personas</dt><dd>${pasajeros(r)} · ${[r.sol!==r.cond?nom(r.sol)+" (solicitante)":"",r.cond?nom(r.cond)+" (conductor)":r.reqCond?"conductor del pool":"",r.relevo?nom(r.relevo)+" (relevo)":"",...r.pas.map(nom)].filter(Boolean).map(esc).join(", ")}</dd><dt>Requisitos</dt><dd>${[r.req.t4?"4x4":"",r.req.carga?"espacio de carga":""].filter(Boolean).join(" · ")||"—"}</dd><dt>Distancia</dt><dd>${distanciaTxt(r)}</dd><dt>Solicita</dt><dd>${esc(nom(r.sol))} · ${r.urg?"asigna":"autoriza"} ${esc(nom(r.jefe))}</dd><dt>Imputación</dt><dd>${r.cc?`<span class="mono">${esc(r.cc)}</span> ${cc?esc(cc.t):""}`:(r.urg?"Por definir":"Por definir (jefatura)")}</dd>${r.pat?`<dt>Vehículo</dt><dd>${placa(r.pat)} ${esc(VX[r.pat].marca+" "+VX[r.pat].modelo)}</dd>`:""}</dl>
+   <div class="seccion"><h3>Solicitud</h3><dl class="ficha"><dt>Cometido</dt><dd>${esc(r.cometido)}</dd>${r.urg?`<dt>Asignación manual</dt><dd>Asignada sin solicitud del funcionario por ${esc(nom(r.urg.por))}, el ${fFH(r.urg.t)}. Motivo: ${esc(r.urg.motivo)}</dd>`:""}<dt>Destino</dt><dd>${r.destinos.map(d=>esc(`${d.lug}, ${d.com} (${d.reg})`)).join("<br>")}</dd><dt>Periodo</dt><dd class="num">${fFH(r.salida)} → ${fFH(r.regreso)}</dd><dt>Personas</dt><dd>${pasajeros(r)} · ${[r.sol!==r.cond?nom(r.sol)+" (solicitante)":"",r.cond?nom(r.cond)+" (conductor)":r.reqCond?"conductor del pool":"",r.relevo?nom(r.relevo)+" (relevo)":"",...r.pas.map(nom)].filter(Boolean).map(esc).join(", ")}</dd><dt>Requisitos</dt><dd>${[r.req.t4?"4x4":"",r.req.carga?"espacio de carga":""].filter(Boolean).join(" · ")||"—"}</dd><dt>Distancia</dt><dd>${distanciaTxt(r)}</dd><dt>Solicita</dt><dd>${esc(nom(r.sol))} · ${r.urg?"asigna":"autoriza"} ${esc(nom(r.jefe))}</dd><dt>Imputación</dt><dd>${r.cc?`<span class="mono">${esc(r.cc)}</span> ${cc?esc(cc.t):""}`:(r.urg?"Por definir":"Por definir (jefatura)")}</dd>${r.pat?`<dt>Vehículo</dt><dd>${placa(r.pat)} ${esc(VX[r.pat].marca+" "+VX[r.pat].modelo)}</dd>`:""}</dl>
    ${["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)?`<div><button class="btn sec chico" type="button" data-orden="${r.id}">Ver orden de salida</button></div>`:""}</div>
    <div class="seccion" id="accion">${accion}</div>
    ${gestor&&paso.hecho?"":`<div class="pie-cajon"><button class="btn sec" type="button" data-volver-sal>← Volver a Salidas a terreno</button></div>`}`;
@@ -2014,7 +2014,7 @@ function pasosHTML(r){
   const idx={PEND_JEFE:0,OBSERVADA:0,APROBADA:1,CONFIRMADA:2,EN_TERRENO:3,FINALIZADA:4}[r.est];
   if(idx==null) return flujoHTML(r.est);
   const b=r.bit||{};
-  const P=[["Aprobación",r.urg?`Asignación por urgencia · ${nom(r.jefe)}`:idx>0?`Aprobada por ${nom(r.jefe)}`:`Esperando a ${nom(r.jefe)}`],
+  const P=[["Aprobación",r.urg?`Asignación manual · ${nom(r.jefe)}`:idx>0?`Aprobada por ${nom(r.jefe)}`:`Esperando a ${nom(r.jefe)}`],
    ["Asignación",idx>1?`${r.pat} · ${r.cond?nom(r.cond):"conductor propio"}`:idx===1?"Elegir vehículo, tarjeta y conductor":"Se habilita al aprobar la jefatura"],
    ["Salida",idx>2?`${fCorta(b.sal)} · ${km(b.odoS)} km`:idx===2?(entregaAbierta(r)?"Registrar la entrega del vehículo":`Se habilita el ${diaTxt(r.salida)}`):"Se habilita al asignar"],
    ["Regreso",idx>3?`${fCorta(b.reg)} · ${km(b.odoR-b.odoS)} km recorridos`:idx===3?"Registrar la recepción del vehículo":"Se habilita al registrar la salida"]];
