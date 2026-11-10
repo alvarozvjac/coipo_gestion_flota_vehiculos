@@ -1214,7 +1214,7 @@ function vMis(){
      <td class="mono">${r.id}</td>${comCelda(r)}<td class="num">${fCorta(r.salida)}</td><td>${esc(r.destinos.map(d=>d.com).join(" · "))}</td>
      <td>${r.pat?placa(r.pat):'<span class="tenue">—</span>'}</td><td>${chipR(r.est)}</td>
      <td class="mis-acc">${["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)?`<button class="btn sec chico" type="button" data-orden="${r.id}">Orden</button>`:r.est==="OBSERVADA"?`<button class="btn chico" type="button" data-corregir="${r.id}">Corregir</button>`:""}${chev}</td></tr>`;
-  return `<div class="cab-vista cab-compacta cab-mis"><h1>Mis salidas</h1><button class="btn chico" type="button" data-ir="nueva">+ Nueva solicitud</button></div>
+  return `<div class="cab-vista cab-compacta cab-mis"><h1>Mis salidas</h1></div>
    ${tabsHTML([["curso",`En curso (${curso.length})`],["hist",`Historial (${hist.length})`]],sel.misTab,"data-mt")}
    <section class="panel mis-panel">${sel.misTab==="hist"?excelTira("mis"):""}
    ${ver.length?tablaFilas(["N° orden","Cometido","Salida","Destino","Patente","Estado"],ver.map(fila).join(""),[2,5],[1,4])
@@ -1928,15 +1928,11 @@ function vInicio(){
     const prox=eq.filter(r=>["APROBADA","CONFIRMADA"].includes(r.est)&&F(r.salida)>=HOY&&F(r.salida)<fin7);
     const semana=eq.filter(r=>["PEND_JEFE","OBSERVADA","APROBADA","CONFIRMADA","EN_TERRENO"].includes(r.est)&&F(r.regreso)>=HOY&&F(r.salida)<fin7).sort((a,b)=>a.salida.localeCompare(b.salida));
     const dias=x=>Math.max(0,Math.floor((HOY-F(x))/DIA)), hace=d=>d===0?"hoy":d===1?"hace 1 día":`hace ${d} días`;
-    const mes=eq.filter(r=>r.est==="FINALIZADA"&&r.bit?.sal&&F(r.bit.sal).getMonth()===HOY.getMonth()&&F(r.bit.sal).getFullYear()===HOY.getFullYear());
-    const kmMes=mes.reduce((a,r)=>a+(r.bit.odoR?r.bit.odoR-r.bit.odoS:0),0), diasMes=mes.reduce((a,r)=>a+Math.max(1,Math.ceil((F(r.bit.reg||r.regreso)-F(r.bit.sal))/DIA)),0);
-    const pers=mes.reduce((a,r)=>a+pasajeros(r),0), folios=[...new Set(mes.map(r=>r.cc).filter(Boolean))];
     ACCESOS=[{v:"bandeja",ico:"aprobar",t:"Por aprobar",d:pend.length?`La más antigua espera desde ${hace(dias(pend[0].fSol))}.`:"No hay solicitudes esperando tu decisión.",cta:"Revisar",n:pend.length,nl:"por aprobar",aviso:true,principal:true},
              {v:"calendario",ico:"calendario",t:"Calendario de mi equipo",d:`Salidas y vehículos de tu equipo por estado, por mes o por año.${terr.length?` Hoy hay ${terr.length} en terreno.`:""}`,cta:"Ver calendario"},
              {v:"equipo",ico:"equipo",t:"Salidas de mi equipo",d:"Historial de lo que autorizaste y Excel mensual o anual.",cta:"Ver historial"}];
     return heroHTML(pend.length?`Tienes ${pend.length} ${pend.length===1?"solicitud":"solicitudes"} de tu equipo esperando tu aprobación.`:"No tienes solicitudes pendientes de aprobación.")+
-      `<div class="accesos acc-n acc-jef" style="--n:3">${accesosHTML(ACCESOS).replace(/^<div[^>]*>/,"").replace(/<\/div>$/,"")}</div>
-      <p class="jef-mes"><b>${MESES[HOY.getMonth()][0].toUpperCase()+MESES[HOY.getMonth()].slice(1)} ${HOY.getFullYear()} · tu equipo</b><span><b class="num">${mes.length}</b> ${mes.length===1?"salida realizada":"salidas realizadas"}</span><span><b class="num">${km(kmMes)}</b> km recorridos</span><span><b class="num">${diasMes}</b> días en terreno</span><span><b class="num">${pers}</b> personas trasladadas</span><span>Folio${folios.length===1?"":"s"}: <b class="mono">${folios.join(", ")||"—"}</b></span></p>`;
+      `<div class="accesos acc-n acc-jef" style="--n:3">${accesosHTML(ACCESOS).replace(/^<div[^>]*>/,"").replace(/<\/div>$/,"")}</div>`;
   }
   return "";
 }
