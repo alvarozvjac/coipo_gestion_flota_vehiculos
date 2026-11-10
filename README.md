@@ -33,6 +33,14 @@ Manual: [`manuales/manual-usuario-v4.pdf`](manuales/manual-usuario-v4.pdf) (cinc
 | La asignación manual avisa por correo a la jefatura directa del funcionario, y un filtro reúne esas salidas | Diferencia maqueta y ERS (decisión 2.31) | Salidas a terreno |
 | Bitácora: foto del tablero obligatoria, conductor que retira y que entrega, estado del vehículo al entregar y al recibir, y devolución de la tarjeta de combustible | §5.1: odómetro sin respaldo, «Recepción Conforme» sin checklist, sin conductor real ni devolución de tarjeta | Entregar y recibir vehículo |
 | Cargas para revisar: rendimiento fuera de lo habitual, dos cargas en menos de 24 horas o precio por litro atípico | §5.4: sin reglas de uso indebido de la tarjeta | Combustible y gastos |
+| Plazo de la jefatura: cada solicitud muestra los días hábiles de espera, con marca «fuera de plazo» sobre 2 | §4.3: sin plazos ni avisos | Por aprobar (jefatura) |
+| Ausencia y subrogancia: la jefatura registra quién la subroga y hasta cuándo; nadie aprueba su propia solicitud | §4.3 y §6: sin subrogancia ni jefatura directa | Por aprobar → Ausencia y subrogancia; usuario de prueba «Jefatura subrogante» |
+| Salidas con regreso atrasado: marca, filtro y aviso en el Inicio; el vehículo y el conductor no se ofrecen hasta que vuelvan | §5.1: una salida puede no cerrarse nunca | Salidas a terreno, filtro «Atrasadas» |
+| Holgura de una hora entre dos salidas del mismo vehículo o conductor | §4.3: la ocupación no incluía holguras | Asignar vehículo |
+| Historial de cada salida: quién, cuándo y motivo de cada cambio de estado | §4.3 y §6: el estado se sobrescribía | Detalle de la salida |
+| Hoja «Trazabilidad» en cada Excel (quién, cuándo, filtros, filas) | §4.4: exportaciones sin trazabilidad | Reportes y Excel de salidas |
+| Tarjetas de combustible por devolver: filtro y registro posterior de la devolución | Sigue a la bitácora de la v4 | Salidas a terreno, filtro «Tarjeta por devolver» |
+| Alineación con el estándar de interfaz de `coipo_master_produccion`: banner con piso de 68 px y título en su franja en teléfono (UI-1, UI-2), banners copiados de `identidad/7_banner_FINANZAS`, franja «Maqueta no operacional» compacta, cortes de §8.2, tamaños de letra como tokens y una sola curva | Validación contra la fábrica (10-11-2026) | Toda la maqueta |
 
 Ya estaban resueltos en la versión 3 y no cambian: el estado «Observada», la imputación definida por la jefatura, el
 bloqueo de la entrega con documentos vencidos o vehículo en taller, la reasignación, el odómetro mínimo, el aviso de
