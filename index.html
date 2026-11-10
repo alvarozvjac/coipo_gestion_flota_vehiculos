@@ -55,6 +55,9 @@
   --st-excl:#c6ccd4; --st-excl-bg:#2b3036; --st-neu:#bccabf; --st-neu-bg:#25302a;
   color-scheme:dark;
 }}
+:root[data-theme="light"]{color-scheme:light}
+.btn-tema .ico-tema{font-size:1.05em;line-height:1}
+@media (max-width:640px){.btn-tema .txt-tema{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
 :root[data-theme="dark"]{
   --bg:#141714; --sup:#1c201b; --sup-2:#212b25; --sup-3:#29342d; --linea:#33413a; --linea-fuerte:#4e5f55;
   --tinta:#e5ece7; --tinta-2:#b4c1b8; --tinta-3:#8f9d94;
@@ -469,6 +472,8 @@ th{background:var(--sup-2);color:var(--tinta-2)}
 tr.clic:hover{background:var(--verde-tinte)}
 footer.pie-app{background:var(--verde-tinta);color:#e9f1e7;border-top:4px solid var(--verde-acento)}
 .pie-app span{color:inherit}
+:root[data-theme="dark"] footer.pie-app{background:#1f3a1c;color:#d7e6d3;border-top-color:#467d3e}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) footer.pie-app{background:#1f3a1c;color:#d7e6d3;border-top-color:#467d3e} }
 
 /* Inicio por perfil */
 .hero{position:relative;overflow:hidden;border-radius:12px;background:linear-gradient(115deg,var(--verde-tinta) 0%,#3f6b38 60%,var(--verde-acento) 100%);color:#fff;padding:var(--e-6) var(--e-6);margin-bottom:var(--e-6);display:flex;justify-content:space-between;align-items:flex-end;gap:var(--e-5);flex-wrap:wrap;box-shadow:var(--s-2)}
@@ -568,7 +573,7 @@ body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{d
   #rol-chip{display:none}
   .quien{border-left:0;padding-left:0}
   .quien .qtxt{display:none}
-  #btn-salir{min-width:44px;min-height:44px;padding:0;justify-content:center}
+  #btn-salir,#btn-tema{min-width:44px;min-height:44px;padding:0;justify-content:center}
   #btn-salir .txt-salir{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   .nav button{min-height:44px} /* la pestaña «Inicio» queda visible también en teléfono */
   .hero{padding:var(--e-4)}
@@ -789,6 +794,7 @@ tr.pag-oculta{display:none}
     <div class="perfil">
       <span class="rol-chip" id="rol-chip"></span>
       <div class="quien" id="quien"></div>
+      <button class="btn sec chico btn-tema" type="button" id="btn-tema" aria-pressed="false"><span class="ico-tema" aria-hidden="true">☾</span><span class="txt-tema">Tema oscuro</span></button>
       <button class="btn sec chico" type="button" id="btn-salir"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-salir"/></svg><span class="txt-salir">Cerrar sesión</span></button>
     </div>
   </div>
@@ -2802,6 +2808,13 @@ $("#form-login").addEventListener("submit",e=>{
   if(USR.some(u=>u.id===p.id&&!u.activo)){ err("Su usuario está inactivo. Contacte al administrador nacional."); return; }
   iniciarSesion(p);
 });
+/* Tema claro / oscuro: parte del sistema operativo y se puede cambiar; la preferencia se recuerda en este navegador. */
+function temaActual(){ const t=document.documentElement.dataset.theme; return t||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"); }
+function pintarBotonTema(){ const osc=temaActual()==="dark", b=$("#btn-tema"); if(!b) return;
+  b.setAttribute("aria-pressed",String(osc)); b.querySelector(".txt-tema").textContent=osc?"Tema claro":"Tema oscuro"; b.querySelector(".ico-tema").textContent=osc?"☀":"☾";
+  b.title=osc?"Cambiar a tema claro":"Cambiar a tema oscuro"; }
+(()=>{ let t=null; try{ t=localStorage.getItem("flota-tema"); }catch(e){} if(t==="dark"||t==="light") document.documentElement.dataset.theme=t; pintarBotonTema(); })();
+$("#btn-tema").addEventListener("click",()=>{ const nuevo=temaActual()==="dark"?"light":"dark"; document.documentElement.dataset.theme=nuevo; try{ localStorage.setItem("flota-tema",nuevo); }catch(e){} pintarBotonTema(); tostada(nuevo==="dark"?"Tema oscuro activado.":"Tema claro activado."); });
 $("#btn-salir").addEventListener("click",()=>{ try{localStorage.removeItem("flota-sesion")}catch(e){} Object.entries(QUIEN_BASE).forEach(([k,q])=>ROLES[k].quien=q); mostrarLogin(); tostada("Sesión cerrada."); });
 (()=>{ let id=null; try{ id=localStorage.getItem("flota-sesion"); }catch(e){} if(id&&PX[id]) iniciarSesion(PX[id]); else mostrarLogin(); })();
 
