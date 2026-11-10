@@ -551,6 +551,11 @@ body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{d
 .wiz button.hecho{color:var(--st-disp);border-color:var(--st-disp);background:var(--st-disp-bg)} .wiz button.hecho .n{background:var(--st-disp);border-color:var(--st-disp);color:var(--sup)}
 .wiz button[aria-current="step"]{border:2px solid var(--boton);color:var(--tinta);font-weight:600} .wiz button[aria-current="step"] .n{background:var(--boton);border-color:var(--boton);color:var(--boton-texto)}
 .wiz button:disabled{cursor:default;opacity:.6}
+.wiz button,.wiz .n{transition:background-color .3s ease,border-color .3s ease,color .3s ease,opacity .3s ease}
+#form-sol [data-paso].sale{opacity:0;transition:opacity .12s ease-in}
+#form-sol [data-paso].entra{animation:paso-entra .25s ease-out}
+@keyframes paso-entra{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){ .wiz button,.wiz .n{transition:none} #form-sol [data-paso].sale{transition:none;opacity:1} #form-sol [data-paso].entra{animation:none} }
 .nav-pasos{justify-content:space-between} .nav-pasos #btn-sig{margin-left:auto}
 .link-edit{border:0;background:none;color:var(--verde-tinta);font:inherit;font-size:var(--f-xs);font-weight:600;text-decoration:underline;cursor:pointer;margin-left:var(--e-2)}
 @media (max-width:559.98px){ /* teléfono */ .wiz{grid-template-columns:repeat(4,minmax(0,1fr))} .wiz button{flex-direction:column;justify-content:center;text-align:center;font-size:11px;padding:var(--e-1)} }
@@ -1389,8 +1394,12 @@ post.nueva = ()=>{
     </dl><div class="disp-res">${$("#f-disp").innerHTML}</div></div>`;
   }
   function mostrarPaso(n){
-    b._paso=n; b._max=Math.max(b._max||1,n);
-    document.querySelectorAll("#form-sol [data-paso]").forEach(el=>el.hidden=+el.dataset.paso!==n);
+    const antes=b._paso; b._paso=n; b._max=Math.max(b._max||1,n);
+    // Fundido suave entre pasos (10-11-2026): el paso actual se desvanece y el nuevo aparece. Sin movimiento si el sistema pide reducirlo.
+    const els=[...document.querySelectorAll("#form-sol [data-paso]")], cambiar=()=>els.forEach(el=>{ const ver=+el.dataset.paso===n; el.classList.remove("sale"); el.classList.toggle("entra",ver&&anima); el.hidden=!ver; });
+    const anima=!!antes&&antes!==n&&!matchMedia("(prefers-reduced-motion: reduce)").matches;
+    clearTimeout(mostrarPaso._t);
+    if(anima){ els.forEach(el=>{ if(!el.hidden) el.classList.add("sale"); }); mostrarPaso._t=setTimeout(cambiar,130); } else cambiar();
     $("#btn-ant").hidden=n===1; $("#btn-sig").hidden=n===4;
     document.querySelectorAll("#wiz [data-wiz]").forEach(bt=>{const k=+bt.dataset.wiz; bt.setAttribute("aria-current",k===n?"step":"false"); bt.classList.toggle("hecho",k<n||(k<=b._max&&k!==n)); bt.disabled=k>b._max;});
     if(n===4) pintarResumen(); else { const fl=$("#f-faltan"); fl.hidden=true; }
