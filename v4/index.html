@@ -167,7 +167,11 @@ th{text-align:left;font-weight:600;font-size:var(--f-xs);text-transform:uppercas
 td{padding:var(--e-2) var(--e-3);border-bottom:1px solid var(--linea);vertical-align:middle}
 tr.clic{cursor:pointer;transition:background var(--t-micro) var(--curva)}
 tr.clic:hover{background:var(--sup-2)}
-td.d{text-align:right;font-variant-numeric:tabular-nums}
+td.d,th.d{text-align:right;font-variant-numeric:tabular-nums} td.d{white-space:nowrap}
+.kpis-comb{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--e-3);margin-bottom:var(--e-4)} .kpis-comb .v{font-size:var(--f-2xl)}
+@media (max-width:559.98px){ /* teléfono */ .kpis-comb{gap:var(--e-2)} .kpis-comb .kpi{padding:var(--e-2) var(--e-3)} .kpis-comb .v{font-size:var(--f-xl)} .kpis-comb .kpi:nth-child(3){grid-column:1/-1} }
+.cab-comb{margin-bottom:var(--e-4);display:flex;justify-content:space-between;align-items:flex-end;gap:var(--e-4);flex-wrap:wrap} .cab-comb h1{margin:0 0 var(--e-1);font-size:1.375rem} .cab-comb p{margin:0;color:var(--tinta-2);font-size:var(--f-s)} .per-comb{min-width:12rem;margin:0}
+.intro-tab{color:var(--tinta-2);font-size:var(--f-s);margin:0 0 var(--e-3);max-width:75ch}
 .cat-lay{display:grid;grid-template-columns:260px minmax(0,1fr);gap:var(--e-4);align-items:start}
 .cat-lista{background:var(--sup);border:1px solid var(--linea);border-radius:var(--r-l);padding:var(--e-3);box-shadow:var(--s-1)}
 .cat-lista h3{margin:var(--e-3) var(--e-2) var(--e-1);font-size:var(--f-xs);text-transform:uppercase;letter-spacing:.06em;color:var(--tinta-3)}
@@ -1849,7 +1853,7 @@ function render(){
 }
 /* Paginación automática de tablas largas (05-11-2026): en las vistas que aún eran largas, la tabla con más filas
    muestra sólo las que caben en la ventana y agrega «Anterior / Siguiente». No cambia los datos ni los totales. */
-const VISTAS_AUTOPAG=["conductores","combustible","reportes","config"];
+const VISTAS_AUTOPAG=["conductores","reportes","config"];
 function autoPaginar(){
   const V=$("#vista"); if(!V||!VISTAS_AUTOPAG.includes(V.dataset.v)) return;
   V.querySelectorAll(".pag-auto").forEach(x=>x.remove()); V.querySelectorAll("tbody tr.pag-oculta").forEach(x=>x.classList.remove("pag-oculta"));
@@ -2421,23 +2425,40 @@ function revisionCargas(){
     if(m.length) out.push({c,m}); });
   return out.sort((a,b)=>b.c.fecha.localeCompare(a.c.fecha));
 }
-function revisionCargasHTML(){
-  const l=revisionCargas();
-  return `<section class="panel" style="margin-bottom:var(--e-4)"><header><div><h2>Cargas para revisar</h2><span class="sub">${l.length?l.length+" "+(l.length===1?"carga":"cargas")+" con una regla activada":"Ninguna carga activa una regla"} · rendimiento fuera de rango (menos del 70 % o más del 140 % de lo habitual del vehículo), dos cargas en menos de 24 horas, o precio por litro que se aleja más de un 15 % del de referencia</span></div></header>${l.length?`<div class="tabla-env"><table><thead><tr><th>Fecha</th><th>Patente</th><th>Litros</th><th>Monto</th><th>Motivo de la revisión</th></tr></thead><tbody>${l.map(({c,m})=>`<tr class="clic" data-veh="${c.pat}"><td class="num">${fF(c.fecha)}</td><td>${placa(c.pat)}</td><td class="d">${c.lt}</td><td class="d">${clp(c.monto)}</td><td class="peq">${m.map(esc).join("<br>")}</td></tr>`).join("")}</tbody></table></div>`:""}</section>`;
+function revisionCargasHTML(per){
+  const l=revisionCargas().filter(x=>enPerComb(x.c.fecha,per));
+  return `<section class="panel" style="margin-bottom:var(--e-4)"><header><div><h2>Cargas para revisar</h2><span class="sub">${l.length?`${l.length} ${l.length===1?"carga activa":"cargas activan"} una regla. No acusan a nadie: indican qué revisar.`:"Ninguna carga del periodo activa una regla."}</span></div></header>
+   <div class="cuerpo"><p class="tenue peq">Se marca una carga cuando su rendimiento se aleja de lo habitual del vehículo (menos del 70 % o más del 140 %), cuando hay otra carga del mismo vehículo en menos de 24 horas, o cuando el precio por litro se aleja más de un 15 % del de referencia.</p></div>
+   ${l.length?`<div class="tabla-env"><table><thead><tr><th>Fecha</th><th>Patente</th><th class="d">Litros</th><th class="d">Monto</th><th>Motivo de la revisión</th></tr></thead><tbody>${l.map(({c,m})=>`<tr class="clic" data-veh="${c.pat}"><td class="num">${fF(c.fecha)}</td><td>${placa(c.pat)}</td><td class="d">${c.lt}</td><td class="d">${clp(c.monto)}</td><td class="peq">${m.map(esc).join("<br>")}</td></tr>`).join("")}</tbody></table></div>`:""}</section>`;
 }
+/* Combustible y gastos (rediseño 10-11-2026, observación de Álvaro Zegers: «no entiendo la información que representan»).
+   Arriba, el periodo elegido y su resumen; debajo, cada pestaña con título, explicación y totales del periodo. */
+const enPerComb=(fecha,per)=>per==="todo"||String(fecha).slice(0,7)===per;
+const perCombTxt=per=>per==="todo"?"todo el registro":MESES[+per.slice(5,7)-1]+" de "+per.slice(0,4);
 function vCombustible(){
-  const t=sel.combTab, tabs=[["cargas","Cargas"],["copec","Importar archivo COPEC"],["gastos","Gastos por documento"]];
+  const t=sel.combTab, per=sel.combPer||(sel.combPer="2026-10"), tabs=[["cargas","Cargas de combustible"],["gastos","Otros gastos (facturas y boletas)"],["copec","Importar archivo COPEC"]];
+  const meses=[...new Set([...CARGAS,...GASTOS].map(x=>x.fecha.slice(0,7)))].sort().reverse();
+  const cargas=CARGAS.filter(x=>enPerComb(x.fecha,per)).sort((a,b)=>b.fecha.localeCompare(a.fecha)), gastos=GASTOS.filter(x=>enPerComb(x.fecha,per)).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const rdL=rendimientos(), rd=Object.fromEntries(rdL.map(r=>[r.id,r.rend])), rdP=rdL.filter(r=>enPerComb(r.fecha,per)), prom=rdP.length?rdP.reduce((s,r)=>s+r.rend,0)/rdP.length:null;
+  const nRev=revisionCargas().filter(x=>enPerComb(x.c.fecha,per)).length, lt=cargas.reduce((s,x)=>s+x.lt,0), mC=cargas.reduce((s,x)=>s+x.monto,0), mG=gastos.reduce((s,x)=>s+x.monto,0), pTxt=perCombTxt(per);
+  const resumen=`<div class="kpis-comb" aria-label="Resumen de ${pTxt}">
+    <div class="kpi"><span class="k">Combustible</span><span class="v num">${clp(mC)}</span><span class="d">${cargas.length} ${cargas.length===1?"carga":"cargas"} · ${km(lt)} litros</span></div>
+    <div class="kpi"><span class="k">Otros gastos</span><span class="v num">${clp(mG)}</span><span class="d">${gastos.length} ${gastos.length===1?"factura o boleta":"facturas o boletas"}</span></div>
+    <div class="kpi"><span class="k">Gasto total</span><span class="v num">${clp(mC+mG)}</span><span class="d">Combustible más otros gastos</span></div>
+    <div class="kpi"><span class="k">Rendimiento promedio</span><span class="v num">${prom?prom.toFixed(1).replace(".",","):"—"}<small class="peq"> km/L</small></span><span class="d">Kilómetros recorridos por litro, entre cargas</span></div>
+    <div class="kpi ${nRev?"alerta":""}"><span class="k">Cargas para revisar</span><span class="v num">${nRev}</span><span class="d">${nRev?"Ver en «Cargas de combustible»":"Ninguna regla activada"}</span></div></div>`;
   let c="";
-  if(t==="cargas"){ const lista=CARGAS.slice().sort((a,b)=>b.fecha.localeCompare(a.fecha)); const rd=Object.fromEntries(rendimientos().map(r=>[r.id,r.rend]));
-    c=`<section class="panel"><div class="tabla-env"><table><thead><tr><th>Fecha</th><th>Patente</th><th>Origen</th><th>Estación</th><th>Litros</th><th>Monto</th><th>Odómetro</th><th>km/L</th><th>Conductor</th></tr></thead><tbody>${lista.map(x=>`<tr class="clic" data-veh="${x.pat}"><td class="num">${fF(x.fecha)}</td><td>${placa(x.pat)}</td><td class="peq">${x.origen}</td><td class="peq">${esc(x.est)}</td><td class="d">${x.lt}</td><td class="d">${clp(x.monto)}</td><td class="d">${km(x.km)}</td><td class="d">${rd[x.id]?(rd[x.id]<6?chip(rd[x.id].toFixed(1).replace(".",",")+" bajo","c-pend","!"):rd[x.id].toFixed(1).replace(".",",")):"—"}</td><td class="peq">${esc(nom(x.cond))}</td></tr>`).join("")}</tbody></table></div><div class="pie-tabla"><span>${lista.length} cargas · ${lista.reduce((s,x)=>s+x.lt,0)} litros</span><span class="total">${clp(lista.reduce((s,x)=>s+x.monto,0))}</span></div></section>`; }
-  if(t==="cargas") c=revisionCargasHTML()+c;
+  if(t==="cargas"){ const {ver,pie}=paginar(cargas,"cmb",`${cargas.length} ${cargas.length===1?"carga":"cargas"} en ${pTxt}. Haz clic en una fila para ver el vehículo.`);
+    c=`<p class="intro-tab">Cada carga de combustible del periodo, pagada con la tarjeta del vehículo o en efectivo. El rendimiento se calcula con los kilómetros recorridos desde la carga anterior del mismo vehículo.</p>`+revisionCargasHTML(per)+
+    `<section class="panel"><header><div><h2>Todas las cargas · ${pTxt}</h2><span class="sub">Ordenadas de la más reciente a la más antigua</span></div></header>${cargas.length?`<div class="tabla-env"><table><thead><tr><th>Fecha</th><th>Patente</th><th>Pago</th><th>Estación</th><th class="d">Litros</th><th class="d">Monto</th><th class="d">Odómetro (km)</th><th class="d">Rendimiento (km/L)</th><th>Conductor</th></tr></thead><tbody>${ver.map(x=>`<tr class="clic" data-veh="${x.pat}"><td class="num">${fF(x.fecha)}</td><td>${placa(x.pat)}</td><td class="peq">${x.origen==="Efectivo"?"Efectivo":"Tarjeta COPEC"}</td><td class="peq">${esc(x.est)}</td><td class="d">${x.lt}</td><td class="d">${clp(x.monto)}</td><td class="d">${km(x.km)}</td><td class="d">${rd[x.id]?(rd[x.id]<6?chip(rd[x.id].toFixed(1).replace(".",",")+" bajo","c-pend","!"):rd[x.id].toFixed(1).replace(".",",")):'<span class="tenue" title="Primera carga registrada del vehículo">—</span>'}</td><td class="peq">${esc(nom(x.cond))}</td></tr>`).join("")}</tbody></table></div>${pie}<div class="pie-tabla"><span>Total ${pTxt}: ${cargas.length} cargas · ${km(lt)} litros</span><span class="total">${clp(mC)}</span></div>`:`<div class="cuerpo"><p class="tenue">No hay cargas en ${pTxt}.</p></div>`}</section>`; }
   if(t==="copec"){ const val=validarCopec(); const ok=val.filter(x=>!x.err.length);
-    c=`<section class="panel"><header><div><h2>Archivo de transacciones COPEC</h2><span class="sub">copec_transacciones_octubre_2026.csv · ${COPEC_ARCHIVO.length} filas (ejemplo)</span></div>${copecImportado?chip("Importado","c-disp","✓"):`<button class="btn" type="button" id="btn-copec">Importar ${ok.length} filas válidas</button>`}</header>
-    <div class="cuerpo"><p class="tenue peq">Reemplaza la «Carga archivo Copec» de GESAD. Antes de importar se valida cada fila: patente registrada, kilometraje mayor que la carga anterior, rendimiento razonable y filas duplicadas.</p></div>
-    <div class="tabla-env"><table><thead><tr><th>Fecha</th><th>Patente</th><th>Tarjeta</th><th>Estación</th><th>Litros</th><th>Monto</th><th>Odómetro</th><th>Validación</th></tr></thead><tbody>${val.map(x=>`<tr><td class="num">${fF(x.fecha)}</td><td>${placa(x.pat)}</td><td class="mono peq">${x.tarjeta}</td><td class="peq">${esc(x.est)}</td><td class="d">${x.lt}</td><td class="d">${clp(x.monto)}</td><td class="d">${km(x.km)}</td><td>${x.err.length?x.err.map(e=>chip(e,"c-malo","✕")).join(" "):x.av.length?x.av.map(e=>chip(e,"c-pend","!")).join(" "):chip("Válida","c-disp","✓")}</td></tr>`).join("")}</tbody></table></div></section>`; }
-  if(t==="gastos"){ const lista=GASTOS.slice().sort((a,b)=>b.fecha.localeCompare(a.fecha));
-    c=`<p class="tenue peq" style="margin-bottom:var(--e-3)">Cada gasto se registra con su factura o boleta desde la ficha del vehículo. Las órdenes de trabajo cerradas generan su gasto automáticamente.</p><section class="panel"><div class="tabla-env"><table><thead><tr><th>Fecha</th><th>Patente</th><th>Documento</th><th>Proveedor</th><th>Tipo</th><th>Folio</th><th>Monto</th></tr></thead><tbody>${lista.map(x=>`<tr class="clic" data-veh="${x.pat}"><td class="num">${fF(x.fecha)}</td><td>${placa(x.pat)}</td><td class="peq">${x.doc} ${esc(x.n)}${x.ot?`<br><span class="tenue">${x.ot}</span>`:""}</td><td class="peq">${esc(x.prov)}</td><td class="peq">${TGX[x.tipo]}</td><td class="mono">${x.folio}</td><td class="d">${clp(x.monto)}</td></tr>`).join("")}</tbody></table></div><div class="pie-tabla"><span>${lista.length} documentos</span><span class="total">${clp(lista.reduce((s,x)=>s+x.monto,0))}</span></div></section>`; }
-  return cab("Combustible y gastos","Cargas con tarjeta o en efectivo, importación del archivo COPEC y gastos de cada vehículo.","GESAD «Combustible» · ERS §5.4")+tabsHTML(tabs,t,"data-ct")+c;
+    c=`<p class="intro-tab">Cómo se cargaría el archivo mensual de transacciones que entrega COPEC por las tarjetas de combustible, en vez de digitar cada carga. Es un archivo de ejemplo de octubre de 2026; no depende del periodo elegido arriba.</p><section class="panel"><header><div><h2>Archivo de transacciones COPEC</h2><span class="sub">copec_transacciones_octubre_2026.csv · ${COPEC_ARCHIVO.length} filas (ejemplo)</span></div>${copecImportado?chip("Importado","c-disp","✓"):`<button class="btn" type="button" id="btn-copec">Importar ${ok.length} filas válidas</button>`}</header>
+    <div class="cuerpo"><p class="tenue peq">Antes de importar se valida cada fila: patente registrada, odómetro mayor que la carga anterior, rendimiento razonable y filas duplicadas. Las filas con error no se importan.</p></div>
+    <div class="tabla-env"><table><thead><tr><th>Fecha</th><th>Patente</th><th>Tarjeta</th><th>Estación</th><th class="d">Litros</th><th class="d">Monto</th><th class="d">Odómetro (km)</th><th>Validación</th></tr></thead><tbody>${val.map(x=>`<tr><td class="num">${fF(x.fecha)}</td><td>${placa(x.pat)}</td><td class="mono peq">${x.tarjeta}</td><td class="peq">${esc(x.est)}</td><td class="d">${x.lt}</td><td class="d">${clp(x.monto)}</td><td class="d">${km(x.km)}</td><td>${x.err.length?x.err.map(e=>chip(e,"c-malo","✕")).join(" "):x.av.length?x.av.map(e=>chip(e,"c-pend","!")).join(" "):chip("Válida","c-disp","✓")}</td></tr>`).join("")}</tbody></table></div></section>`; }
+  if(t==="gastos"){ c=`<p class="intro-tab">Gastos del vehículo que no son combustible: mantenciones y reparaciones, seguros, permiso de circulación, revisión técnica, peajes, estacionamientos y lavado. Cada uno se registra con su factura o boleta; las órdenes de trabajo cerradas generan su gasto solas.</p><section class="panel"><header><div><h2>Facturas y boletas · ${pTxt}</h2><span class="sub">La imputación es el folio presupuestario al que se carga el gasto</span></div></header>${gastos.length?`<div class="tabla-env"><table><thead><tr><th>Fecha</th><th>Patente</th><th>Documento</th><th>Proveedor</th><th>Tipo de gasto</th><th>Imputación (folio)</th><th class="d">Monto</th></tr></thead><tbody>${gastos.map(x=>`<tr class="clic" data-veh="${x.pat}"><td class="num">${fF(x.fecha)}</td><td>${placa(x.pat)}</td><td class="peq">${x.doc} ${esc(x.n)}${x.ot?`<br><span class="tenue">${x.ot}</span>`:""}</td><td class="peq">${esc(x.prov)}</td><td class="peq">${TGX[x.tipo]}</td><td class="mono">${x.folio}</td><td class="d">${clp(x.monto)}</td></tr>`).join("")}</tbody></table></div><div class="pie-tabla"><span>Total ${pTxt}: ${gastos.length} documentos</span><span class="total">${clp(mG)}</span></div>`:`<div class="cuerpo"><p class="tenue">No hay facturas ni boletas en ${pTxt}.</p></div>`}</section>`; }
+  return `<div class="cab-comb"><div><h1>Combustible y gastos</h1><p>Cuánto se gastó en combustible y en el resto de los gastos de los vehículos, y qué cargas conviene revisar.</p></div>
+    <div class="campo per-comb"><label for="c-per">Periodo</label><select id="c-per">${meses.map(m=>`<option value="${m}" ${m===per?"selected":""}>${perCombTxt(m).replace(/^./,x=>x.toUpperCase())}</option>`).join("")}<option value="todo" ${per==="todo"?"selected":""}>Todo el registro</option></select></div></div>`+
+    resumen+tabsHTML(tabs,t,"data-ct")+c;
 }
 function validarCopec(){
   const vistos=new Set();
@@ -2452,6 +2473,8 @@ function validarCopec(){
     return {...x,err,av}; });
 }
 post.combustible = ()=>{ const V=$("#vista"); V.querySelectorAll("[data-ct]").forEach(b=>b.onclick=()=>{sel.combTab=b.dataset.ct;render()});
+  const cp=$("#c-per"); if(cp) cp.onchange=e=>{sel.combPer=e.target.value; sel.cmbPag=0; render()};
+  V.querySelectorAll("[data-pg]").forEach(b=>b.onclick=()=>{sel.cmbPag=(sel.cmbPag||0)+ +b.dataset.pg; render()});
   const bc=$("#btn-copec"); if(bc) bc.onclick=()=>{ const ok=validarCopec().filter(x=>!x.err.length); ok.forEach(x=>CARGAS.push({id:nCarga++,fecha:x.fecha,pat:x.pat,origen:"Tarjeta COPEC",est:x.est,lt:x.lt,monto:x.monto,km:x.km,cond:null})); copecImportado=true; audit("Importa archivo COPEC","octubre 2026","—",ok.length+" cargas"); tostada(`${ok.length} cargas importadas. ${COPEC_ARCHIVO.length-ok.length} filas rechazadas.`); render(); };
 };
 
