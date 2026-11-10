@@ -557,6 +557,12 @@ body.sin-sesion .barra, body.sin-sesion #vista, body.sin-sesion footer.pie-app{d
 @keyframes paso-entra{from{opacity:0}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){ .wiz button,.wiz .n{transition:none} #form-sol [data-paso].sale{transition:none;opacity:1} #form-sol [data-paso].entra{animation:none} }
 .nav-pasos{justify-content:space-between} .nav-pasos #btn-sig{margin-left:auto}
+.edit-linea{margin-top:var(--e-2);padding:var(--e-3);border:1px solid var(--linea-fuerte);border-radius:var(--r-m);background:var(--sup-2)}
+.edit-linea .acciones{margin-top:var(--e-3);align-items:center}
+#f-resumen dd.editando{grid-column:1/-1}
+#f-resumen dd.recien-edit{animation:paso-entra .4s ease-out}
+.edit-linea.entra{animation:paso-entra .25s ease-out}
+@media (prefers-reduced-motion:reduce){ .edit-linea.entra,#f-resumen dd.recien-edit{animation:none} }
 .link-edit{border:0;background:none;color:var(--verde-tinta);font:inherit;font-size:var(--f-xs);font-weight:600;text-decoration:underline;cursor:pointer;margin-left:var(--e-2)}
 @media (max-width:559.98px){ /* teléfono */ .wiz{grid-template-columns:repeat(4,minmax(0,1fr))} .wiz button{flex-direction:column;justify-content:center;text-align:center;font-size:11px;padding:var(--e-1)} }
 .err-campo{display:flex;gap:6px;align-items:flex-start;color:var(--st-malo);font-size:var(--f-s);font-weight:600;margin-top:4px}
@@ -1298,7 +1304,7 @@ function vNueva(){
   </form></div>`;
 }
 post.nueva = ()=>{
-  const b=borrador;
+  const b=borrador; b._edit=null;
   const opt=(lista,val,ph)=>`<option value="">${ph}</option>`+lista.map(x=>`<option ${x===val?"selected":""}>${esc(x)}</option>`).join("");
   const pintarDest=()=>{$("#f-dest").innerHTML=b.destinos.map((d,i)=>{ const uni=UNIDADES[d.reg]||[];
     return `<div class="destino"><div class="campo"><label for="d-reg-${i}">Región</label><select id="d-reg-${i}" data-d="${i}" data-k="reg">${opt(DPA.map(x=>x[0]),d.reg,"— Región —")}</select></div>
@@ -1381,19 +1387,48 @@ post.nueva = ()=>{
   }
   function pintarResumen(){
     const d=b.destinos.map(x=>`${x.lug===OTRA?x.otro:x.lug}, ${x.com} (${x.reg})`).join("<br>"), pv=pasValidos();
-    const fila=(t,v,p)=>`<dt>${t}</dt><dd>${v} <button type="button" class="link-edit" data-wiz="${p}">Editar</button></dd>`;
+    if(b._edit) return;   // mientras se edita en línea no se redibuja (los campos reales están dentro del resumen)
+    const fila=(t,v,k)=>`<dt>${t}</dt><dd data-fila="${k}">${v} ${k?`<button type="button" class="link-edit" data-edit="${k}" aria-label="Editar ${t.toLowerCase()}">Editar</button>`:""}</dd>`;
     $("#f-resumen").innerHTML=`<header><h2 id="t-resumen">Revisa tu solicitud antes de enviarla</h2></header><div class="cuerpo"><dl class="ficha">
-      ${fila("Jefatura que autoriza",esc(nom(b.jefe)),1)}
-      ${fila("Salida y regreso",b.salida&&b.regreso?`${fCorta(b.salida)} → ${fCorta(b.regreso)} · ${$("#f-dur").textContent}`:"—",1)}
-      ${fila("Destinos",d||"—",2)}
-      ${fila("Cometido",esc(b.cometido)||"—",2)}
-      ${fila("Distancia y vehículo",`${b.km?km(b.km)+" km aprox.":"—"} · ${esc(b.tipo)}${b.t4?" · 4x4":""}${b.carga?" · carga":""}`,2)}
-      ${fila("Conductor",b.reqCond?"Del pool (lo asigna el encargado)":esc(nom(b.cond)||"—"),3)}
-      ${fila("Acompañantes",pv.length?pv.map(x=>esc(x.nom||x.rut)).join(", "):"Ninguno",3)}
-      ${fila("Total de personas",esc($("#f-tot").textContent),3)}
+      ${fila("Jefatura que autoriza",esc(nom(b.jefe)),"jefe")}
+      ${fila("Salida y regreso",b.salida&&b.regreso?`${fCorta(b.salida)} → ${fCorta(b.regreso)} · ${$("#f-dur").textContent}`:"—","fechas")}
+      ${fila("Destinos",d||"—","destinos")}
+      ${fila("Cometido",esc(b.cometido)||"—","cometido")}
+      ${fila("Distancia y vehículo",`${b.km?km(b.km)+" km aprox.":"—"} · ${esc(b.tipo)}${b.t4?" · 4x4":""}${b.carga?" · carga":""}`,"vehiculo")}
+      ${fila("Conductor",b.reqCond?"Del pool (lo asigna el encargado)":esc(nom(b.cond)||"—"),"conductor")}
+      ${fila("Acompañantes",pv.length?pv.map(x=>esc(x.nom||x.rut)).join(", "):"Ninguno","pasajeros")}
+      ${fila("Total de personas",esc($("#f-tot").textContent),"")}
     </dl><div class="disp-res">${$("#f-disp").innerHTML}</div></div>`;
   }
+  // Edición en línea en «Revisar y enviar» (10-11-2026, en prueba): «Editar» trae los campos reales al resumen,
+  // sin volver al paso anterior; «Listo» los valida, los devuelve a su paso y actualiza el resumen.
+  const EDITA={jefe:[1,["#f-jefe"]],fechas:[1,["#f-sal","#f-sal-h","#f-reg","#f-reg-h","#f-dur","#f-disp"]],destinos:[2,["#f-dest"]],cometido:[2,["#f-com"]],
+    vehiculo:[2,["#f-km","#f-tipo","#f-4x4"]],conductor:[3,['input[name="f-rc"]',"#w-cond"]],pasajeros:[3,["#f-pas","#f-tot"]]};
+  function editarEnLinea(k){
+    if(b._edit) cerrarEdicion(true);
+    const [paso,sels]=EDITA[k], dd=document.querySelector(`#f-resumen [data-fila="${k}"]`); if(!dd) return;
+    const nodos=[...new Set(sels.map(x=>{const e=document.querySelector("#form-sol "+x); return e&&(e.closest(".campo")||e);}).filter(Boolean))];
+    const caja=document.createElement("div"); caja.className="edit-linea entra"; caja.innerHTML=`<div class="campos c${Math.min(nodos.length,4)}"></div><div class="acciones"><button class="btn chico" type="button" id="edit-listo">Listo</button><span class="tenue peq">Los cambios se ven en el resumen al presionar «Listo».</span></div>`;
+    const ph=nodos.map(n=>{const c=document.createComment("edit"); n.parentNode.insertBefore(c,n); return c;});
+    nodos.forEach(n=>caja.firstChild.appendChild(n));
+    b._edit={k,paso,nodos,ph,txt:dd.innerHTML}; dd.innerHTML=""; dd.appendChild(caja); dd.classList.add("editando");
+    caja.querySelector("#edit-listo").onclick=()=>cerrarEdicion(false);
+    const f=caja.querySelector("input:not([type=hidden]):not([disabled]),select:not([disabled]),textarea"); if(f) f.focus();
+  }
+  function cerrarEdicion(forzar){
+    const E=b._edit; if(!E) return true;
+    leer(); revisar();
+    const errs=(b._errs||[]).filter(x=>PASO_DE[x.campo]===E.paso&&E.nodos.some(n=>n.contains(document.getElementById(x.campo))));
+    if(errs.length&&!forzar){ (b._valid=b._valid||new Set()).add(E.paso); pintarErrores(); const el=$("#"+errs[0].campo); const fo=el&&(["INPUT","SELECT","TEXTAREA"].includes(el.tagName)?el:el.querySelector("[aria-invalid],input,select")); if(fo) fo.focus();
+      tostada(errs.length===1?"Completa el campo marcado.":`Completa los ${errs.length} campos marcados.`); return false; }
+    E.nodos.forEach((n,i)=>{ E.ph[i].parentNode.insertBefore(n,E.ph[i]); E.ph[i].remove(); });
+    b._edit=null; pintarResumen();
+    const dd=document.querySelector(`#f-resumen [data-fila="${E.k}"]`); if(dd&&!forzar){ dd.classList.add("recien-edit"); dd.querySelector("[data-edit]")?.focus(); }
+    return true;
+  }
+  $("#f-resumen").addEventListener("click",e=>{ const bt=e.target.closest("[data-edit]"); if(!bt) return; e.preventDefault(); editarEnLinea(bt.dataset.edit); });
   function mostrarPaso(n){
+    if(b._edit) cerrarEdicion(true);
     const antes=b._paso; b._paso=n; b._max=Math.max(b._max||1,n);
     // Fundido suave entre pasos (10-11-2026): el paso actual se desvanece y el nuevo aparece. Sin movimiento si el sistema pide reducirlo.
     const els=[...document.querySelectorAll("#form-sol [data-paso]")], cambiar=()=>els.forEach(el=>{ const ver=+el.dataset.paso===n; el.classList.remove("sale"); el.classList.toggle("entra",ver&&anima); el.hidden=!ver; });
@@ -1414,7 +1449,7 @@ post.nueva = ()=>{
   document.querySelector(".form-sol-env").addEventListener("click",e=>{ const w=e.target.closest("[data-wiz]"); if(!w||w.disabled) return; e.preventDefault(); const k=+w.dataset.wiz; if(k>b._paso){ for(let p=b._paso;p<k;p++){ if(erroresDePaso(p).length){ mostrarPaso(p); siguiente(); return; } } } mostrarPaso(k); });
   mostrarPaso(b._paso);
   function mostrarFaltan(){ const fl=$("#f-faltan"), L=b._errs||[]; if(!L.length){ fl.hidden=true; fl.innerHTML=""; return; } fl.hidden=false; fl.innerHTML=`<b>No se puede enviar: ${L.length===1?"falta completar un campo":"faltan "+L.length+" campos por completar"}.</b> Están marcados en rojo.`; }
-  f.addEventListener("submit",e=>{e.preventDefault();leer();revisar();
+  f.addEventListener("submit",e=>{e.preventDefault(); if(b._edit&&!cerrarEdicion(false)) return; leer();revisar();
     if(b._paso<4){ siguiente(); return; }
     if((b._bloqueos||[]).length){ b._intento=true; const pe=PASO_DE[b._errs[0].campo]||1; if(pe!==b._paso){ mostrarPaso(pe); } pintarErrores(); mostrarFaltan(); const p1=$("#"+b._errs[0].campo); const foco=p1&&(["INPUT","SELECT","TEXTAREA"].includes(p1.tagName)?p1:p1.querySelector("[aria-invalid],input,select")); if(foco){ foco.scrollIntoView({block:"center",behavior:"smooth"}); foco.focus({preventScroll:true}); } return; }
     const destinos=b.destinos.map(d=>({reg:d.reg,prov:d.prov,com:d.com,lug:d.lug===OTRA?d.otro.trim():d.lug}));
