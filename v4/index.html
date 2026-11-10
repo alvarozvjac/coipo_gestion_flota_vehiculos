@@ -349,10 +349,6 @@ dl.ficha dd{margin:0;min-width:0}
 .orden{background:#fff;color:#111;border:1px solid #999;padding:var(--e-5);font-size:13px;max-width:780px;margin:0 auto;width:100%}
 .orden .enc{display:flex;justify-content:space-between;gap:var(--e-4);border-bottom:2px solid #064928;padding-bottom:var(--e-3);margin-bottom:var(--e-3);flex-wrap:wrap}
 .orden h3{font-size:20px;color:#064928}
-.orden .qr-orden{display:flex;gap:8px;align-items:center;font-size:11px;color:#333;line-height:1.35}
-.verif-orden{max-width:780px;margin:var(--e-3) auto 0;width:100%}
-.verif-orden summary{cursor:pointer;font-weight:600;min-height:32px}
-body.imprime-orden .verif-orden{display:none}
 .orden table td{border-bottom:1px solid #ddd;padding:5px 6px;color:#111}
 .orden table td:first-child{color:#555;width:30%;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
 .orden .pie{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--e-4);margin-top:var(--e-6);text-align:center;font-size:12px;color:#333}
@@ -1643,21 +1639,10 @@ function vReportesTes(){
    <div class="tabla-env">${filas.length?`<table class="t-com"><thead><tr><th>ID salida</th><th>Folio presupuestario</th><th>Jefatura que autorizó</th><th>Funcionario</th><th>RUT</th><th>Rol</th><th>Fecha de salida</th><th>Hora de salida</th><th>Fecha de regreso</th><th>Hora de regreso</th><th>Días</th><th>Región</th><th>Provincia</th><th>Destino</th><th>Cometido</th><th>Gerencia</th></tr></thead><tbody>${filas.map(f=>`<tr><td class="mono">${f.id}</td><td class="folio-c" title="${esc(f.folioTxt)}"><b class="mono">${esc(f.folio)}</b><span class="tenue peq">${esc(f.prog)} · ${esc(f.folioTxt)}</span></td><td class="peq">${esc(f.jefe)}</td><td>${esc(f.nom)}</td><td class="mono peq">${f.rut}</td><td class="peq">${f.rol}</td><td class="num">${fF(f.sal)}</td><td class="num">${fH(f.sal)}</td><td class="num">${fF(f.reg)}</td><td class="num">${fH(f.reg)}</td><td class="d">${f.dias}</td><td class="peq">${esc(f.region)}</td><td class="peq">${esc(f.provincia)}</td><td class="peq">${esc(f.destino)}</td><td class="peq">${esc(f.cometido)}</td><td class="peq">${esc(f.ger.split(" · ")[0])}</td></tr>`).join("")}</tbody></table>`:vacio("Sin salidas finalizadas en el periodo","Elige otro mes o el reporte anual.")}</div></section>`;
 }
 /* ======================= ORDEN DE SALIDA ======================= */
-/* QR de verificación de la orden de salida (v4, 10-11-2026), hallazgo §5.2 de la auditoría del ERS. El dibujo es simulado
-   (no se puede leer con un teléfono). El código cambia si cambian el vehículo o el conductor, así que una orden reasignada
-   deja de ser válida; quien escanea ve sólo vigencia, patente y horario, sin nombres, RUT ni destinos. */
-function tokenOrden(r){ let h=2166136261; for(const ch of r.id+"|"+r.pat+"|"+(r.cond||"")+"|"+(r.relevo||"")){ h^=ch.charCodeAt(0); h=Math.imul(h,16777619)>>>0; } return h.toString(16).toUpperCase().padStart(8,"0"); }
-function qrSimSVG(tok){ const n=25; let s=parseInt(tok,16)||1, d="";
-  const rnd=()=>{ s^=s<<13; s>>>=0; s^=s>>>17; s^=s<<5; s>>>=0; return s/4294967296; };
-  for(let y=0;y<n;y++) for(let x=0;x<n;x++){ const fx=x<7?x:x>=n-7?x-(n-7):-1, fy=y<7?y:y>=n-7?y-(n-7):-1, fin=fx>=0&&fy>=0&&!(x>=n-7&&y>=n-7);
-    const on=fin?(fx===0||fx===6||fy===0||fy===6||(fx>=2&&fx<=4&&fy>=2&&fy<=4)):((x===7||y===7||x===n-8||y===n-8)&&(x<8||y<8||x>n-9||y>n-9))?false:rnd()<0.5;
-    if(on) d+=`M${x} ${y}h1v1h-1z`; }
-  return `<svg viewBox="-2 -2 ${n+4} ${n+4}" width="92" height="92" role="img" aria-label="Código QR de verificación (simulado)"><rect x="-2" y="-2" width="${n+4}" height="${n+4}" fill="#fff"/><path d="${d}" fill="#111"/></svg>`; }
-const vigenciaOrden=r=>({CONFIRMADA:"Vigente",EN_TERRENO:"Vigente · vehículo en terreno",FINALIZADA:"Cerrada: el vehículo ya regresó",ANULADA:"Anulada: no es válida"})[r.est]||"No válida";
 function abrirOrden(id){
-  const r=RES.find(x=>x.id===id), v=VX[r.pat], cc=CCX[r.cc], tok=tokenOrden(r);
+  const r=RES.find(x=>x.id===id), v=VX[r.pat], cc=CCX[r.cc];
   $("#capa2").innerHTML=`<div class="velo" id="velo2"><div class="cajon" role="dialog" aria-modal="true" aria-labelledby="t-orden"><header><h2 id="t-orden" style="font-size:var(--f-l)">Orden de salida · <span class="mono">${r.id}</span></h2><span class="acc-orden"><button class="btn chico" type="button" id="bajar-orden" title="Abre el diálogo de impresión: elige «Guardar como PDF»">Descargar PDF</button><button class="btn sec chico" type="button" id="cerrar2">Cerrar</button></span></header><div class="cuerpo">
-  <div class="orden"><div class="enc"><div><b>Corporación Nacional Forestal</b><br>Gerencia de Finanzas y Administración · Unidad de Vehículos<h3>Orden de salida de vehículo fiscal</h3><span class="mono">N° ${r.id}</span> · fecha de emisión ${fF(HOY)} · hora de emisión ${fH(HOY)}</div><div class="qr-orden">${qrSimSVG(tok)}<span>Verificación en línea<br><b class="mono">${tok.slice(0,4)}-${tok.slice(4)}</b></span></div></div>
+  <div class="orden"><div class="enc"><div><b>Corporación Nacional Forestal</b><br>Gerencia de Finanzas y Administración · Unidad de Vehículos<h3>Orden de salida de vehículo fiscal</h3><span class="mono">N° ${r.id}</span> · fecha de emisión ${fF(HOY)} · hora de emisión ${fH(HOY)}</div></div>
   <table><tbody>
    <tr><td>Solicitado por</td><td>${esc(nom(r.sol))} · ${esc(PX[r.sol].ger)}</td></tr>
    <tr><td>Autorizado por</td><td>${esc(nom(r.jefe))} · ${esc(PX[r.jefe].cargo)}${r.urg?" · asignación manual":""}</td></tr>${r.urg?`<tr><td>Motivo de la asignación manual</td><td>${esc(r.urg.motivo)}</td></tr>`:""}
@@ -1679,8 +1664,7 @@ function abrirOrden(id){
   </tbody></table>
   <p style="margin-top:12px;font-size:12px">1. En caso de colisión o choque: dejar constancia en Carabineros indicando la póliza ${v.poliza}, vigente hasta ${fF(v.polizaVence)}.<br>2. Asistencia en viaje: 22 826 1101 · 22 797 6100, indicando patente ${esc(r.pat)} y RUT 61.313.000-4 CONAF.<br>3. Devolver con el estanque al menos en 1/4.</p>
   <div class="pie"><div>Firma conductor</div><div>V°B° Unidad de Vehículos</div><div>Recepción conforme</div></div></div>
-  <details class="verif-orden"><summary>Qué ve quien escanea el QR</summary><dl class="ficha"><dt>Orden</dt><dd class="mono">${r.id} · código ${tok.slice(0,4)}-${tok.slice(4)}</dd><dt>Estado</dt><dd>${vigenciaOrden(r)}</dd><dt>Vehículo</dt><dd>${esc(r.pat)}</dd><dt>Periodo autorizado</dt><dd class="num">${fFH(r.salida)} → ${fFH(r.regreso)}</dd></dl><p class="tenue peq">La verificación pública no muestra nombres, RUT, destinos ni cometido. Si la salida se reasigna o se anula, el código cambia y la orden impresa deja de ser válida.</p></details>
-  <p class="tenue peq">Formato basado en el comprobante «Salida Vehículo» de GESAD. La póliza indicada es ficticia. El QR es una simulación: en la maqueta no se puede escanear.</p></div></div></div>`;
+  <p class="tenue peq">Formato basado en el comprobante «Salida Vehículo» de GESAD. La póliza indicada es ficticia.</p></div></div></div>`;
   const cerrar=()=>{$("#capa2").innerHTML="";document.removeEventListener("keydown",esc_)}; const esc_=e=>{if(e.key==="Escape")cerrar()};
   $("#bajar-orden").onclick=()=>{ const t0=document.title; document.title=`Orden de salida ${r.id}`; document.body.classList.add("imprime-orden"); const fin=()=>{document.body.classList.remove("imprime-orden"); document.title=t0; removeEventListener("afterprint",fin)}; addEventListener("afterprint",fin); try{ window.print(); }catch(e){ tostada("La descarga no está disponible en esta vista previa: ábrela desde GitHub Pages."); fin(); } };
   $("#cerrar2").onclick=cerrar; $("#velo2").onclick=e=>{if(e.target.id==="velo2")cerrar()}; document.addEventListener("keydown",esc_); $("#cerrar2").focus();

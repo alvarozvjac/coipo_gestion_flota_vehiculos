@@ -32,7 +32,6 @@ Manual: [`manuales/manual-usuario-v4.pdf`](manuales/manual-usuario-v4.pdf) (cinc
 | La jefatura que autoriza se toma de la nómina y no se puede cambiar | §4.3: el solicitante elegía a su jefatura | Nueva solicitud, paso 1 |
 | La asignación manual avisa por correo a la jefatura directa del funcionario, y un filtro reúne esas salidas | Diferencia maqueta y ERS (decisión 2.31) | Salidas a terreno |
 | Bitácora: foto del tablero obligatoria, conductor que retira y que entrega, estado del vehículo al entregar y al recibir, y devolución de la tarjeta de combustible | §5.1: odómetro sin respaldo, «Recepción Conforme» sin checklist, sin conductor real ni devolución de tarjeta | Entregar y recibir vehículo |
-| Orden de salida con QR de verificación (simulado) que muestra sólo vigencia, patente y periodo; el código cambia si la salida se reasigna | §5.2: QR sin reglas de datos ni de invalidación | Ver orden de salida |
 | Cargas para revisar: rendimiento fuera de lo habitual, dos cargas en menos de 24 horas o precio por litro atípico | §5.4: sin reglas de uso indebido de la tarjeta | Combustible y gastos |
 
 Ya estaban resueltos en la versión 3 y no cambian: el estado «Observada», la imputación definida por la jefatura, el
@@ -40,6 +39,9 @@ bloqueo de la entrega con documentos vencidos o vehículo en taller, la reasigna
 mantención vencida al asignar y el detalle «Reservado» del calendario para quien no es parte de la salida. Lo que
 depende del backend o de una definición de otras áreas (autenticación, cifrado, retención, DL 799, conciliación con el
 emisor de la tarjeta) queda en el informe de auditoría y no se simula.
+
+El QR de verificación de la orden de salida (§5.2) se probó en la versión 4 y se retiró el 10-11-2026: se mantiene la
+decisión 2.1 de dejarlo fuera.
 
 ## Cómo probarla
 
