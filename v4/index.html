@@ -400,6 +400,8 @@ footer.pie-app{padding-block:var(--e-5);padding-left:var(--gutter-l);padding-rig
 .check-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:var(--e-1) var(--e-4)}
 .check-grid label{display:flex;gap:var(--e-2);align-items:center;font-weight:400;min-height:32px;cursor:pointer}
 .check-grid .falta{color:var(--st-malo);font-weight:600}
+.hist-sal summary{cursor:pointer;font-weight:700;min-height:32px;display:flex;align-items:center;gap:6px}
+.hist-lista{margin:var(--e-2) 0 0;padding-left:1.25rem;display:grid;gap:6px}
 .grupo-acc{font-size:var(--f-xs);text-transform:uppercase;letter-spacing:.06em;color:var(--tinta-3);margin-top:var(--e-2)}
 details.no-aptos{border:1px dashed var(--linea-fuerte);border-radius:var(--r-m);padding:var(--e-2) var(--e-3)}
 details.no-aptos summary{cursor:pointer;font-weight:500;color:var(--tinta-2);min-height:32px;display:flex;align-items:center}
@@ -950,18 +952,18 @@ let RES = [
  R({id:"OC-2026-000388",est:"FINALIZADA",fSol:"2026-09-21T15:05",sol:"p6",jefe:"p5",salida:"2026-09-28T08:00",regreso:"2026-09-30T18:30",destinos:[{reg:"Biobío",com:"Concepción",lug:"Dirección Regional del Biobío"},{reg:"Biobío",com:"Florida",lug:"Sede comunitaria sector Copiulemu"}],cometido:"Talleres de prevención social de incendios forestales con comunidades de interfaz.",km:1180,cc:"48010",reqCond:true,cond:"c2",relevo:"c3",pas:["p13","p11"],pat:"SFHW-60",bit:{sal:"2026-09-28T08:05",odoS:60790,combS:"Lleno",docs:true,reg:"2026-09-30T18:20",odoR:61972,combR:"1/2",nov:"Sin novedades"}}),
  R({id:"OC-2026-000351",est:"FINALIZADA",fSol:"2026-08-10T11:05",sol:"p4",jefe:"p3",salida:"2026-08-18T08:00",regreso:"2026-08-18T19:00",destinos:[{reg:"O'Higgins",com:"Rancagua",lug:"Oficina Regional O'Higgins"}],cometido:"Revisión de bodega regional y toma de inventario de materiales de oficina.",km:180,cc:"P01-601",reqCond:true,cond:"c2",pas:["p15"],pat:"SZCK-83",bit:{sal:"2026-08-18T08:05",odoS:51210,combS:"Lleno",docs:true,reg:"2026-08-18T18:40",odoR:51398,combR:"1/2",nov:"Sin novedades"}}),
  R({id:"OC-2026-000366",est:"FINALIZADA",fSol:"2026-09-01T10:20",sol:"p4",jefe:"p3",salida:"2026-09-08T07:30",regreso:"2026-09-09T19:00",destinos:[{reg:"Maule",com:"Talca",lug:"Oficina Regional Maule"}],cometido:"Apoyo al proceso de compra de insumos para la temporada de incendios.",km:540,cc:"P01-601",reqCond:true,cond:"c1",pas:["p16"],pat:"SZWZ-31",bit:{sal:"2026-09-08T07:40",odoS:59870,combS:"Lleno",docs:true,reg:"2026-09-09T18:30",odoR:60418,combR:"1/4",nov:"Sin novedades"}}),
- R({id:"OC-2026-000395",est:"FINALIZADA",fSol:"2026-10-01T09:40",sol:"p4",jefe:"p3",salida:"2026-10-06T08:00",regreso:"2026-10-07T19:30",destinos:[{reg:"Valparaíso",com:"Viña del Mar",lug:"Oficina Provincial Marga Marga"}],cometido:"Capacitación en uso de convenio marco a equipos provinciales de abastecimiento.",km:290,cc:"P01-601",reqCond:true,cond:"c1",pas:["p15","p16"],pat:"SHPY-15",bit:{sal:"2026-10-06T08:12",odoS:90421,combS:"Lleno",docs:true,reg:"2026-10-07T19:02",odoR:90713,combR:"3/4",nov:"Sin novedades"}}),
+ R({id:"OC-2026-000395",est:"FINALIZADA",fSol:"2026-10-01T09:40",sol:"p4",jefe:"p3",salida:"2026-10-06T08:00",regreso:"2026-10-07T19:30",destinos:[{reg:"Valparaíso",com:"Viña del Mar",lug:"Oficina Provincial Marga Marga"}],cometido:"Capacitación en uso de convenio marco a equipos provinciales de abastecimiento.",km:290,cc:"P01-601",reqCond:true,cond:"c1",pas:["p15","p16"],pat:"SHPY-15",bit:{sal:"2026-10-06T08:12",odoS:90421,combS:"Lleno",docs:true,reg:"2026-10-07T19:02",odoR:90713,combR:"3/4",nov:"Sin novedades",tarjDev:false}}),
  R({id:"OC-2026-000398",est:"FINALIZADA",fSol:"2026-10-07T12:00",sol:"p6",jefe:"p5",salida:"2026-10-13T07:00",regreso:"2026-10-15T20:00",destinos:[{reg:"La Araucanía",com:"Lonquimay",lug:"Sector Malalcahuello"}],cometido:"Supervisión de faenas de silvicultura preventiva en cortafuegos comunales.",km:1340,cc:"48011",reqCond:true,cond:"c3",pas:["p11"],pat:"SZCK-83",req:{t4:true},bit:{sal:"2026-10-13T07:08",odoS:51062,combS:"Lleno",docs:true,reg:"2026-10-15T19:47",odoR:52410,combR:"1/2",nov:"Sin novedades"}}),
  R({id:"OC-2026-000401",est:"FINALIZADA",fSol:"2026-10-14T09:12",sol:"p6",jefe:"p5",salida:"2026-10-19T08:00",regreso:"2026-10-20T19:00",destinos:[{reg:"Ñuble",com:"Quillón",lug:"Oficina Provincial Diguillín"}],cometido:"Reunión técnica de análisis de causalidad con equipo provincial, previo a la temporada 2026-2027.",km:860,cc:"48006",cond:"p6",pas:["p11"],pat:"SZWY-98",bit:{sal:"2026-10-19T08:10",odoS:79952,combS:"Lleno",docs:true,reg:"2026-10-20T18:42",odoR:80812,combR:"1/2",nov:"Sin novedades"}}),
  R({id:"OC-2026-000407",est:"FINALIZADA",fSol:"2026-10-09T11:40",sol:"p9",jefe:"p10",salida:"2026-10-15T07:30",regreso:"2026-10-16T18:00",destinos:[{reg:"Valparaíso",com:"Limache",lug:"Vivero Limache"}],cometido:"Retiro de material vegetal para el Programa de Arborización.",km:380,cc:"48067",cond:"p9",pas:["p14"],pat:"PLLH-76",req:{carga:true},bit:{sal:"2026-10-15T07:41",odoS:71010,combS:"3/4",docs:true,reg:"2026-10-16T17:55",odoR:71390,combR:"1/4",nov:"Luz de patente trasera quemada"}}),
  R({id:"OC-2026-000403",est:"RECHAZADA",fSol:"2026-10-13T10:02",sol:"p6",jefe:"p5",salida:"2026-10-21T09:00",regreso:"2026-10-21T14:00",destinos:[{reg:"Metropolitana",com:"Santiago",lug:"Oficina Regional RM"}],cometido:"Reunión de coordinación de pronóstico.",km:30,cc:"48015",obsLog:"Rechazada: la reunión puede realizarse por videoconferencia."}),
  R({id:"OC-2026-000406",est:"ANULADA",fSol:"2026-10-15T15:20",sol:"p4",jefe:"p3",salida:"2026-10-22T08:00",regreso:"2026-10-22T17:00",destinos:[{reg:"Valparaíso",com:"Valparaíso",lug:"Dirección Regional"}],cometido:"Visita a bodega regional.",km:250,cc:"P01-601",obsLog:"Anulada por la solicitante: visita reprogramada."}),
- R({id:"OC-2026-000405",est:"EN_TERRENO",fSol:"2026-10-16T12:30",sol:"p7",jefe:"p8",salida:"2026-10-21T07:30",regreso:"2026-10-23T19:00",destinos:[{reg:"Valparaíso",com:"Quillota",lug:"Sector Pocochay"},{reg:"Valparaíso",com:"Hijuelas",lug:"Predio denunciado"}],cometido:"Fiscalización por corta no autorizada de bosque nativo (denuncia ciudadana).",km:420,cc:"48046",cond:"p7",pas:["p12"],pat:"PLLH-22",req:{t4:true},bit:{sal:"2026-10-21T07:38",odoS:119106,combS:"Lleno",docs:true}}),
+ R({id:"OC-2026-000405",est:"EN_TERRENO",fSol:"2026-10-16T12:30",sol:"p7",jefe:"p8",salida:"2026-10-21T07:30",regreso:"2026-10-21T19:00",destinos:[{reg:"Valparaíso",com:"Quillota",lug:"Sector Pocochay"},{reg:"Valparaíso",com:"Hijuelas",lug:"Predio denunciado"}],cometido:"Fiscalización por corta no autorizada de bosque nativo (denuncia ciudadana).",km:420,cc:"48046",cond:"p7",pas:["p12"],pat:"PLLH-22",req:{t4:true},bit:{sal:"2026-10-21T07:38",odoS:119106,combS:"Lleno",docs:true}}),
  R({id:"OC-2026-000408",est:"CONFIRMADA",fSol:"2026-10-17T09:05",sol:"p9",jefe:"p10",salida:"2026-10-22T11:00",regreso:"2026-10-24T13:00",destinos:[{reg:"O'Higgins",com:"Rancagua",lug:"Municipalidad de Rancagua"}],cometido:"Entrega de plantas del Programa de Arborización a municipio.",km:210,cc:"48067",reqCond:true,cond:"c1",pat:"JXZS-29",req:{carga:true}}),
  R({id:"OC-2026-000409",est:"CONFIRMADA",fSol:"2026-10-18T16:44",sol:"p6",jefe:"p5",salida:"2026-10-24T08:00",regreso:"2026-10-25T18:00",destinos:[{reg:"Biobío",com:"Santa Juana",lug:"Sede vecinal sector Tanahuillín"}],cometido:"Apoyo a simulacro comunitario de evacuación ante incendios forestales.",km:1050,cc:"48007",reqCond:true,cond:"c2",relevo:"c3",pas:["p13"],pat:"SFHW-60",req:{t4:true}}),
  R({id:"OC-2026-000410",est:"APROBADA",fSol:"2026-10-19T10:15",sol:"p9",jefe:"p10",salida:"2026-10-27T07:00",regreso:"2026-10-30T20:00",destinos:[{reg:"Ñuble",com:"Chillán",lug:"Vivero Chillán (carga)"},{reg:"Atacama",com:"Copiapó",lug:"Vivero Copiapó (descarga)"}],cometido:"Traslado de plantas desde Vivero Chillán a Vivero Copiapó.",km:2700,cc:"48065",reqCond:true,pas:["p14"],req:{carga:true}}),
  R({id:"OC-2026-000411",est:"CONFIRMADA",fSol:"2026-10-19T14:02",sol:"p4",jefe:"p3",salida:"2026-10-28T08:00",regreso:"2026-10-30T18:00",destinos:[{reg:"La Araucanía",com:"Temuco",lug:"Dirección Regional La Araucanía"}],cometido:"Supervisión de inventario de bodega regional y cierre de procesos de compra.",km:1450,cc:"P01-601",reqCond:true,cond:"c2",pas:["p15"],pat:"KBSW-97"}),
- R({id:"OC-2026-000412",est:"PEND_JEFE",fSol:"2026-10-21T16:20",sol:"p4",jefe:"p3",salida:"2026-10-26T08:00",regreso:"2026-10-27T20:00",destinos:[{reg:"Ñuble",com:"Bulnes",lug:"Oficina Provincial Diguillín"}],cometido:"Capacitación en compras públicas al equipo regional de abastecimiento.",km:900,cc:null,reqCond:true,pas:["p15","p16"]}),
+ R({id:"OC-2026-000412",est:"PEND_JEFE",fSol:"2026-10-16T16:20",sol:"p4",jefe:"p3",salida:"2026-10-26T08:00",regreso:"2026-10-27T20:00",destinos:[{reg:"Ñuble",com:"Bulnes",lug:"Oficina Provincial Diguillín"}],cometido:"Capacitación en compras públicas al equipo regional de abastecimiento.",km:900,cc:null,reqCond:true,pas:["p15","p16"]}),
  R({id:"OC-2026-000413",est:"PEND_JEFE",fSol:"2026-10-22T08:47",sol:"p7",jefe:"p8",salida:"2026-10-29T08:00",regreso:"2026-10-29T18:00",destinos:[{reg:"Metropolitana",com:"Melipilla",lug:"Oficina Provincial Melipilla"}],cometido:"Fiscalización de plan de manejo en predio rural.",km:160,cc:null,cond:"p7",req:{t4:true}}),
  R({id:"OC-2026-000414",est:"CONFIRMADA",fSol:"2026-10-20T11:11",sol:"p9",jefe:"p10",salida:"2026-11-02T08:00",regreso:"2026-11-04T18:00",destinos:[{reg:"Maule",com:"Talca",lug:"Centro de Semillas"}],cometido:"Revisión de lotes de semillas y coordinación de despacho.",km:540,cc:"48065",reqCond:true,cond:"c1",pas:["c4"],pat:"SZWY-98"}),
 ];
@@ -970,10 +972,10 @@ const HIST = [["SHPY-15","P01-601",640,"2025-11-12"],["SZCK-83","48006",1210,"20
 RES.forEach(r=>r.hist.push({t:r.fSol,quien:r.sol,acc:"Solicitud ingresada"}));
 let AUD = [
  {t:"2026-10-22T08:47",u:"p7",acc:"Crea solicitud",obj:"OC-2026-000413",ant:"—",nue:"Pendiente jefatura",ip:"10.20.4.18"},
- {t:"2026-10-21T16:20",u:"p4",acc:"Crea solicitud",obj:"OC-2026-000412",ant:"—",nue:"Pendiente jefatura",ip:"10.20.4.33"},
  {t:"2026-10-21T07:38",u:"p2",acc:"Registra salida",obj:"OC-2026-000405 · PLLH-22",ant:"Confirmada",nue:"En terreno · odómetro 119.106",ip:"10.20.9.2"},
  {t:"2026-10-20T15:02",u:"p2",acc:"Asigna vehículo y conductor",obj:"OC-2026-000411",ant:"Aprobada",nue:"KBSW-97 · J.P. Henríquez",ip:"10.20.4.51"},
  {t:"2026-10-20T09:30",u:"p1",acc:"Actualiza estado operativo",obj:"GVYR-53",ant:"Disponible",nue:"En taller (preventiva)",ip:"10.20.4.10"},
+ {t:"2026-10-16T16:20",u:"p4",acc:"Crea solicitud",obj:"OC-2026-000412",ant:"—",nue:"Pendiente jefatura",ip:"10.20.4.33"},
 ];
 const ROLES = {
  solicitante:{quien:"p4",nombre:"Funcionario solicitante",nav:[["mis","Mis solicitudes"],["nueva","Nueva solicitud"],["visor","Disponibilidad"]]},
@@ -1026,7 +1028,19 @@ function estadoHoy(v){
   return RES.some(r=>r.pat===v.pat && r.est==="EN_TERRENO")?"TERR":"DISP";
 }
 const chipV = v=>chip(...EST_V[estadoHoy(v)]);
-const solapa = (a1,a2,b1,b2)=>F(a1)<F(b2)&&F(b1)<F(a2);
+const solapa = (a1,a2,b1,b2)=>F(a1)<F(b2).getTime()+HOLG&&F(b1)<F(a2).getTime()+HOLG; // con holgura de 1 hora (v4)
+/* Mejoras v4, segunda tanda (10-11-2026), a partir de la auditoría completa del ERS:
+   holgura entre reservas (§4.3), salidas atrasadas (§5.1), plazo y subrogancia de la jefatura (§4.3 y §6). */
+const HOLGURA_MIN=60, HOLG=HOLGURA_MIN*60000;
+const atrasada=r=>r.est==="EN_TERRENO"&&F(r.regreso)<HOY;
+const regEf=o=>atrasada(o)?"2999-12-31T23:59":o.regreso; // si no ha vuelto, ocupa el vehículo y el conductor hasta que se registre el regreso
+const PLAZO_JEF=2;
+function diasHabiles(desde){ let d=new Date(F(desde)); d.setHours(0,0,0,0); const h=new Date(HOY); h.setHours(0,0,0,0); let n=0; while(d<h){ d=new Date(d.getTime()+DIA); const w=d.getDay(); if(w!==0&&w!==6) n++; } return n; }
+let SUBROG=[];
+const hoyF=()=>iso(HOY).slice(0,10);
+const subrActiva=j=>SUBROG.find(s=>s.jefe===j&&!s.fin&&s.desde<=hoyF()&&s.hasta>=hoyF());
+const subrogaA=yo=>SUBROG.filter(s=>s.subr===yo&&subrActiva(s.jefe)===s).map(s=>s.jefe);
+const atiendeJef=(r,yo)=>r.jefe===yo||(subrogaA(yo).includes(r.jefe)&&r.sol!==yo);
 const ACTIVAS = ["CONFIRMADA","EN_TERRENO"];
 function condApto(cid, r, ignorar){
   const c=CX[cid], motivos=[]; const fin=F(r.regreso);
@@ -1036,7 +1050,7 @@ function condApto(cid, r, ignorar){
   if(F(c.licHasta)<fin) motivos.push("Licencia vence "+fF(c.licHasta));
   const v=r.pat?VX[r.pat]:null;
   if(v && (v.tipo==="CAMIÓN"||v.cargaKg>3500||v.tipo==="MINIBÚS") && !c.clases.some(x=>["A4","A5","A3"].includes(x))) motivos.push("Requiere licencia profesional clase A");
-  const choque=RES.find(o=>o.id!==r.id&&o.id!==ignorar&&(ACTIVAS.includes(o.est))&&(o.cond===cid||o.relevo===cid)&&solapa(o.salida,o.regreso,r.salida,r.regreso));
+  const choque=RES.find(o=>o.id!==r.id&&o.id!==ignorar&&(ACTIVAS.includes(o.est))&&(o.cond===cid||o.relevo===cid)&&solapa(o.salida,regEf(o),r.salida,r.regreso));
   if(choque) motivos.push("Ocupado en "+choque.id);
   return {ok:!motivos.length,motivos};
 }
@@ -1080,8 +1094,8 @@ function vehApto(v, r){
   [["rt","Revisión técnica"],["soap","SOAP"],["perm","Permiso de circulación"],["gases","Revisión de gases"]].forEach(([k,n])=>{
     if(!v[k]) av.push(n+" sin registro"); else if(F(v[k])<fin) m.push(n+" vencida al "+fF(v[k]));
   });
-  const ch=RES.find(o=>o.id!==r.id&&ACTIVAS.includes(o.est)&&o.pat===v.pat&&solapa(o.salida,o.regreso,r.salida,r.regreso));
-  if(ch) m.push("Reservado: "+ch.id);
+  const ch=RES.find(o=>o.id!==r.id&&ACTIVAS.includes(o.est)&&o.pat===v.pat&&solapa(o.salida,regEf(o),r.salida,r.regreso));
+  if(ch) m.push(atrasada(ch)?"En terreno con regreso atrasado ("+ch.id+")":"Reservado: "+ch.id);
   const mt=mant(v); if(mt.est==="VENC") av.push("Mantención vencida hace "+km(-mt.resta)+" km"); else if(mt.resta < (r.km||0)) av.push("Mantención vence durante el viaje");
   return {ok:!m.length,motivos:m,avisos:av};
 }
@@ -1162,7 +1176,7 @@ function postExport(tipo){
     const filas=L.map(r=>{const d=Math.max(1,Math.ceil((F(r.bit.reg||r.regreso)-F(r.bit.sal))/DIA)); return [...(tipo==="equipo"?[nom(r.sol),PX[r.sol]?.rut||""]:[]),r.id,fF(r.bit.sal),fH(r.bit.sal),r.bit.reg?fF(r.bit.reg):"",r.bit.reg?fH(r.bit.reg):"",d,r.destinos.map(x=>`${x.lug||x.otro||""}, ${x.com} (${x.reg})`).join(" · "),r.cometido,r.pat||"",nom(r.cond),pasajeros(r),r.bit.odoR?r.bit.odoR-r.bit.odoS:"",r.cc||""];});
     const aoa=[[tipo==="mis"?"Mis salidas realizadas · Sistema Nacional de Gestión de Flota · CONAF":"Salidas realizadas por mi equipo · Sistema Nacional de Gestión de Flota · CONAF"],[`Periodo: ${per}`,"",`${tipo==="mis"?"Funcionario":"Jefatura"}: ${p.nom}`,"","Fecha de emisión: "+fF(HOY),"Hora de emisión: "+fH(HOY)],[],cab_,...filas];
     const ws=XLSX.utils.aoa_to_sheet(aoa); ws["!cols"]=(tipo==="equipo"?[28,13]:[]).concat([16,14,13,15,14,6,48,50,10,26,9,13,12]).map(w=>({wch:w}));
-    const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,"Salidas");
+    const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,"Salidas"); hojaTrazabilidad(wb,(tipo==="mis"?"Mis salidas realizadas":"Salidas realizadas por mi equipo")+" · periodo "+per,filas.length);
     const nombre=`${tipo==="mis"?"mis_salidas":"salidas_equipo"}_${EXP.anio}${EXP.modo==="mes"?"_"+String(EXP.mes).padStart(2,"0"):""}.xlsx`;
     try{ XLSX.writeFile(wb,nombre); audit("Descarga Excel de salidas realizadas",nombre,"—",filas.length+" filas"); tostada(`Excel generado: ${nombre} (${filas.length} ${filas.length===1?"salida":"salidas"}).`); }catch(e){ tostada("La descarga fue bloqueada en esta vista. Ábrela desde GitHub Pages."); }
   };
@@ -1285,7 +1299,7 @@ function vNueva(){
    <fieldset data-paso="1"><legend><span class="seccion-num">1</span>Identificación</legend><div class="campos">
      ${urg?`<div class="campo"><label for="f-sol-u">Funcionario a cargo del cometido</label><select id="f-sol-u"><option value="">— Seleccionar —</option>${PERS.filter(x=>x.id!==ROLES[rol].quien).map(x=>`<option value="${x.id}" ${x.id===b.sol?"selected":""}>${esc(x.nom)} · ${esc(x.cargo)}</option>`).join("")}</select></div>
      <div class="campo ancho"><label for="f-motivo">Motivo de la asignación manual</label><textarea id="f-motivo" rows="2" placeholder="Describe por qué se asigna el vehículo sin solicitud previa del funcionario">${esc(b.motivo)}</textarea></div>`:`<div class="campo"><span class="lbl">Solicitante</span><span class="dato-fijo" id="f-sol">${esc(yo.nom)} · ${esc(yo.rut)}<small>${esc(yo.cargo)} · ${esc(yo.ger)}</small></span></div>
-     <div class="campo"><label for="f-jefe">Jefatura que autoriza el cometido</label><select id="f-jefe" ${jefOpts.length===1?"disabled":""}>${jefOpts.map(j=>`<option value="${j.id}" ${j.id===b.jefe?"selected":""}>${esc(j.nom)} · ${esc(j.cargo)}</option>`).join("")}</select><span class="ayuda">La jefatura se toma de la nómina institucional${jefOpts.length===1?" y no se puede cambiar":""}.</span></div>`}
+     <div class="campo"><label for="f-jefe">Jefatura que autoriza el cometido</label><select id="f-jefe" ${jefOpts.length===1?"disabled":""}>${jefOpts.map(j=>`<option value="${j.id}" ${j.id===b.jefe?"selected":""}>${esc(j.nom)} · ${esc(j.cargo)}</option>`).join("")}</select><span class="ayuda">La jefatura se toma de la nómina institucional${jefOpts.length===1?" y no se puede cambiar":""}.${(()=>{const s=subrActiva(b.jefe); return s?` Mientras dure su ausencia, también la puede aprobar ${esc(nom(s.subr))} (subrogante).`:"";})()}</span></div>`}
    </div></fieldset>
    <fieldset data-paso="1"><legend><span class="seccion-num">2</span>Programación del viaje</legend><div class="campos c4">
      <div class="campo"><label for="f-sal">Fecha de salida</label><input type="date" id="f-sal" value="${b._salF??(b.salida||"").slice(0,10)}"></div>
@@ -1483,15 +1497,35 @@ post.nueva = ()=>{
 
 /* ======================= JEFATURA ======================= */
 function vBandeja(){
-  const yo=ROLES[rol].quien, pend=RES.filter(r=>r.est==="PEND_JEFE"&&r.jefe===yo).sort((a,b)=>a.salida.localeCompare(b.salida));
+  const yo=ROLES[rol].quien, pend=RES.filter(r=>r.est==="PEND_JEFE"&&atiendeJef(r,yo)).sort((a,b)=>a.salida.localeCompare(b.salida));
+  const propias=RES.filter(r=>r.est==="PEND_JEFE"&&r.sol===yo&&subrogaA(yo).includes(r.jefe)).length, miSub=subrActiva(yo);
   const {ver,pie}=paginar(pend,"ban","Selecciona una fila para revisar la solicitud, definir la imputación y aprobar, observar o rechazar.");
   const fila=r=>`<tr class="clic" data-ban="${r.id}" tabindex="0" aria-label="Revisar ${r.id}">
-     <td class="mono">${r.id}</td><td>${esc(nom(r.sol))}</td>${comCelda(r)}<td class="num">${fCorta(r.salida)}</td>
+     <td class="mono">${r.id}</td><td>${esc(nom(r.sol))}${r.jefe!==yo?`<br><span class="tenue peq">Subrogas a ${esc(nom(r.jefe))}</span>`:""}<br>${esperaHTML_(r)}</td>${comCelda(r)}<td class="num">${fCorta(r.salida)}</td>
      <td>${esc(r.destinos.map(d=>d.com).join(" · "))}</td><td class="num">${pasajeros(r)}</td>
      <td class="mis-acc"><button class="btn chico" type="button" data-revisar="${r.id}">Revisar</button>${chev}</td></tr>`;
-  return `<div class="cab-vista cab-compacta cab-mis"><h1>Por aprobar <span class="cuenta-tit">${pend.length}</span></h1><button class="btn sec chico" type="button" data-ir="equipo">Salidas de mi equipo</button></div>
+  return `<div class="cab-vista cab-compacta cab-mis"><h1>Por aprobar <span class="cuenta-tit">${pend.length}</span></h1><span class="acciones">${PX[yo].jefe?`<button class="btn sec chico" type="button" id="btn-subrog">Ausencia y subrogancia</button>`:""}<button class="btn sec chico" type="button" data-ir="equipo">Salidas de mi equipo</button></span></div>
+   ${miSub?`<div class="regla inf" style="margin-bottom:var(--e-3)"><span class="ico" aria-hidden="true">i</span><div><b>Subrogancia activa</b><span>${esc(nom(miSub.subr))} atiende tus solicitudes hasta el ${fF(miSub.hasta)}. Tú también puedes seguir aprobándolas.</span></div></div>`:""}
+   ${propias?`<div class="regla av" style="margin-bottom:var(--e-3)"><span class="ico" aria-hidden="true">!</span><div><b>${propias} ${propias===1?"solicitud tuya queda":"solicitudes tuyas quedan"} para la jefatura titular</b><span>Nadie aprueba su propia solicitud, ni siquiera como subrogante.</span></div></div>`:""}
    <section class="panel mis-panel">${pend.length?tablaFilas(["N° orden","Funcionario","Cometido","Salida","Destino","Personas"],ver.map(fila).join(""),[3,6],[1,5])
      :vacio("Bandeja al día","No hay solicitudes de tu equipo esperando aprobación.")}${pend.length?pie:""}</section>`;
+}
+/* Plazo de la jefatura (v4): días hábiles desde que se envió la solicitud; fuera de plazo sobre PLAZO_JEF. */
+function esperaHTML_(r){ const d=diasHabiles(r.fSol); return d>PLAZO_JEF?chip(`Espera ${d} días hábiles · fuera de plazo`,"c-malo","!"):`<span class="tenue peq">Espera ${d===0?"desde hoy":d===1?"1 día hábil":d+" días hábiles"}</span>`; }
+/* Ausencia y subrogancia (v4): la jefatura titular registra quién la subroga y hasta cuándo. */
+function abrirSubrog(){
+  const yo=ROLES[rol].quien, g=s=>String(s||"").split(" · ")[0], act=subrActiva(yo);
+  const cand=PERS.filter(p=>p.id!==yo&&/^p\d+$/.test(p.id)&&p.id!==ROLES.auditor.quien&&g(p.ger)===g(PX[yo].ger));
+  cajon(`<h2 id="t-cajon" style="font-size:var(--f-xl)">Ausencia y subrogancia</h2>`,"",`<p class="tenue">Mientras dure tu ausencia, las solicitudes de tu equipo también llegan a la persona que te subroga. Nadie aprueba su propia solicitud.</p>
+   ${act?`<div class="regla inf"><span class="ico" aria-hidden="true">i</span><div><b>Subrogancia activa</b><span>${esc(nom(act.subr))}, del ${fF(act.desde)} al ${fF(act.hasta)}.</span></div></div><div class="acciones" style="margin-top:var(--e-3)"><button class="btn peligro" type="button" id="sub-fin">Terminar subrogancia</button></div>`:
+   `<div class="campos" style="margin-top:var(--e-3)"><div class="campo"><label for="sub-desde">Desde</label><input type="date" id="sub-desde" value="${hoyF()}" min="${hoyF()}"></div><div class="campo"><label for="sub-hasta">Hasta</label><input type="date" id="sub-hasta" min="${hoyF()}"></div>
+   <div class="campo ancho"><label for="sub-quien">Te subroga</label><select id="sub-quien"><option value="">— Seleccionar —</option>${cand.map(p=>`<option value="${p.id}">${esc(p.nom)} · ${esc(p.cargo)}</option>`).join("")}</select><span class="ayuda">Funcionarios de tu misma gerencia. En el sistema definitivo, la subrogancia vendría de la nómina o de la resolución que la establece.</span></div></div>
+   <div class="acciones"><button class="btn" type="button" id="sub-ok">Registrar subrogancia</button></div>`}`);
+  const ok=$("#sub-ok"); if(ok) ok.onclick=()=>{ const desde=$("#sub-desde").value, hasta=$("#sub-hasta").value, subr=$("#sub-quien").value;
+    if(!subr){$("#sub-quien").setAttribute("aria-invalid","true");$("#sub-quien").focus();tostada("Elige quién te subroga.");return}
+    if(!desde||!hasta||hasta<desde){$("#sub-hasta").setAttribute("aria-invalid","true");$("#sub-hasta").focus();tostada("Indica un periodo válido: «hasta» no puede ser anterior a «desde».");return}
+    SUBROG.push({jefe:yo,subr,desde,hasta,t:iso(HOY)}); audit("Registra subrogancia",nom(yo),"—",nom(subr)+" · "+fF(desde)+" al "+fF(hasta)); tostada(`${nom(subr)} te subroga hasta el ${fF(hasta)}.`); cerrarCapa(); render(); };
+  const fin=$("#sub-fin"); if(fin) fin.onclick=()=>{ act.fin=iso(HOY); audit("Termina subrogancia",nom(yo),nom(act.subr),"—"); tostada("Subrogancia terminada."); cerrarCapa(); render(); };
 }
 function abrirDecision(id){
   const r=RES.find(x=>x.id===id); if(!r) return; sel.bandeja=id;
@@ -1515,6 +1549,7 @@ post.bandeja = ()=>{
   if(postPaginar("ban")) return;
   filasClic("data-ban",abrirDecision);
   $("#vista").querySelectorAll("[data-revisar]").forEach(b=>b.onclick=()=>abrirDecision(b.dataset.revisar));
+  const bs=$("#btn-subrog"); if(bs) bs.onclick=abrirSubrog;
 };
 // Decisión de la jefatura dentro del panel lateral
 document.addEventListener("click",e=>{
@@ -1523,7 +1558,8 @@ document.addEventListener("click",e=>{
   if(d.dataset.dec!=="APROBADA"&&!com){$("#j-com").setAttribute("aria-invalid","true");$("#j-com").focus();tostada("Escribe un comentario para observar o rechazar.");return}
   if(d.dataset.dec==="APROBADA"){ const ccv=$("#j-cc").value; if(!ccv){$("#j-cc").setAttribute("aria-invalid","true");$("#j-cc").focus();tostada("Selecciona el folio de imputación para aprobar.");return} r.cc=ccv; }
   const ant=EST[r.est][0]; r.est=d.dataset.dec; r.obsLog=com?(d.dataset.dec==="APROBADA"?"Jefatura: ":d.dataset.dec==="OBSERVADA"?"Observación de jefatura: ":"Rechazada: ")+com:"";
-  r.hist.push({t:iso(HOY),quien:ROLES[rol].quien,acc:EST[r.est][0]}); audit("Visación jefatura",r.id,ant,EST[r.est][0]);
+  const yoJ=ROLES[rol].quien, subJ=yoJ!==r.jefe; if(d.dataset.dec==="APROBADA") r.aprobo=yoJ;
+  r.hist.push({t:iso(HOY),quien:yoJ,acc:EST[r.est][0],mot:com||undefined,por:subJ?r.jefe:undefined}); audit("Visación jefatura"+(subJ?" (subrogante de "+nom(r.jefe)+")":""),r.id,ant,EST[r.est][0]);
   tostada(`${r.id}: ${EST[r.est][0]}.`); sel.bandeja=null; cerrarCapa(); render();
 });
 
@@ -1606,10 +1642,15 @@ function perCtl(xid,hay){const t=sel.tes;
    <label class="sr" for="t-anio">Año</label><select id="t-anio" style="width:auto"><option ${t.anio===2026?"selected":""}>2026</option><option ${t.anio===2025?"selected":""}>2025</option></select>
    <button class="btn chico" type="button" id="${xid==="tes"?"btn-xlsx":"btn-xlsx-"+xid}" data-xlsx="${xid}" ${hay?"":"disabled"}>Descargar Excel</button></div>`;
 }
+/* Hoja «Trazabilidad» en cada Excel (v4): quién lo generó, cuándo y con qué filtros. Hallazgo §4.4 de la auditoría. */
+function hojaTrazabilidad(wb,filtros,n){ const p=PX[ROLES[rol].quien];
+  const ws=XLSX.utils.aoa_to_sheet([["Trazabilidad de la descarga"],[],["Generado por",p.nom],["Perfil",ROLES[rol].nombre],["Fecha de generación",fF(HOY)],["Hora de generación",fH(HOY)],["Filtros aplicados",filtros],["Filas exportadas",n],["Origen","Sistema Nacional de Gestión de Flota · maqueta v4"],["Registro","La descarga queda en el registro de auditoría con el nombre del archivo."]]);
+  ws["!cols"]=[{wch:22},{wch:80}]; XLSX.utils.book_append_sheet(wb,ws,"Trazabilidad"); }
 function bajarXlsx(base,titulo,hojas,n){
   if(typeof XLSX==="undefined"){tostada("No se pudo cargar el generador de Excel. Revisa tu conexión.");return}
   const wb=XLSX.utils.book_new();
-  hojas.forEach(([nom,enc,filas,anchos])=>{ const ws=XLSX.utils.aoa_to_sheet([[titulo+" · CONAF · Unidad de Vehículos"],[`Periodo: ${perTxt()}`,"","Fecha de emisión: "+fF(HOY),"Hora de emisión: "+fH(HOY),"Emisor: Encargado de Vehículos Oficina Central"],[],enc,...filas]); ws["!cols"]=anchos.map(w=>({wch:w})); XLSX.utils.book_append_sheet(wb,ws,nom); });
+  hojas.forEach(([nom,enc,filas,anchos])=>{ const ws=XLSX.utils.aoa_to_sheet([[titulo+" · CONAF · Unidad de Vehículos"],[`Periodo: ${perTxt()}`,"","Fecha de emisión: "+fF(HOY),"Hora de emisión: "+fH(HOY),"Emisor: "+PX[ROLES[rol].quien].nom+" · "+ROLES[rol].nombre],[],enc,...filas]); ws["!cols"]=anchos.map(w=>({wch:w})); XLSX.utils.book_append_sheet(wb,ws,nom); });
+  hojaTrazabilidad(wb,"Reporte «"+titulo+"» · periodo "+perTxt()+(sel.repTab==="tes"&&sel.tes?.amb?" · alcance "+(sel.tes.amb==="nac"?"nacional":sel.tes.amb):""),n);
   const nombre=`${base}_${perSufijo()}.xlsx`;
   try{ XLSX.writeFile(wb,nombre); audit("Emite reporte "+titulo.toLowerCase(),nombre,"—",n+" filas"); tostada(`Excel generado: ${nombre} (${n} filas).`); }catch(e){ tostada("La descarga fue bloqueada en esta vista. Ábrela desde GitHub Pages."); }
 }
@@ -1645,7 +1686,7 @@ function abrirOrden(id){
   <div class="orden"><div class="enc"><div><b>Corporación Nacional Forestal</b><br>Gerencia de Finanzas y Administración · Unidad de Vehículos<h3>Orden de salida de vehículo fiscal</h3><span class="mono">N° ${r.id}</span> · fecha de emisión ${fF(HOY)} · hora de emisión ${fH(HOY)}</div></div>
   <table><tbody>
    <tr><td>Solicitado por</td><td>${esc(nom(r.sol))} · ${esc(PX[r.sol].ger)}</td></tr>
-   <tr><td>Autorizado por</td><td>${esc(nom(r.jefe))} · ${esc(PX[r.jefe].cargo)}${r.urg?" · asignación manual":""}</td></tr>${r.urg?`<tr><td>Motivo de la asignación manual</td><td>${esc(r.urg.motivo)}</td></tr>`:""}
+   <tr><td>Autorizado por</td><td>${r.aprobo&&r.aprobo!==r.jefe?`${esc(nom(r.aprobo))} · subrogante de ${esc(nom(r.jefe))}`:`${esc(nom(r.jefe))} · ${esc(PX[r.jefe].cargo)}`}${r.urg?" · asignación manual":""}</td></tr>${r.urg?`<tr><td>Motivo de la asignación manual</td><td>${esc(r.urg.motivo)}</td></tr>`:""}
    <tr><td>Cometido</td><td>${esc(r.cometido)}</td></tr>
    <tr><td>Destino</td><td>${esc(r.destinos.map(d=>`${d.lug}, ${d.com}, Región de ${d.reg}`).join(" · "))}</td></tr>
    <tr><td>Imputación</td><td>${r.cc?`${esc(r.cc)} · ${esc(cc?.t||"")}`:"Por definir"}</td></tr>
@@ -1921,12 +1962,12 @@ function accesosHTML(lista){
 let ACCESOS=[];
 function postAccesos(){ $("#vista").querySelectorAll("[data-acc]").forEach(b=>b.onclick=()=>{const a=ACCESOS[+b.dataset.acc]; if(a.orden){abrirOrden(a.orden);return} if(a.pre) a.pre(); ir(a.v);}); }
 function accesosGestion(){
-  const n=e=>RES.filter(r=>r.est===e).length;
+  const n=e=>RES.filter(r=>r.est===e).length, nAt=RES.filter(atrasada).length, nTj=RES.filter(r=>r.bit?.tarjDev===false).length;
   const cond=COND.map(c=>estCond(c).est), porVencer=cond.filter(e=>e==="POR"||e==="BLOQ").length;
   const est=VEH.map(estadoHoy), ne=k=>est.filter(e=>e===k).length;
   ACCESOS=[
-   {v:"salidas",ico:"aprobar",t:"Salidas a terreno",d:`${n("APROBADA")} por asignar, ${n("CONFIRMADA")} por entregar y ${n("EN_TERRENO")} en terreno por recibir. Incluye el calendario de la flota.`,cta:"Ir a salidas",n:n("APROBADA")+n("CONFIRMADA")+n("EN_TERRENO"),nl:"salidas por gestionar",aviso:n("APROBADA")+n("CONFIRMADA")+n("EN_TERRENO")>0,principal:true,
-    pre:()=>{sel.salModo="lista"; sel.salFiltro=n("APROBADA")?"asignar":"entregar"}},
+   {v:"salidas",ico:"aprobar",t:"Salidas a terreno",d:`${n("APROBADA")} por asignar, ${n("CONFIRMADA")} por entregar y ${n("EN_TERRENO")} en terreno por recibir${nAt?` (<b>${nAt} con regreso atrasado</b>)`:""}.${nTj?` ${nTj} ${nTj===1?"tarjeta de combustible":"tarjetas de combustible"} por devolver.`:""} Incluye el calendario de la flota.`,cta:"Ir a salidas",n:n("APROBADA")+n("CONFIRMADA")+n("EN_TERRENO")+nTj,nl:"salidas por gestionar",aviso:n("APROBADA")+n("CONFIRMADA")+n("EN_TERRENO")+nTj>0,principal:true,
+    pre:()=>{sel.salModo="lista"; sel.salFiltro=nAt?"atrasadas":n("APROBADA")?"asignar":"entregar"}},
    {v:"flota",ico:"car",t:"Flota",d:`Hoy: ${ne("DISP")} disponibles de ${VEH.length}, ${ne("TERR")} en terreno, ${ne("TALL_P")+ne("TALL_C")} en taller y ${ne("MALO")+ne("EXCL")+ne("BAJA")} fuera de servicio o exclusivos.`,cta:"Ver vehículos"},
    {v:"taller",ico:"taller",t:"Taller y documentos",d:(()=>{const T=tallerLista(), c=k=>T.filter(x=>x.it.some(i=>i.k===k)).length; return `${c("nov")} con novedad, ${c("mant")} con mantención, ${c("ot")} en taller y ${c("doc")} con documentos por renovar.`;})(),cta:"Atender pendientes",n:tallerLista().length,nl:"vehículos con pendientes",aviso:tallerLista().some(x=>x.it.some(i=>i.urg>=3))},
    {v:"conductores",ico:"licencia",t:"Conductores",d:"Caución y licencia de cada conductor. Los bloqueados no se pueden asignar.",cta:"Ver padrón",n:porVencer,nl:"por vencer o bloqueados",aviso:porVencer>0},
@@ -1951,15 +1992,15 @@ function vInicio(){
   }
   if(rol==="jefatura"){
     // Panel de mando de la jefatura (05-11-2026): pendientes, equipo en terreno, próximas salidas y cifras del mes.
-    const eq=RES.filter(r=>r.jefe===yo), pend=eq.filter(r=>r.est==="PEND_JEFE").sort((a,b)=>a.fSol.localeCompare(b.fSol));
+    const eq=RES.filter(r=>r.jefe===yo), pend=RES.filter(r=>r.est==="PEND_JEFE"&&atiendeJef(r,yo)).sort((a,b)=>a.fSol.localeCompare(b.fSol)), fp=pend.filter(r=>diasHabiles(r.fSol)>PLAZO_JEF).length, subA=subrogaA(yo);
     const terr=eq.filter(r=>r.est==="EN_TERRENO"), fin7=new Date(HOY.getTime()+7*DIA);
     const prox=eq.filter(r=>["APROBADA","CONFIRMADA"].includes(r.est)&&F(r.salida)>=HOY&&F(r.salida)<fin7);
     const semana=eq.filter(r=>["PEND_JEFE","OBSERVADA","APROBADA","CONFIRMADA","EN_TERRENO"].includes(r.est)&&F(r.regreso)>=HOY&&F(r.salida)<fin7).sort((a,b)=>a.salida.localeCompare(b.salida));
     const dias=x=>Math.max(0,Math.floor((HOY-F(x))/DIA)), hace=d=>d===0?"hoy":d===1?"hace 1 día":`hace ${d} días`;
-    ACCESOS=[{v:"bandeja",ico:"aprobar",t:"Por aprobar",d:pend.length?`La más antigua espera desde ${hace(dias(pend[0].fSol))}.`:"No hay solicitudes esperando tu decisión.",cta:"Revisar",n:pend.length,nl:"por aprobar",aviso:true,principal:true},
+    ACCESOS=[{v:"bandeja",ico:"aprobar",t:"Por aprobar",d:pend.length?`La más antigua espera desde ${hace(dias(pend[0].fSol))}.${fp?` <b>${fp} fuera de plazo</b> (más de ${PLAZO_JEF} días hábiles).`:""}`:"No hay solicitudes esperando tu decisión.",cta:"Revisar",n:pend.length,nl:"por aprobar",aviso:true,principal:true},
              {v:"calendario",ico:"calendario",t:"Calendario de mi equipo",d:`Salidas y vehículos de tu equipo por estado, por mes o por año.${terr.length?` Hoy hay ${terr.length} en terreno.`:""}`,cta:"Ver calendario"},
              {v:"equipo",ico:"equipo",t:"Salidas de mi equipo",d:"Historial de lo que autorizaste y Excel mensual o anual.",cta:"Ver historial"}];
-    return heroHTML(pend.length?`Tienes ${pend.length} ${pend.length===1?"solicitud":"solicitudes"} de tu equipo esperando tu aprobación.`:"No tienes solicitudes pendientes de aprobación.")+
+    return heroHTML((pend.length?`Tienes ${pend.length} ${pend.length===1?"solicitud":"solicitudes"} esperando tu aprobación.`:"No tienes solicitudes pendientes de aprobación.")+(subA.length?` Subrogas a ${subA.map(nom).map(esc).join(" y ")}.`:""))+
       `<div class="accesos acc-n acc-jef" style="--n:3">${accesosHTML(ACCESOS).replace(/^<div[^>]*>/,"").replace(/<\/div>$/,"")}</div>`;
   }
   return "";
@@ -1975,12 +2016,13 @@ function vSalidas(){
   if(sel.salModo==="calendario") return vVisor().replace('<h1>Visor de disponibilidad</h1>',titModo("calendario"));
   const g={}; RES.forEach(r=>{const k=grupoSalida(r); g[k]=(g[k]||0)+1});
   const q=sel.salQ.toLowerCase();
-  const lista=RES.filter(r=>(sel.salFiltro==="todas"||(sel.salFiltro==="manual"?!!r.urg:grupoSalida(r)===sel.salFiltro))&&(!q||[r.id,r.pat,nom(r.sol),nom(r.cond),r.cometido,...r.destinos.map(d=>d.com)].join(" ").toLowerCase().includes(q)))
+  const esp={todas:()=>true,manual:r=>!!r.urg,atrasadas:atrasada,tarjeta:r=>r.bit?.tarjDev===false}, enFiltro=r=>esp[sel.salFiltro]?esp[sel.salFiltro](r):grupoSalida(r)===sel.salFiltro;
+  const lista=RES.filter(r=>enFiltro(r)&&(!q||[r.id,r.pat,nom(r.sol),nom(r.cond),r.cometido,...r.destinos.map(d=>d.com)].join(" ").toLowerCase().includes(q)))
     .sort((a,b)=>sel.salFiltro==="finalizadas"||sel.salFiltro==="todas"?b.salida.localeCompare(a.salida):a.salida.localeCompare(b.salida));
   return cab("Salidas a terreno","Todas las solicitudes en un solo lugar. Ábrelas para asignar, entregar o recibir el vehículo.","ERS §4.3 · GESAD «Salidas de vehículos»").replace('<h1>Salidas a terreno</h1>',titModo("lista"))+
-  `<div class="barra-herr">${filtrosHTML([["asignar","Por asignar",g.asignar||0],["entregar","Entregar o recibir",g.entregar||0],["finalizadas","Finalizadas",g.finalizadas||0],["jefatura","En jefatura",g.jefatura||0],["manual","Asignación manual",RES.filter(r=>r.urg).length],["todas","Todas",RES.length]],sel.salFiltro,"data-sf")}
+  `<div class="barra-herr">${filtrosHTML([["asignar","Por asignar",g.asignar||0],["entregar","Entregar o recibir",g.entregar||0],["finalizadas","Finalizadas",g.finalizadas||0],["jefatura","En jefatura",g.jefatura||0],["manual","Asignación manual",RES.filter(r=>r.urg).length],["atrasadas","Atrasadas",RES.filter(atrasada).length],["tarjeta","Tarjeta por devolver",RES.filter(r=>r.bit?.tarjDev===false).length],["todas","Todas",RES.length]],sel.salFiltro,"data-sf")}
    <div class="filtros"><label class="sr" for="s-q">Buscar</label><input type="search" id="s-q" placeholder="Buscar ID, patente, persona o comuna" value="${esc(sel.salQ)}"></div></div>
-  <section class="panel"><div class="tabla-env">${lista.length?`<table><thead><tr><th>ID</th><th>Estado</th><th>Salida</th><th>Regreso</th><th>Destino</th><th>Solicitante</th><th>Vehículo</th><th>Conductor</th></tr></thead><tbody>${lista.map(r=>`<tr class="clic" data-sal="${r.id}" tabindex="0"><td class="mono">${r.id}</td><td>${chipR(r.est)}</td><td class="num">${fCorta(r.salida)}</td><td class="num">${fCorta(r.regreso)}</td><td>${esc(r.destinos.map(d=>d.com).join(" · "))}</td><td>${esc(nom(r.sol))}</td><td>${r.pat?placa(r.pat):'<span class="tenue">Por asignar</span>'}</td><td>${r.cond?esc(nom(r.cond)):r.reqCond?'<span class="tenue">Del pool</span>':"—"}</td></tr>`).join("")}</tbody></table>`:vacio("Sin salidas en este grupo","Cambia el filtro o la búsqueda.")}</div></section>`;
+  <section class="panel"><div class="tabla-env">${lista.length?`<table><thead><tr><th>ID</th><th>Estado</th><th>Salida</th><th>Regreso</th><th>Destino</th><th>Solicitante</th><th>Vehículo</th><th>Conductor</th></tr></thead><tbody>${lista.map(r=>`<tr class="clic" data-sal="${r.id}" tabindex="0"><td class="mono">${r.id}</td><td>${chipR(r.est)}${atrasada(r)?" "+chip("Atrasada","c-malo","!"):""}${r.bit?.tarjDev===false?" "+chip("Tarjeta sin devolver","c-pend","!"):""}</td><td class="num">${fCorta(r.salida)}</td><td class="num">${fCorta(r.regreso)}</td><td>${esc(r.destinos.map(d=>d.com).join(" · "))}</td><td>${esc(nom(r.sol))}</td><td>${r.pat?placa(r.pat):'<span class="tenue">Por asignar</span>'}</td><td>${r.cond?esc(nom(r.cond)):r.reqCond?'<span class="tenue">Del pool</span>':"—"}</td></tr>`).join("")}</tbody></table>`:vacio("Sin salidas en este grupo","Cambia el filtro o la búsqueda.")}</div></section>`;
 }
 post.salidas = ()=>{
   const V=$("#vista");
@@ -2011,8 +2053,9 @@ function abrirSalida(id){
   else if(r.obsLog) accion = `<p class="nota">${esc(r.obsLog)}</p>`;
   if(gestor&&!paso.hecho&&!paso.conf&&!paso.anular&&rol==="super"&&(r._snaps||[]).length) accion+=`<p class="tenue peq" style="margin-top:var(--e-3)">¿El último registro fue un error? <button class="btn sec chico" type="button" id="x-anular">Anular último registro</button></p>`;
   const cuerpo=`<div class="estado-linea">${chipR(r.est)}</div>${gestor?pasosHTML(r):flujoHTML(r.est)}
-   <div class="seccion"><h3>Solicitud</h3><dl class="ficha"><dt>Cometido</dt><dd>${esc(r.cometido)}</dd>${r.urg?`<dt>Asignación manual</dt><dd>Asignada sin solicitud del funcionario por ${esc(nom(r.urg.por))}, el ${fFH(r.urg.t)}. Motivo: ${esc(r.urg.motivo)}</dd>`:""}<dt>Destino</dt><dd>${r.destinos.map(d=>esc(`${d.lug}, ${d.com} (${d.reg})`)).join("<br>")}</dd><dt>Periodo</dt><dd class="num">${fFH(r.salida)} → ${fFH(r.regreso)}</dd><dt>Personas</dt><dd>${pasajeros(r)} · ${[r.sol!==r.cond?nom(r.sol)+" (solicitante)":"",r.cond?nom(r.cond)+" (conductor)":r.reqCond?"conductor del pool":"",r.relevo?nom(r.relevo)+" (relevo)":"",...r.pas.map(nom)].filter(Boolean).map(esc).join(", ")}</dd><dt>Requisitos</dt><dd>${[r.req.t4?"4x4":"",r.req.carga?"espacio de carga":""].filter(Boolean).join(" · ")||"—"}</dd><dt>Distancia</dt><dd>${distanciaTxt(r)}</dd><dt>Solicita</dt><dd>${esc(nom(r.sol))} · ${r.urg?"asigna":"autoriza"} ${esc(nom(r.jefe))}</dd><dt>Imputación</dt><dd>${r.cc?`<span class="mono">${esc(r.cc)}</span> ${cc?esc(cc.t):""}`:(r.urg?"Por definir":"Por definir (jefatura)")}</dd>${r.pat?`<dt>Vehículo</dt><dd>${placa(r.pat)} ${esc(VX[r.pat].marca+" "+VX[r.pat].modelo)}</dd>`:""}</dl>
+   <div class="seccion"><h3>Solicitud</h3><dl class="ficha"><dt>Cometido</dt><dd>${esc(r.cometido)}</dd>${r.urg?`<dt>Asignación manual</dt><dd>Asignada sin solicitud del funcionario por ${esc(nom(r.urg.por))}, el ${fFH(r.urg.t)}. Motivo: ${esc(r.urg.motivo)}</dd>`:""}<dt>Destino</dt><dd>${r.destinos.map(d=>esc(`${d.lug}, ${d.com} (${d.reg})`)).join("<br>")}</dd><dt>Periodo</dt><dd class="num">${fFH(r.salida)} → ${fFH(r.regreso)}</dd><dt>Personas</dt><dd>${pasajeros(r)} · ${[r.sol!==r.cond?nom(r.sol)+" (solicitante)":"",r.cond?nom(r.cond)+" (conductor)":r.reqCond?"conductor del pool":"",r.relevo?nom(r.relevo)+" (relevo)":"",...r.pas.map(nom)].filter(Boolean).map(esc).join(", ")}</dd><dt>Requisitos</dt><dd>${[r.req.t4?"4x4":"",r.req.carga?"espacio de carga":""].filter(Boolean).join(" · ")||"—"}</dd><dt>Distancia</dt><dd>${distanciaTxt(r)}</dd><dt>Solicita</dt><dd>${esc(nom(r.sol))} · ${r.urg?"asigna":"autoriza"} ${esc(nom(r.aprobo||r.jefe))}${r.aprobo&&r.aprobo!==r.jefe?` (subrogante de ${esc(nom(r.jefe))})`:""}</dd><dt>Imputación</dt><dd>${r.cc?`<span class="mono">${esc(r.cc)}</span> ${cc?esc(cc.t):""}`:(r.urg?"Por definir":"Por definir (jefatura)")}</dd>${r.pat?`<dt>Vehículo</dt><dd>${placa(r.pat)} ${esc(VX[r.pat].marca+" "+VX[r.pat].modelo)}</dd>`:""}</dl>
    ${["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)?`<div><button class="btn sec chico" type="button" data-orden="${r.id}">Ver orden de salida</button></div>`:""}</div>
+   ${histHTML(r)}
    <div class="seccion" id="accion">${accion}</div>
    ${gestor&&paso.hecho?"":`<div class="pie-cajon"><button class="btn sec" type="button" data-volver-sal>← Volver a Salidas a terreno</button></div>`}`;
   cajon(`<h2 id="t-cajon" style="font-size:var(--f-xl)" class="mono">${r.id}</h2>`, esc(r.destinos.map(d=>d.com).join(" · ")), cuerpo);
@@ -2031,10 +2074,10 @@ function pasosHTML(r){
   const idx={PEND_JEFE:0,OBSERVADA:0,APROBADA:1,CONFIRMADA:2,EN_TERRENO:3,FINALIZADA:4}[r.est];
   if(idx==null) return flujoHTML(r.est);
   const b=r.bit||{};
-  const P=[["Aprobación",r.urg?`Asignación manual · ${nom(r.jefe)}`:idx>0?`Aprobada por ${nom(r.jefe)}`:`Esperando a ${nom(r.jefe)}`],
+  const P=[["Aprobación",r.urg?`Asignación manual · ${nom(r.jefe)}`:idx>0?`Aprobada por ${nom(r.aprobo||r.jefe)}`:`Esperando a ${nom(r.jefe)}`],
    ["Asignación",idx>1?`${r.pat} · ${r.cond?nom(r.cond):"conductor propio"}`:idx===1?"Elegir vehículo, tarjeta y conductor":"Se habilita al aprobar la jefatura"],
    ["Salida",idx>2?`${fCorta(b.sal)} · ${km(b.odoS)} km`:idx===2?(entregaAbierta(r)?"Registrar la entrega del vehículo":`Se habilita el ${diaTxt(r.salida)}`):"Se habilita al asignar"],
-   ["Regreso",idx>3?`${fCorta(b.reg)} · ${km(b.odoR-b.odoS)} km recorridos`:idx===3?"Registrar la recepción del vehículo":"Se habilita al registrar la salida"]];
+   ["Regreso",idx>3?`${fCorta(b.reg)} · ${km(b.odoR-b.odoS)} km recorridos`:idx===3?(atrasada(r)?`Atrasada: debía volver el ${diaTxt(r.regreso)} a las ${fH(r.regreso)}`:"Registrar la recepción del vehículo"):"Se habilita al registrar la salida"]];
   return `<ol class="pasos-sal" aria-label="Etapas de la salida">${P.map(([n,d],i)=>{ const st=i<idx?"hecho":(i===idx&&!(i===2&&!entregaAbierta(r))&&i!==0)?"actual":i===idx&&i===0?"espera":"bloq";
     return `<li class="${st}" ${st==="actual"?'aria-current="step"':""}><span class="marca" aria-hidden="true">${st==="hecho"?"✓":st==="bloq"?'<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>':i+1}</span><span class="txt"><b>${n}</b><span>${esc(d)}</span></span></li>`}).join("")}</ol>`;
 }
@@ -2047,7 +2090,7 @@ function reasignarSalida(r,motivo){
   const ant=r.pat+(r.cond?" · "+nom(r.cond):"");
   r._previa=r.pat+(r.cond?" con "+nom(r.cond):"");
   r.est="APROBADA"; r.pat=null; r.tarjeta=null; if(r.reqCond){ r.cond=null; r.relevo=null; }
-  r.obsLog="Logística: "+motivo; r.hist.push({t:iso(HOY),quien:ROLES[rol].quien,acc:"Reasignación"}); r._snaps=[];
+  r.obsLog="Logística: "+motivo; r.hist.push({t:iso(HOY),quien:ROLES[rol].quien,acc:"Reasignación",mot:motivo}); r._snaps=[];
   audit("Reasigna salida · "+motivo,r.id,"Confirmada · "+ant,"Aprobada · por asignar");
 }
 function esperaHTML(r){
@@ -2102,7 +2145,7 @@ function asignacionHTML(r){
   const conds=COND.filter(c=>c.tipo==="POOL").map(c=>({c,a:condApto(c.id,tmp)}));
   const kmDia=r.km/Math.max(1,Math.ceil((F(r.regreso)-F(r.salida))/DIA));
   return `<h3>Asignar</h3>
-  <p class="tenue peq">Sólo se listan vehículos disponibles: fuera de taller y de baja, con capacidad (${pasajeros(r)} personas)${r.req.t4?", 4x4":""}${r.req.carga?", carga":""}, documentos vigentes y horario libre.</p>
+  <p class="tenue peq">Sólo se listan vehículos disponibles: fuera de taller y de baja, con capacidad (${pasajeros(r)} personas)${r.req.t4?", 4x4":""}${r.req.carga?", carga":""}, documentos vigentes y horario libre, con una hora de holgura entre salidas.</p>
   <div class="campos">
    <div class="campo ancho"><label for="a-pat">Vehículo disponible</label>${aptos.length?`<select id="a-pat"><option value="">— Seleccionar vehículo (${aptos.length} disponibles) —</option>${aptos.map(({v,a})=>`<option value="${v.pat}" ${asig.pat===v.pat?"selected":""}>${v.pat} · ${esc(v.marca+" "+v.modelo)} · ${esc(v.tipo)} · ${v.trac} · ${v.cap} plazas · ${km(v.km)} km${a.avisos.length?" · ⚠ "+esc(a.avisos.join(", ")):""}</option>`).join("")}</select>`:`<p class="nota">No hay vehículos disponibles que cumplan los requisitos. Use «Sin disponibilidad».</p>`}${asig.pat&&vSel?.a.avisos.length?`<span class="ayuda">${vSel.a.avisos.map(m=>chip(m,"c-pend","!")).join(" ")}</span>`:""}</div>
    <div class="campo ancho"><label for="a-tarj">Tarjeta de combustible</label><select id="a-tarj" ${asig.pat?"":"disabled"}><option value="">${asig.pat?"— Seleccionar tarjeta —":"— Elija primero el vehículo —"}</option>${tarjetas.map(x=>`<option value="${esc(x.t)}" ${asig.tarj===x.t?"selected":""}>${esc(x.t)} · ${x.pat===asig.pat?"tarjeta del vehículo":"tarjeta de "+x.pat}</option>`).join("")}</select><span class="ayuda">Sólo tarjetas activas de ${esc(regTarj)} que no estén entregadas en otra salida en esas fechas. Por defecto, la del vehículo asignado.</span></div>
@@ -2120,6 +2163,9 @@ function estadoVehHTML(p){ return `<div class="check-grid">${ESTADO_VEH.map(n=>`
 function leerEstado(C,p){ const ok=[...C.querySelectorAll("."+p+"-est:checked")].map(i=>i.value); return {faltan:ESTADO_VEH.filter(n=>!ok.includes(n)),obs:$("#"+p+"-est-obs").value.trim()}; }
 const estTxt=e=>!e?"—":e.faltan.length?"observado: "+e.faltan.join(", ")+(e.obs?" ("+e.obs+")":""):"en orden";
 const fotoCampo=(id,txt)=>`<div class="campo"><label for="${id}">Foto del tablero (odómetro)</label><input type="file" id="${id}" accept="image/*" capture="environment"><span class="ayuda">${txt}</span></div>`;
+/* Historial de la salida (v4): cada cambio de estado con quién, cuándo y el motivo. Hallazgos §4.3 y §6 de la auditoría. */
+function histHTML(r){ const h=(r.hist||[]).slice().sort((a,b)=>String(a.t).localeCompare(String(b.t)));
+  return `<details class="seccion hist-sal"><summary>Historial de la salida <span class="tenue peq">· ${h.length} ${h.length===1?"registro":"registros"}</span></summary><ol class="hist-lista">${h.map(x=>`<li><span class="num tenue">${fFH(x.t)}</span> <b>${esc(x.acc)}</b> · ${esc(nom(x.quien))}${x.por?` <span class="tenue">(subrogante de ${esc(nom(x.por))})</span>`:""}${x.mot?`<br><span class="peq">Motivo: ${esc(x.mot)}</span>`:""}</li>`).join("")}</ol></details>`; }
 function checklistHTML(r){
   return `<div class="check-grid">${DOCS_ENTREGA.map(n=>`<label><input type="checkbox" class="s-doc" value="${esc(n)}" checked> ${esc(n)}${n==="Tarjeta de combustible"&&r.tarjeta?` <span class="tenue peq mono">${esc(r.tarjeta)}</span>`:""}</label>`).join("")}</div>`;
 }
@@ -2137,7 +2183,7 @@ function despachoHTML(r){
   <div class="acciones"><button class="btn" type="button" id="s-ok" ${bloq.length?"disabled":""}>Registrar salida</button></div>`;
 }
 function recepcionHTML(r){
-  return `<h3>Recibir vehículo</h3><p class="tenue peq">Salió ${fFH(r.bit.sal)} con ${km(r.bit.odoS)} km y estanque ${esc(r.bit.combS)}.</p>
+  return `<h3>Recibir vehículo</h3>${atrasada(r)?`<div class="regla bl"><span class="ico" aria-hidden="true">!</span><div><b>Regreso atrasado</b><span>Debía volver el ${fCorta(r.regreso)}. Contacta al conductor y registra el regreso cuando llegue. Mientras no vuelva, el vehículo y el conductor no se ofrecen en otras salidas.</span></div></div>`:""}<p class="tenue peq">Salió ${fFH(r.bit.sal)} con ${km(r.bit.odoS)} km y estanque ${esc(r.bit.combS)}.</p>
   <div class="campos"><div class="campo"><label for="g-hora">Fecha y hora de llegada</label><input type="datetime-local" id="g-hora" value="${paso.form.hora||iso(HOY)}" min="${r.bit.sal}" max="${iso(HOY)}"><span class="ayuda">Entre la salida y ahora.</span></div><div class="campo"><label for="g-odo">Odómetro (km)</label><input type="number" id="g-odo" value="" min="${r.bit.odoS+1}" placeholder="Lea el tablero"><span class="ayuda">Salió con ${km(r.bit.odoS)} km${r.km?` · estimado al regreso: ${km(r.bit.odoS+r.km)} km`:""}</span><span class="ayuda" id="g-rec"></span></div>
   <div class="campo"><label for="g-comb">Estanque</label><select id="g-comb"><option value="">— Seleccionar —</option>${["Reserva","1/4","1/2","3/4","Lleno"].map(x=>`<option>${x}</option>`).join("")}</select></div>
   <div class="campo"><span class="lbl">Carga de combustible en ruta</span><div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--e-2)"><input type="number" id="g-lt" placeholder="Litros" aria-label="Litros"><input type="number" id="g-monto" placeholder="Monto $" aria-label="Monto"></div></div></div>
@@ -2152,13 +2198,14 @@ function cierreHTML(r){
    <dt>Conductor</dt><dd>${b.condS?`Retiró ${esc(nom(b.condS))} · entregó ${esc(nom(b.condR||b.condS))}`:"—"}</dd>
    <dt>Estado del vehículo</dt><dd>${b.estS?`Al salir ${esc(estTxt(b.estS))} · al volver ${esc(estTxt(b.estR))}`:"—"}</dd>
    <dt>Fotos del tablero</dt><dd>${b.fotoS?"Salida"+(b.fotoR?" y regreso":"")+" adjuntas":"—"}</dd>
-   <dt>Tarjeta de combustible</dt><dd>${b.tarjDev===false?chip("No devuelta","c-malo","!"):b.tarjDev?"Devuelta":"—"}</dd></dl>`;
+   <dt>Tarjeta de combustible</dt><dd>${b.tarjDev===false?chip("No devuelta","c-malo","!")+(puedeGestionar()?` <button class="btn sec chico" type="button" id="x-tarj">Registrar devolución</button>`:""):b.tarjDev?"Devuelta"+(b.tarjDevT?" el "+fCorta(b.tarjDevT):""):"—"}</dd></dl>`;
 }
 function postSalida(r){
   const C=$("#capa");
   C.querySelectorAll("[data-volver-sal]").forEach(b=>b.onclick=()=>{cerrarCapa();render()});
   const cok=$("#c-ok"); if(cok) cok.onclick=()=>{ aplicarPaso(r); tostada({asig:"Asignación confirmada. Correo enviado al solicitante y a la jefatura.",sal:"Salida registrada.",reg:"Regreso registrado."}[paso.hecho.tipo]); abrirSalida(r.id); };
   const cbk=$("#c-back"); if(cbk) cbk.onclick=()=>{ paso.conf=null; abrirSalida(r.id); };
+  const xt=$("#x-tarj"); if(xt) xt.onclick=()=>{ r.bit.tarjDev=true; r.bit.tarjDevT=iso(HOY); r.hist.push({t:iso(HOY),quien:ROLES[rol].quien,acc:"Tarjeta de combustible devuelta"}); audit("Registra devolución de tarjeta de combustible",r.id+" · "+r.pat,"No devuelta","Devuelta"); tostada("Devolución de la tarjeta registrada."); abrirSalida(r.id); };
   const hu=$("#h-undo"); if(hu) hu.onclick=()=>{ if(Date.now()-paso.hecho.t>UNDO_MS){ tostada("Pasaron 10 minutos: pide al administrador nacional que lo anule."); abrirSalida(r.id); return; } const s=restaurarSalida(r); audit("Deshace "+NOMBRE_PASO[s.tipo],r.id,"—","Vuelve a "+EST[r.est][0]); paso.hecho=null; tostada("Registro deshecho."); abrirSalida(r.id); };
   const xr=$("#x-reasig"); if(xr) xr.onclick=()=>{ if(!xr.dataset.conf){ xr.dataset.conf="1"; xr.textContent="Confirmar: liberar "+r.pat+" y reasignar"; xr.classList.add("peligro"); return; } reasignarSalida(r,"se reasigna vehículo o conductor."); asig={pat:null,cond:null,rel:null,tarj:null,rid:r.id}; paso={rid:r.id,conf:null,hecho:null,form:{},anular:false}; tostada(`${r.id}: vuelve a «por asignar». Elige otro vehículo${r.reqCond?" y conductor":""}.`); abrirSalida(r.id); };
   const xa=$("#x-anular"); if(xa) xa.onclick=()=>{ paso.anular=true; abrirSalida(r.id); };
@@ -2171,7 +2218,7 @@ function postSalida(r){
   const ok=$("#a-ok"); if(ok) ok.onclick=()=>{ const va=VX[asig.pat]?vehApto(VX[asig.pat],r):{ok:false,motivos:["Vehículo no válido"]}; if(!va.ok){ tostada("El vehículo ya no cumple: "+va.motivos.join(", ")+"."); asig.pat=null; asig.tarj=null; abrirSalida(r.id); return; }
     if(r.reqCond&&asig.cond&&!condApto(asig.cond,{...r,pat:asig.pat}).ok){ tostada("El conductor ya no está disponible."); asig.cond=null; abrirSalida(r.id); return; }
     paso.conf={tipo:"asig",d:{obs:$("#a-obs").value.trim()}}; abrirSalida(r.id); };
-  const sd=$("#a-sd"); if(sd) sd.onclick=()=>{ r.est="SIN_DISP"; r.obsLog="Logística: sin vehículos del pool que cumplan requisitos."; audit("Marca sin disponibilidad",r.id,"Aprobada","Sin disponibilidad"); tostada(`${r.id}: se avisó al solicitante.`); abrirSalida(r.id); };
+  const sd=$("#a-sd"); if(sd) sd.onclick=()=>{ r.est="SIN_DISP"; r.obsLog="Logística: sin vehículos del pool que cumplan requisitos."; r.hist.push({t:iso(HOY),quien:ROLES[rol].quien,acc:"Sin disponibilidad",mot:"Sin vehículos del pool que cumplan requisitos"}); audit("Marca sin disponibilidad",r.id,"Aprobada","Sin disponibilidad"); tostada(`${r.id}: se avisó al solicitante.`); abrirSalida(r.id); };
   const so=$("#s-ok"); if(so) so.onclick=()=>{ if(bloqueosEntrega(r).length) return; const v=VX[r.pat], odo=+$("#s-odo").value, hora=$("#s-hora").value;
     if(!hora||F(hora)>HOY){$("#s-hora").setAttribute("aria-invalid","true");$("#s-hora").focus();tostada(`La hora de salida no puede ser posterior a ahora (${fCorta(HOY)}).`);return}
     if(F(hora)<F(r.salida.slice(0,10))){$("#s-hora").setAttribute("aria-invalid","true");$("#s-hora").focus();tostada(`La salida no puede registrarse antes del ${diaTxt(r.salida)}.`);return}
@@ -2715,7 +2762,7 @@ document.addEventListener("click",e=>{
   const v=e.target.closest("[data-veh]"); if(v){fichaTab="resumen";abrirFicha(v.dataset.veh);return}
   const a=e.target.closest("[data-asig]"); if(a){abrirSalida(a.dataset.asig);return}
   const i=e.target.closest("[data-ir]"); if(i){cerrarCapa();ir(i.dataset.ir);return}
-  const an=e.target.closest("[data-anular]"); if(an){const r=RES.find(x=>x.id===an.dataset.anular); if(an.dataset.conf){const ant=EST[r.est][0]; r.est="ANULADA"; r.obsLog="Anulada por el solicitante."; audit("Anula solicitud",r.id,ant,"Anulada"); tostada(`${r.id} anulada.`); if($("#capa").innerHTML) cerrarCapa(); render();} else {an.dataset.conf="1"; an.textContent="Confirmar anulación";} return}
+  const an=e.target.closest("[data-anular]"); if(an){const r=RES.find(x=>x.id===an.dataset.anular); if(an.dataset.conf){const ant=EST[r.est][0]; r.est="ANULADA"; r.obsLog="Anulada por el solicitante."; r.hist.push({t:iso(HOY),quien:ROLES[rol].quien,acc:"Anulada por el solicitante"}); audit("Anula solicitud",r.id,ant,"Anulada"); tostada(`${r.id} anulada.`); if($("#capa").innerHTML) cerrarCapa(); render();} else {an.dataset.conf="1"; an.textContent="Confirmar anulación";} return}
 });
 
 /* ======================= ALTAS (sólo administrador nacional) ======================= */
@@ -2885,10 +2932,22 @@ function abrirAltaConductor(){
 }
 
 /* ======================= INGRESO (login simulado con RUT y nombre) ======================= */
+/* Historial de los datos de ejemplo (v4): las salidas de ejemplo sólo traían «Solicitud ingresada». Se completan las etapas ya
+   cumplidas con horas aproximadas, para mostrar el historial de cada salida. Las salidas nuevas lo registran al operar. */
+RES.forEach(r=>{ if(r.hist.length>1||r.urg) return; const s=F(r.salida).getTime(), f0=F(r.fSol).getTime();
+  const ap=new Date(Math.min(f0+22*3600000, s-6*3600000)), as=new Date(Math.min(ap.getTime()+3*3600000, s-3600000));
+  if(["RECHAZADA","OBSERVADA"].includes(r.est)) r.hist.push({t:iso(ap),quien:r.jefe,acc:r.est==="RECHAZADA"?"Rechazada":"Observada por jefatura",mot:(r.obsLog||"").replace(/^[^:]*: /,"")||undefined});
+  if(r.est==="ANULADA") r.hist.push({t:iso(ap),quien:r.sol,acc:"Anulada",mot:(r.obsLog||"").replace(/^[^:]*: /,"")||undefined});
+  if(["APROBADA","CONFIRMADA","EN_TERRENO","FINALIZADA","SIN_DISP"].includes(r.est)) r.hist.push({t:iso(ap),quien:r.jefe,acc:"Aprobada · por asignar"});
+  if(r.est==="SIN_DISP") r.hist.push({t:iso(as),quien:"p2",acc:"Sin disponibilidad",mot:(r.obsLog||"").replace(/^[^:]*: /,"")||undefined});
+  if(["CONFIRMADA","EN_TERRENO","FINALIZADA"].includes(r.est)) r.hist.push({t:iso(as),quien:"p2",acc:"Asignada"});
+  if(r.bit?.sal) r.hist.push({t:r.bit.sal,quien:"p2",acc:"Salida"});
+  if(r.bit?.reg) r.hist.push({t:r.bit.reg,quien:"p2",acc:"Regreso"}); });
 const QUIEN_BASE=Object.fromEntries(Object.entries(ROLES).map(([k,r])=>[k,r.quien]));
 const USUARIOS_PRUEBA=[["solicitante","plus","Funcionario solicitante"],["jefatura","aprobar","Jefatura directa"],["encargado","car","Encargado de vehículos"],["super","config","Administrador nacional"],["auditor","lista","Auditor (sólo lectura)"]];
 const normNom=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/\s+/g," ").trim();
-function rolDe(p){ const u=typeof USR!=="undefined"&&USR.find(x=>x.id===p.id&&x.activo); if(u&&!Object.values(QUIEN_BASE).includes(p.id)) return PERFILES_USR[u.perfil]; const k=Object.keys(QUIEN_BASE).find(k=>QUIEN_BASE[k]===p.id); return k||(p.jefe?"jefatura":"solicitante"); }
+function rolDe(p){ { const k=Object.keys(QUIEN_BASE).find(k=>QUIEN_BASE[k]===p.id); if(subrogaA(p.id).length&&(!k||k==="solicitante")) return "jefatura"; }
+  const u=typeof USR!=="undefined"&&USR.find(x=>x.id===p.id&&x.activo); if(u&&!Object.values(QUIEN_BASE).includes(p.id)) return PERFILES_USR[u.perfil]; const k=Object.keys(QUIEN_BASE).find(k=>QUIEN_BASE[k]===p.id); return k||(p.jefe?"jefatura":"solicitante"); }
 function iniciarSesion(p){
   rol=rolDe(p); ROLES[rol].quien=p.id; vista=ROLES[rol].nav[0][0]; borrador=null;
   try{ localStorage.setItem("flota-sesion",p.id); }catch(e){}
@@ -2901,7 +2960,8 @@ function mostrarLogin(){
   temaClaro();
   cerrarCapa(); $("#capa2").innerHTML=""; document.body.classList.add("sin-sesion"); $("#login").hidden=false;
   $("#l-rut").value=""; $("#l-nom").value=""; $("#l-error").textContent=""; ["#l-rut","#l-nom"].forEach(s=>$(s).removeAttribute("aria-invalid"));
-  $("#l-usuarios").innerHTML=USUARIOS_PRUEBA.map(([k,ic,t])=>`<li><button type="button" class="l-usuario" data-u="${QUIEN_BASE[k]}" aria-pressed="false">${ico(ic)}${t}${ico("flecha","ico fin")}</button></li>`).join("");
+  $("#l-usuarios").innerHTML=USUARIOS_PRUEBA.map(([k,ic,t])=>`<li><button type="button" class="l-usuario" data-u="${QUIEN_BASE[k]}" aria-pressed="false">${ico(ic)}${t}${ico("flecha","ico fin")}</button></li>`).join("")+
+    SUBROG.filter(s=>subrActiva(s.jefe)===s).map(s=>`<li><button type="button" class="l-usuario" data-u="${s.subr}" aria-pressed="false">${ico("aprobar")}Jefatura subrogante (${esc(nom(s.subr))})${ico("flecha","ico fin")}</button></li>`).join("");
   $("#l-usuarios").querySelectorAll("[data-u]").forEach(b=>b.onclick=()=>{const p=PX[b.dataset.u]; $("#l-rut").value=p.rut; $("#l-nom").value=p.nom; $("#l-error").textContent=""; $("#l-usuarios").querySelectorAll("[data-u]").forEach(x=>x.setAttribute("aria-pressed",x===b)); $("#form-login button[type=submit]").focus();});
   $("#l-rut").focus();
 }
