@@ -8,6 +8,8 @@ vencimientos legales y combustible. Requerimiento de la Sección Servicios Gener
 
 **Ver la maqueta:** https://alvarozvjac.github.io/coipo_gestion_flota_vehiculos/
 
+**Ver la versión 4 (incorpora la auditoría del ERS):** https://alvarozvjac.github.io/coipo_gestion_flota_vehiculos/v4/
+
 > Demostración no operacional. Los vehículos y sus vencimientos son datos reales de
 > Oficina Central (planilla de mantenciones al 28-09-2026), con los números de motor y
 > chasis enmascarados. Personas, RUT, pólizas y cargas de combustible son ficticios
@@ -15,6 +17,29 @@ vencimientos legales y combustible. Requerimiento de la Sección Servicios Gener
 > validar el flujo y el alcance con la contraparte y el Departamento de Informática.
 
 **Vista celular:** en computador, el botón flotante «Vista celular», abajo a la izquierda muestra la maqueta dentro de un marco de teléfono de 390 × 844 px, para presentarla sin abrir las herramientas del navegador. Se cierra con «Cerrar» o Esc. En un teléfono real el botón no aparece.
+
+## Versión 4: cambios derivados de la auditoría del ERS (10-11-2026)
+
+La versión 4 está en la carpeta `v4/` y convive con la versión 3, que sigue en la dirección principal. Incorpora los
+hallazgos de la revisión con perfil de auditor del ERS INF-LOG-TI-2026-V1 (§3.2 a §5.4) que una maqueta puede mostrar.
+Manual: [`manuales/manual-usuario-v4.pdf`](manuales/manual-usuario-v4.pdf) (cinco perfiles).
+
+| Cambio | Hallazgo del ERS | Dónde verlo |
+|---|---|---|
+| Perfil **Auditor**, de sólo lectura; es el único que consulta el registro de auditoría, que sale de la Configuración del administrador nacional | §3.2: el Super Usuario revisaba su propia auditoría | Usuario de prueba «Auditor (sólo lectura)» |
+| Se registran los inicios y cierres de sesión, y cada consulta del registro de auditoría | §3.2: la auditoría cubría cambios, no accesos | Perfil Auditor |
+| El PIN de la tarjeta de combustible no se registra | §4.1: el PIN quedaba en la ficha | Agregar vehículo (administrador) |
+| La jefatura que autoriza se toma de la nómina y no se puede cambiar | §4.3: el solicitante elegía a su jefatura | Nueva solicitud, paso 1 |
+| La asignación manual avisa por correo a la jefatura directa del funcionario, y un filtro reúne esas salidas | Diferencia maqueta y ERS (decisión 2.31) | Salidas a terreno |
+| Bitácora: foto del tablero obligatoria, conductor que retira y que entrega, estado del vehículo al entregar y al recibir, y devolución de la tarjeta de combustible | §5.1: odómetro sin respaldo, «Recepción Conforme» sin checklist, sin conductor real ni devolución de tarjeta | Entregar y recibir vehículo |
+| Orden de salida con QR de verificación (simulado) que muestra sólo vigencia, patente y periodo; el código cambia si la salida se reasigna | §5.2: QR sin reglas de datos ni de invalidación | Ver orden de salida |
+| Cargas para revisar: rendimiento fuera de lo habitual, dos cargas en menos de 24 horas o precio por litro atípico | §5.4: sin reglas de uso indebido de la tarjeta | Combustible y gastos |
+
+Ya estaban resueltos en la versión 3 y no cambian: el estado «Observada», la imputación definida por la jefatura, el
+bloqueo de la entrega con documentos vencidos o vehículo en taller, la reasignación, el odómetro mínimo, el aviso de
+mantención vencida al asignar y el detalle «Reservado» del calendario para quien no es parte de la salida. Lo que
+depende del backend o de una definición de otras áreas (autenticación, cifrado, retención, DL 799, conciliación con el
+emisor de la tarjeta) queda en el informe de auditoría y no se simula.
 
 ## Cómo probarla
 
