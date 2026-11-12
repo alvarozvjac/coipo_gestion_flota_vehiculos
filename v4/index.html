@@ -2022,7 +2022,7 @@ post.hoy = ()=>postAccesos();
 /* ======================= SALIDAS ======================= */
 function grupoSalida(r){ return r.est==="APROBADA"?"asignar":r.est==="CONFIRMADA"||r.est==="EN_TERRENO"?"entregar":r.est==="FINALIZADA"?"finalizadas":r.est==="PEND_JEFE"||r.est==="OBSERVADA"?"jefatura":"otras"; }
 /* Título de Salidas con el cambio de vista Lista / Calendario al lado */
-const titModo=act=>`<div class="tit-modo"><h1>Salidas a terreno</h1><div class="seg" role="group" aria-label="Vista de las salidas"><button type="button" data-modo="lista" aria-pressed="${act==="lista"}">${ico("lista")}Lista</button><button type="button" data-modo="calendario" aria-pressed="${act==="calendario"}">${ico("calendario")}Calendario</button></div>${puedeGestionar()?`<button class="btn sec chico" type="button" data-urg>Asignación manual</button>`:""}</div>`;
+const titModo=act=>`<div class="tit-modo"><h1>Salidas a terreno</h1><div class="seg" role="group" aria-label="Vista de las salidas"><button type="button" data-modo="lista" aria-pressed="${act==="lista"}">${ico("lista")}Lista</button><button type="button" data-modo="calendario" aria-pressed="${act==="calendario"}">${ico("calendario")}Calendario</button></div>${puedeGestionar()?`<div class="seg" role="group" aria-label="Crear salida"><button type="button" data-urg>${ico("plus")}Asignación manual</button></div>`:""}</div>`;
 function vSalidas(){
   if(sel.salModo==="calendario") return vVisor().replace('<h1>Visor de disponibilidad</h1>',titModo("calendario"));
   const g={}; RES.forEach(r=>{const k=grupoSalida(r); g[k]=(g[k]||0)+1});
